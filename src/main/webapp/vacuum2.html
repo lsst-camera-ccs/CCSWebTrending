@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TS7-1 vacuum and temperatures</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.css" />
+        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.js"></script>
+        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="CCSTrending.js"></script>
+    </head>
+    <body>
+        <div id="graph" style="width:1000px;height:400px"></div>
+        <script type="text/javascript">
+            g = new CCSTrendingPlot(
+                    document.getElementById("graph"), {
+                title: 'TS7-1 vacuum and temperatures',
+                range: {start: new Date(1495832400000), end: new Date(1495854000000)},
+                data: {
+                    1201: {title: 'cold_1'},
+                    1202: {title: 'cold_2'},
+                    1203: {title: 'cryo'},
+                    1215: {title: 'pressure', axis: 'y2'}
+                }
+            });
+        </script>
+    </body>
+
+</html>

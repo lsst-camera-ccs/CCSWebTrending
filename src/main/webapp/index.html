@@ -1,44 +1,26 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Trending demo</title>
+        <title>Cleanroom monitoring</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
-        <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
-        <style>
-            .dygraph-title {
-                color: gray;
-            }
-            #graph {
-                width: 1000px;
-                height: 400px;
-            }
-        </style>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.css" />
+        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.js"></script>
+        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="CCSTrending.js"></script>
     </head>
     <body>
-        <div id="graph"></div>
+        <div id="graph" style="width:1000px;height:400px"></div>
         <script type="text/javascript">
-               
-            g = new Dygraph(
-                    document.getElementById("graph"), [[new Date("2017-05-28T05:52:46Z"), 0, 0, 0],[new Date("2017-05-29T05:52:46Z"), 1, 1, 1]], {
-                // options go here. See http://dygraphs.com/options.html 
-                legend: 'always',
-                animatedZooms: true,
-                title: 'Time History',
-                connectSeparatedPoints: true,
-                labels: ["time", "a", "b", "c"]
-            });
-            $.getJSON("rest?n=400&key=1918&key=1868&key=1898&period=12h").done(function (newData) {
-                console.log(newData[0]);
-                for (var i = 0; i < newData.length; i++) {
-                    newData[i][0] = new Date(newData[i][0]);
+            g = new CCSTrendingPlot(
+                    document.getElementById("graph"), {
+                title: 'Lighthouse temperatures',
+                data: {
+                    1918: {},
+                    1868: {},
+                    1898: {}
                 }
-                g.updateOptions({file: newData});
-            })
-                    .fail(function (jqXHR, message) {
-                       alert("error " + message);
-                    });
+            });
         </script>
     </body>
 

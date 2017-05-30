@@ -1,7 +1,7 @@
 function CCSTrendingPlot(element, options) {
     var now = Date.now();
     this.title = (typeof options.title === 'undefined') ? 'Trending Plot' : options.title;
-    this.range = (typeof options.range === 'undefined') ? {start: now - 60 * 60 * 1000, end: now} : options.range;
+    this.range = (typeof options.range === 'undefined') ? {start: new Date(now - 60 * 60 * 1000), end: new Date(now)} : options.range;
     this.data = options.data;
     this.nBins = 100;
     this.keys = [];
@@ -22,6 +22,7 @@ function CCSTrendingPlot(element, options) {
     dummyData[0][0] = this.range.start;
     dummyData[1][0] = this.range.end;
 
+    var ccs = this;
     var graph = new Dygraph(element, dummyData,
             {
                 title: this.title,
@@ -30,17 +31,25 @@ function CCSTrendingPlot(element, options) {
                 legend: 'always',
                 animatedZooms: true,
                 connectSeparatedPoints: true,
-                drawPoints: true
+                drawPoints: true,
+                zoomCallback: function (minDate, maxDate, yRanges) {
+                    var args = $.param({"key": ccs.keys, "t1": Math.round(minDate), "t2": Math.round(maxDate), "n": ccs.nBins}, true);
+                    updateData(args);
+                }
             });
+    
+    function updateData(args) {
+        $.getJSON("rest", args).done(function (newData) {
+            for (var i = 0; i < newData.length; i++) {
+                newData[i][0] = new Date(newData[i][0]);
+            }
+            graph.updateOptions({file: newData});
+        })
+        .fail(function (jqXHR, message) {
+                    alert("error " + message);
+        });
+    }
 
     var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins}, true);
-    $.getJSON("rest", args).done(function (newData) {
-        for (var i = 0; i < newData.length; i++) {
-            newData[i][0] = new Date(newData[i][0]);
-        }
-        graph.updateOptions({file: newData});
-    })
-    .fail(function (jqXHR, message) {
-                alert("error " + message);
-    });
+    updateData(args);
 }

@@ -38,6 +38,14 @@ function CCSTrendingPlot(element, options) {
                 }
             });
     
+    this.zoom = function(seconds) {
+        var now = Date.now();
+        var then = now-seconds*1000;
+        graph.updateOptions({dateWindow: [then,now]});
+        var args = $.param({"key": ccs.keys, "t1": then, "t2": now, "n": ccs.nBins}, true);
+        updateData(args);
+    };
+    
     function updateData(args) {
         $.getJSON("rest", args).done(function (newData) {
             for (var i = 0; i < newData.length; i++) {

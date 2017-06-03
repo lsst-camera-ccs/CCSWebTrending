@@ -11,11 +11,23 @@
     </head>
     <body>
         <div id="graph" style="width:1000px;height:400px"></div>
+        <div class="link-interaction">
+            <style>.link-interaction a:visited { color: blue; }</style>
+            <div id="div_g"></div>
+            <b>Zoom:</b>
+            <a href="#" id="hour">hour</a> 
+            <a href="#" id="3hour">3 hour</a> 
+            <a href="#" id="6hour">6 hour</a> 
+            <a href="#" id="12hour">12 hour</a> 
+            <a href="#" id="day">day</a> 
+            <a href="#" id="week">week</a> 
+            <a href="#" id="month">month</a> 
+
+        </div>
         <script type="text/javascript">
             g = new CCSTrendingPlot(
                     document.getElementById("graph"), {
                 title: 'TS7-1 vacuum and temperatures',
-                range: {start: new Date(1495832400000), end: new Date(1495854000000)},
                 data: {
                     1201: {title: 'cold_1'},
                     1202: {title: 'cold_2'},
@@ -23,6 +35,15 @@
                     1215: {title: 'pressure', axis: 'y2'}
                 }
             });
+            document.getElementById('hour').onclick = function() { g.zoom(3600); };
+            document.getElementById('3hour').onclick = function() { g.zoom(3*3600); };
+            document.getElementById('6hour').onclick = function() { g.zoom(6*3600); };
+            document.getElementById('12hour').onclick = function() { g.zoom(12*3600); };
+            document.getElementById('day').onclick = function() { g.zoom(86400); };
+            document.getElementById('week').onclick = function() { g.zoom(604800); };
+            document.getElementById('month').onclick = function() { g.zoom(30 * 86400); };
+            document.getElementById('left').onclick = function() { pan(-1); };
+            document.getElementById('right').onclick = function() { pan(+1); };
         </script>
     </body>
 

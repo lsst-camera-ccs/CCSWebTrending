@@ -1,10 +1,8 @@
 package org.lsst.ccs.web.trending;
 
-
-import java.io.PrintWriter;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.lsst.ccs.web.trending.TrendingRestInterface.ErrorBars;
 
 /**
  * A special map for building CSV files from sets of trending data
@@ -13,26 +11,61 @@ import java.util.TreeMap;
  */
 class MergedMap {
 
-    private final SortedMap<Long, Double[]> map = new TreeMap<>();
+    private final SortedMap<Long, Bin[]> map = new TreeMap<>();
     private final int nSets;
+    private final ErrorBars errorBars;
 
-    public MergedMap(int nSets) {
+    public MergedMap(int nSets, ErrorBars errorBars) {
         this.nSets = nSets;
+        this.errorBars = errorBars;
     }
 
-    void put(String timeString, String valueString, int axis) {
+    void put(String timeString, String valueString, String rmsString, String minString, String maxString, int axis) {
         long time = Long.parseLong(timeString);
-        double value = Double.parseDouble(valueString);
-        Double[] values = map.get(time);
-        if (values == null) {
-            values = new Double[nSets];
-            map.put(time, values);
+        Bin[] bins = map.get(time);
+        if (bins == null) {
+            bins = new Bin[nSets];
+            map.put(time, bins);
         }
-        values[axis] = value;
+        bins[axis] = new Bin(valueString, rmsString, minString, maxString);
     }
 
-    public SortedMap<Long, Double[]> getMap() {
+    public SortedMap<Long, Bin[]> getMap() {
         return map;
     }
 
+    public ErrorBars getErrorBars() {
+        return errorBars;
+    }
+
+    static class Bin {
+        private double value;
+        private double rms;
+        private double min;
+        private double max;
+
+        private Bin(String valueString, String rmsString, String minString, String maxString) {
+           value = Double.parseDouble(valueString);
+           rms = Double.parseDouble(rmsString);
+           min = Double.parseDouble(minString);
+           max = Double.parseDouble(maxString);
+        }
+
+        double getValue() {
+            return value;
+        }
+
+        double getRMS() {
+            return rms;
+        }
+
+        double getMin() {
+            return min;
+        }
+
+        double getMax() {
+            return max;
+        }
+        
+    }
 }

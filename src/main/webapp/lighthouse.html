@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Cleanroom monitoring</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
+        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="CCSTrending.js"></script>
+    </head>
+    <body>
+        <div id="graph1" style="width:1000px;height:300px"></div>
+        <div id="graph2" style="width:1000px;height:300px"></div>
+        <div id="graph3" style="width:1000px;height:300px"></div>
+        <script type="text/javascript">
+            g1 = new CCSTrendingPlot(
+                    document.getElementById("graph1"), {
+                range: '1d',
+                title: 'Lighthouse temperatures',
+                data: {
+                    1908: {title: "Aux"},
+                    1918: {title: "Entry"},
+                    1868: {title: "Main NE"},
+                    1898: {title: "Main NW"},
+                    1878: {title: "Main SE"},
+                    1888: {title: "Main SW"},
+                }
+            });
+            g2 = new CCSTrendingPlot(
+                    document.getElementById("graph2"), {
+                range: '1d',
+                title: 'Lighthouse humidty',
+                data: {
+                    1907: {title: "Aux"},
+                    1917: {title: "Entry"},
+                    1867: {title: "Main NE"},
+                    1897: {title: "Main NW"},
+                    1877: {title: "Main SE"},
+                    1887: {title: "Main SW"},
+                }
+            });
+            g3 = new CCSTrendingPlot(
+                    document.getElementById("graph3"), {
+                range: '1d',
+                title: 'Lighthouse particle density (3.0)',
+                data: {
+                    1900: {title: "Aux"},
+                    1910: {title: "Entry"},
+                    1860: {title: "Main NE"},
+                    1890: {title: "Main NW"},
+                    1870: {title: "Main SE"},
+                    1880: {title: "Main SW"},
+                }
+            });
+        </script>
+    </body>
+
+</html>

@@ -4,8 +4,7 @@
         <title>TS7-1 vacuum and temperatures</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.css" />
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.0.0/dygraph.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
         <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
         <script src="CCSTrending.js"></script>
     </head>
@@ -21,8 +20,12 @@
             <a href="#" id="12hour">12 hour</a> 
             <a href="#" id="day">day</a> 
             <a href="#" id="week">week</a> 
-            <a href="#" id="month">month</a> 
-
+            <a href="#" id="month">month</a>.
+            Or drag to select area for zoom, or shift drag to pan.<br>
+            <b>Error Bars:</b> 
+            <a href="#" id="none">none</a> 
+            <a href="#" id="minmax">min/max</a> 
+            <a href="#" id="rms">rms</a> 
         </div>
         <script type="text/javascript">
             g = new CCSTrendingPlot(
@@ -42,8 +45,9 @@
             document.getElementById('day').onclick = function() { g.zoom(86400); };
             document.getElementById('week').onclick = function() { g.zoom(604800); };
             document.getElementById('month').onclick = function() { g.zoom(30 * 86400); };
-            document.getElementById('left').onclick = function() { pan(-1); };
-            document.getElementById('right').onclick = function() { pan(+1); };
+            document.getElementById('none').onclick = function() { g.setErrorBars('NONE'); };
+            document.getElementById('minmax').onclick = function() { g.setErrorBars('MINMAX'); };
+            document.getElementById('rms').onclick = function() { g.setErrorBars('RMS'); };
         </script>
     </body>
 

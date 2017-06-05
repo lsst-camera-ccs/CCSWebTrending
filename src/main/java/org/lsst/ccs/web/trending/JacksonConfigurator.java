@@ -12,9 +12,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import org.lsst.ccs.web.trending.ChannelTree.TreeNode;
+import org.lsst.ccs.web.trending.MergedMap.Bin;
+import org.lsst.ccs.web.trending.TrendingRestInterface.ErrorBars;
 
 /**
- * Register custom jackson serializers for Waveform histories.
+ * Register custom jackson serializers.
  *
  * @author tonyj
  */
@@ -40,16 +42,27 @@ public class JacksonConfigurator implements ContextResolver<ObjectMapper> {
 
         @Override
         public void serialize(MergedMap mergedMap, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-            Map<Long, Double[]> map = mergedMap.getMap();
+            Map<Long, Bin[]> map = mergedMap.getMap();
             jgen.writeStartArray();
-            for (Map.Entry<Long, Double[]> entry : map.entrySet()) {
+            for (Map.Entry<Long, Bin[]> entry : map.entrySet()) {
                 jgen.writeStartArray();
                 jgen.writeNumber(entry.getKey());
-                for (Double a : entry.getValue()) {
+                for (Bin a : entry.getValue()) {
                     if (a == null) {
                         jgen.writeNull();
+                    } else if (mergedMap.getErrorBars() == ErrorBars.NONE) {
+                        jgen.writeNumber(a.getValue());
                     } else {
-                        jgen.writeNumber(a);
+                        jgen.writeStartArray();
+                        if (mergedMap.getErrorBars() == ErrorBars.MINMAX) {
+                            jgen.writeNumber(a.getMin());
+                            jgen.writeNumber(a.getValue());
+                            jgen.writeNumber(a.getMax());
+                        } else {
+                            jgen.writeNumber(a.getValue());
+                            jgen.writeNumber(a.getRMS());
+                        }
+                        jgen.writeEndArray();
                     }
                 }
                 jgen.writeEndArray();
@@ -57,16 +70,16 @@ public class JacksonConfigurator implements ContextResolver<ObjectMapper> {
             jgen.writeEndArray();
         }
     }
-    
+
     private static class TreeNodeSerializer extends JsonSerializer<TreeNode> {
 
         @Override
         public void serialize(TreeNode t, JsonGenerator jg, SerializerProvider sp) throws IOException, JsonProcessingException {
             jg.writeStartObject();
             jg.writeStringField("text", t.getName());
-            jg.writeNumberField("id",t.getHandle());
+            jg.writeNumberField("id", t.getHandle());
             if (t.getId() != null) {
-                jg.writeStringField("extra", t.getId());
+                jg.writeStringField("data", t.getId());
             }
             jg.writeBooleanField("children", !t.getChildren().isEmpty());
             jg.writeEndObject();

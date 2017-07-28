@@ -39,10 +39,10 @@ class MergedMap {
     }
 
     static class Bin {
-        private double value;
-        private double rms;
-        private double min;
-        private double max;
+        private final double value;
+        private final double rms;
+        private final double min;
+        private final double max;
 
         private Bin(String valueString, String rmsString, String minString, String maxString) {
            value = Double.parseDouble(valueString);

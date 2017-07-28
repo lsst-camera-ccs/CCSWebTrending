@@ -3,9 +3,7 @@ package org.lsst.ccs.web.trending;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.GET;
@@ -39,12 +37,18 @@ public class TrendingRestInterface {
     private static URL restURL;
     private final static Logger logger = Logger.getLogger(TrendingRestInterface.class.getName());
     private static ChannelTree channelTree;
-    public enum ErrorBars { NONE, MINMAX, RMS };
-    public enum Flavor { STAT, RAW };
+
+    public enum ErrorBars {
+        NONE, MINMAX, RMS
+    };
+
+    public enum Flavor {
+        STAT, RAW
+    };
 
     public TrendingRestInterface() throws IOException {
         if (restURL == null) {
-            restURL = new URL("http://lsst-mcm.slac.stanford.edu:8080/rest/data/dataserver/");
+            restURL = new URL("http://lsst-vw01.slac.stanford.edu:8080/rest/data/dataserver/");
             channelTree = new ChannelTree(restURL);
         }
     }
@@ -84,23 +88,29 @@ public class TrendingRestInterface {
         if (errorBars == null) {
             errorBars = ErrorBars.NONE;
         }
-        TrendingMetaData meta = new TrendingMetaData(errorBars,nBins,t1,t2,flavor);
+        TrendingMetaData meta = new TrendingMetaData(errorBars, nBins, t1, t2, flavor);
         MergedMap merged = new MergedMap(keys.size(), errorBars);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        int y = 0;
+        StringBuilder allKeys = new StringBuilder();
         for (String key : keys) {
-            logger.log(Level.INFO, "Handling {0}", key);
-            URL dataURL = new URL(restURL, String.format("data/%s?t1=%s&t2=%s&n=%s&flavor=%s", key, t1, t2, nBins, flavor.toString().toLowerCase()));
-            logger.log(Level.INFO, "Reading: {0}", dataURL);            
-            try (InputStream in = dataURL.openStream()) {
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                Document doc = db.parse(in);
-                logger.log(Level.INFO, "Document created for {0}", key);
-                XPathFactory xPathfactory = XPathFactory.newInstance();
-                XPath xpath = xPathfactory.newXPath();
-                XPathExpression expr = xpath.compile("data/trendingresult/trendingdata");
-                NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
-                Map<String, String> map = new LinkedHashMap<>();
+            allKeys.append("id=").append(key).append('&');
+        }
+        URL dataURL = new URL(restURL, String.format("data/?%st1=%s&t2=%s&n=%s&flavor=%s", allKeys, t1, t2, nBins, flavor.toString().toLowerCase()));
+        logger.log(Level.INFO, "Reading: {0}", dataURL);
+        try (InputStream in = dataURL.openStream()) {
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(in);
+            logger.log(Level.INFO, "Finished reading: {0}", dataURL);
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+            XPathExpression expr = xpath.compile("datas/data");
+            NodeList dataList = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+            for (int y = 0; y < dataList.getLength(); y++) {
+                Node data = dataList.item(y);
+                String key = keys.get(y);
+                logger.log(Level.INFO, "Handling {0}", key);
+                XPathExpression expr2 = xpath.compile("trendingresult/trendingdata");
+                NodeList nl = (NodeList) expr2.evaluate(data, XPathConstants.NODESET);
                 for (int n = 0; n < nl.getLength(); n++) {
                     Node node = nl.item(n);
                     String time = (String) xpath.evaluate("axisvalue[@name='time']/@value", node, XPathConstants.STRING);
@@ -111,14 +121,15 @@ public class TrendingRestInterface {
                     merged.put(time, value, rms, min, max, y);
                 }
                 logger.log(Level.INFO, "Finished processing for {0}", key);
-            } catch (IOException | ParserConfigurationException | SAXException | XPathExpressionException ex) {
-                throw new IOException("Error processing restful data from: " + dataURL, ex);
             }
-            y++;
+        } catch (IOException | ParserConfigurationException | SAXException | XPathExpressionException ex) {
+            throw new IOException("Error processing restful data from: " + dataURL, ex);
         }
-        return new TrendingResult(meta,merged);
+        return new TrendingResult(meta, merged);
     }
+
     private static class TrendingResult {
+
         private final TrendingMetaData meta;
         private final MergedMap data;
 
@@ -134,9 +145,11 @@ public class TrendingRestInterface {
         public MergedMap getData() {
             return data;
         }
-        
+
     }
+
     private static class TrendingMetaData {
+
         private final ErrorBars errorBars;
         private final int nBins;
         private final long min;
@@ -170,6 +183,6 @@ public class TrendingRestInterface {
         public Flavor getFlavor() {
             return flavor;
         }
-        
+
     }
 }

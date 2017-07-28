@@ -104,20 +104,26 @@ public class TrendingRestInterface {
             XPathFactory xPathfactory = XPathFactory.newInstance();
             XPath xpath = xPathfactory.newXPath();
             XPathExpression expr = xpath.compile("datas/data");
+            XPathExpression expr2 = xpath.compile("trendingresult/trendingdata");
+            XPathExpression timeExpr = xpath.compile("axisvalue[@name='time']/@value");
+            XPathExpression valueExpr = xpath.compile("datavalue[@name='value']/@value");
+            XPathExpression rmsExpr = xpath.compile("datavalue[@name='rms']/@value");
+            XPathExpression minExpr = xpath.compile("datavalue[@name='min']/@value");
+            XPathExpression maxExpr = xpath.compile("datavalue[@name='max']/@value");
+
             NodeList dataList = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
             for (int y = 0; y < dataList.getLength(); y++) {
                 Node data = dataList.item(y);
                 String key = keys.get(y);
                 logger.log(Level.INFO, "Handling {0}", key);
-                XPathExpression expr2 = xpath.compile("trendingresult/trendingdata");
                 NodeList nl = (NodeList) expr2.evaluate(data, XPathConstants.NODESET);
                 for (int n = 0; n < nl.getLength(); n++) {
                     Node node = nl.item(n);
-                    String time = (String) xpath.evaluate("axisvalue[@name='time']/@value", node, XPathConstants.STRING);
-                    String value = (String) xpath.evaluate("datavalue[@name='value']/@value", node, XPathConstants.STRING);
-                    String rms = (String) xpath.evaluate("datavalue[@name='rms']/@value", node, XPathConstants.STRING);
-                    String min = (String) xpath.evaluate("datavalue[@name='min']/@value", node, XPathConstants.STRING);
-                    String max = (String) xpath.evaluate("datavalue[@name='max']/@value", node, XPathConstants.STRING);
+                    String time = (String) timeExpr.evaluate(node, XPathConstants.STRING);
+                    String value = (String) valueExpr.evaluate(node, XPathConstants.STRING);
+                    String rms = (String) rmsExpr.evaluate(node, XPathConstants.STRING);
+                    String min = (String) minExpr.evaluate(node, XPathConstants.STRING);
+                    String max = (String) maxExpr.evaluate(node, XPathConstants.STRING);
                     merged.put(time, value, rms, min, max, y);
                 }
                 logger.log(Level.INFO, "Finished processing for {0}", key);

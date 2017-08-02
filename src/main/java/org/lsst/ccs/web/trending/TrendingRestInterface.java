@@ -3,9 +3,7 @@ package org.lsst.ccs.web.trending;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.GET;
@@ -13,18 +11,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * The restful interface for the sequencer server, implemented using Jersey and
@@ -39,8 +32,14 @@ public class TrendingRestInterface {
     private static URL restURL;
     private final static Logger logger = Logger.getLogger(TrendingRestInterface.class.getName());
     private static ChannelTree channelTree;
-    public enum ErrorBars { NONE, MINMAX, RMS };
-    public enum Flavor { STAT, RAW };
+
+    public enum ErrorBars {
+        NONE, MINMAX, RMS
+    };
+
+    public enum Flavor {
+        STAT, RAW
+    };
 
     public TrendingRestInterface() throws IOException {
         if (restURL == null) {
@@ -84,41 +83,76 @@ public class TrendingRestInterface {
         if (errorBars == null) {
             errorBars = ErrorBars.NONE;
         }
-        TrendingMetaData meta = new TrendingMetaData(errorBars,nBins,t1,t2,flavor);
+        TrendingMetaData meta = new TrendingMetaData(errorBars, nBins, t1, t2, flavor);
         MergedMap merged = new MergedMap(keys.size(), errorBars);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        int y = 0;
+        StringBuilder allKeys = new StringBuilder();
         for (String key : keys) {
-            logger.log(Level.INFO, "Handling {0}", key);
-            URL dataURL = new URL(restURL, String.format("data/%s?t1=%s&t2=%s&n=%s&flavor=%s", key, t1, t2, nBins, flavor.toString().toLowerCase()));
-            logger.log(Level.INFO, "Reading: {0}", dataURL);            
-            try (InputStream in = dataURL.openStream()) {
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                Document doc = db.parse(in);
-                logger.log(Level.INFO, "Document created for {0}", key);
-                XPathFactory xPathfactory = XPathFactory.newInstance();
-                XPath xpath = xPathfactory.newXPath();
-                XPathExpression expr = xpath.compile("data/trendingresult/trendingdata");
-                NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
-                Map<String, String> map = new LinkedHashMap<>();
-                for (int n = 0; n < nl.getLength(); n++) {
-                    Node node = nl.item(n);
-                    String time = (String) xpath.evaluate("axisvalue[@name='time']/@value", node, XPathConstants.STRING);
-                    String value = (String) xpath.evaluate("datavalue[@name='value']/@value", node, XPathConstants.STRING);
-                    String rms = (String) xpath.evaluate("datavalue[@name='rms']/@value", node, XPathConstants.STRING);
-                    String min = (String) xpath.evaluate("datavalue[@name='min']/@value", node, XPathConstants.STRING);
-                    String max = (String) xpath.evaluate("datavalue[@name='max']/@value", node, XPathConstants.STRING);
-                    merged.put(time, value, rms, min, max, y);
-                }
-                logger.log(Level.INFO, "Finished processing for {0}", key);
-            } catch (IOException | ParserConfigurationException | SAXException | XPathExpressionException ex) {
-                throw new IOException("Error processing restful data from: " + dataURL, ex);
-            }
-            y++;
+            allKeys.append("id=").append(key).append('&');
         }
-        return new TrendingResult(meta,merged);
+        URL dataURL = new URL(restURL, String.format("data/?%st1=%s&t2=%s&n=%s&flavor=%s", allKeys, t1, t2, nBins, flavor.toString().toLowerCase()));
+        logger.log(Level.INFO, "Reading: {0}", dataURL);
+        try (InputStream in = dataURL.openStream()) {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            DefaultHandler handler = new DefaultHandler() {
+
+                private int y = 0;
+                private String time;
+                private String value;
+                private String rms;
+                private String min;
+                private String max;
+
+                @Override
+                public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+                    switch (qName) {
+                        case "trendingdata":
+                            time = value = rms = min = max = "NaN";
+                            break;
+                        case "axisvalue":
+                            time = attributes.getValue("value");
+                            break;
+                        case "datavalue":
+                            String name = attributes.getValue("name");
+                            switch (name) {
+                                case "value":
+                                    value = attributes.getValue("value");
+                                    break;
+                                case "rms":
+                                    rms = attributes.getValue("value");
+                                    break;
+                                case "min":
+                                    min = attributes.getValue("value");
+                                    break;
+                                case "max":
+                                    max = attributes.getValue("value");
+                                    break;
+                            }
+                            break;
+                    }
+                }
+
+                @Override
+                public void endElement(String uri, String localName, String qName) throws SAXException {
+                    if (qName.equals("trendingdata")) {
+                        merged.put(time, value, rms, min, max, y);
+                    } else if (qName.equals("data")) {
+                        y++;
+                    }
+                }
+
+            };
+            saxParser.parse(in, handler, "data");
+
+        } catch (IOException | ParserConfigurationException | SAXException ex) {
+            throw new IOException("Error processing restful data from: " + dataURL, ex);
+        }
+        return new TrendingResult(meta, merged);
     }
+
     private static class TrendingResult {
+
         private final TrendingMetaData meta;
         private final MergedMap data;
 
@@ -134,9 +168,11 @@ public class TrendingRestInterface {
         public MergedMap getData() {
             return data;
         }
-        
+
     }
+
     private static class TrendingMetaData {
+
         private final ErrorBars errorBars;
         private final int nBins;
         private final long min;
@@ -170,6 +206,6 @@ public class TrendingRestInterface {
         public Flavor getFlavor() {
             return flavor;
         }
-        
+
     }
 }

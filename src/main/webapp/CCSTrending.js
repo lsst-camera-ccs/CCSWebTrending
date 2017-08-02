@@ -41,6 +41,7 @@ function CCSTrendingPlot(element, options) {
                 }
             });
     graph.ccsInstance = this;
+    this.graph = graph;
 
     this.zoom = function (seconds) {
         var now = Date.now();
@@ -123,4 +124,14 @@ function CCSTrendingPlot(element, options) {
     };
 
     this._setupPanInteractionHandling();
+}
+
+var synchronize = function() {
+    graphs = [];
+    for (var i = 0; i < arguments.length; i++) {
+      if (arguments[i] instanceof CCSTrendingPlot) {
+          graphs.push(arguments[i].graph);
+      }
+    }  
+    Dygraph.synchronize(graphs,{zoom: true, range: false, selection: false});
 }

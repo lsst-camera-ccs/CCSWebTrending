@@ -43,7 +43,7 @@ public class TrendingRestInterface {
 
     public TrendingRestInterface() throws IOException {
         if (restURL == null) {
-            restURL = new URL("http://lsst-vw01.slac.stanford.edu:8080/rest/data/dataserver/");
+            restURL = new URL("http://lsst-mcm.slac.stanford.edu:8080/rest/data/dataserver/");
             channelTree = new ChannelTree(restURL);
         }
     }

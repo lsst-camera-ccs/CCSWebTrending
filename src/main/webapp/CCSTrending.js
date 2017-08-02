@@ -59,6 +59,10 @@ function CCSTrendingPlot(element, options) {
             updateData(args);
         }
     };
+    
+    this.resize = function() {
+        graph.resize();
+    }
 
     function parseRange(range) {
         var now = Date.now();

@@ -15,6 +15,10 @@ and open the template in the editor.
         <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
         <script src="split-pane/split-pane.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
+        <script src="CCSTrending.js"></script>
+        <script src="css-element-queries/ResizeSensor.js"></script>
+        <script src="css-element-queries/ElementQueries.js"></script>
 
         <style type="text/css">
 
@@ -27,19 +31,18 @@ and open the template in the editor.
 
             #left-component {
                 min-width: 10em;
-                right: 10em;
-                margin-right: 5px;
+                width: 20em;
             }
 
             #my-divider {
-                right: 10em;
+                left: 20em;
                 width: 5px;
             }
 
             #right-component {
-                width: 10em;
+                left: 20em;
+                margin-left: 5px;
             }
-
         </style>
         <script>
             $(function () {
@@ -49,7 +52,7 @@ and open the template in the editor.
     </head>
     <body>
         <div class="pretty-split-pane-frame"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
-            <div class="split-pane fixed-right">
+            <div class="split-pane fixed-left">
                 <div class="split-pane-component" id="left-component">
                     <div class="pretty-split-pane-component-inner"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
                         <div id="channel_tree"></div>
@@ -58,15 +61,7 @@ and open the template in the editor.
                 <div class="split-pane-divider" id="my-divider"></div>
                 <div class="split-pane-component" id="right-component">
                     <div class="pretty-split-pane-component-inner"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
-                        <p>
-                            This split pane component is fixed: when re-sizing the browser window, it will
-                            keep the same width.
-                        </p>
-                        <p>
-                            You can, however, re-size this component by dragging the divider, and it will adjust if
-                            the left component reaches it's <code>min-width</code> (<code>10em</code> in this example).
-                        </p>
-                        <p><button>Set first component size to 300px</button></p>
+                        <div id="graph" style="width:100%;height:400px"></div>
                     </div>
                 </div>
             </div>
@@ -85,6 +80,19 @@ and open the template in the editor.
                         }
                     }
                 }
+            });
+            var element = document.getElementById("graph")
+            g = new CCSTrendingPlot(element, {
+                title: 'TS7-1 vacuum and temperatures',
+                data: {
+                    1201: {title: 'cold_1'},
+                    1202: {title: 'cold_2'},
+                    1203: {title: 'cryo'},
+                    1215: {title: 'pressure', axis: 'y2'}
+                }
+            });
+            new ResizeSensor(element, function() {
+               g.resize();
             });
         </script>
     </body>

@@ -9,6 +9,9 @@ function CCSTrendingPlot(element, options) {
     this.nBins = 100;
     this.keys = [];
     this.labels = ['time'];
+    this.labelsUTC = (typeof options.labelsUTC === 'undefined') ? false : options.labelsUTC;
+    this.flavor = (typeof options.flavor === 'undefined') ? 'STAT' : options.flavor.toUpperCase();
+    this.restURL = options.restURL;
     var series = {};
     for (var key in options.data) {
         if (options.data.hasOwnProperty(key)) {
@@ -34,9 +37,10 @@ function CCSTrendingPlot(element, options) {
                 legend: 'always',
                 animatedZooms: true,
                 connectSeparatedPoints: true,
+                labelsUTC: this.labelsUTC, 
                 drawPoints: true,
                 zoomCallback: function (minDate, maxDate, yRanges) {
-                    var args = $.param({"key": ccs.keys, "t1": Math.round(minDate), "t2": Math.round(maxDate), "n": ccs.nBins, 'errorBars': ccs.errorBars}, true);
+                    var args = $.param({"key": ccs.keys, "t1": Math.round(minDate), "t2": Math.round(maxDate), "n": ccs.nBins, 'errorBars': ccs.errorBars, 'flavor': ccs.flavor, 'restURL': this.restURL}, true);
                     updateData(args);
                 }
             });
@@ -55,7 +59,7 @@ function CCSTrendingPlot(element, options) {
     this.setErrorBars = function (errorBars) {
         if (errorBars !== this.errorBars) {
             this.errorBars = errorBars;
-            var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
+            var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars, 'flavor': this.flavor, 'restURL': this.restURL}, true);
             updateData(args);
         }
     };
@@ -88,7 +92,7 @@ function CCSTrendingPlot(element, options) {
                 });
     }
 
-    var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
+    var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars, 'flavor': this.flavor, 'restURL': this.restURL}, true);
     updateData(args);
 
     CCSTrendingPlot.prototype._setupPanInteractionHandling = function () {
@@ -117,7 +121,7 @@ function CCSTrendingPlot(element, options) {
 
             //Trigger new detail load
             console.log("Pan detected");
-            var args = $.param({"key": ccs.keys, "t1": Math.round(axisX[0]), "t2": Math.round(axisX[1]), "n": ccs.nBins, 'errorBars': ccs.errorBars}, true);
+            var args = $.param({"key": ccs.keys, "t1": Math.round(axisX[0]), "t2": Math.round(axisX[1]), "n": ccs.nBins, 'errorBars': ccs.errorBars, 'flavor': ccs.flavor, 'restURL': ccs.restURL}, true);
             updateData(args);
         };
         Dygraph.endPan = Dygraph.Interaction.endPan; //see dygraph-interaction-model.js

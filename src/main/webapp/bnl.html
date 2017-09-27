@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>BNL Trending during run 5307D (Chris's thermal test)</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
+        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="CCSTrending.js"></script>
+    </head>
+    <body>
+        See also <a href="https://confluence.slac.stanford.edu/display/LSSTCAM/RTM-3+runs">RTM-3+runs</a>.
+        <table>
+            <tr><th>Event</th><th>Start</th><th>End</th></tr>
+            <tr><td>Turn on RSA heater to 0 percent</td><td>2017-09-18 01:15:57</td><td>2017-09-18 01:17:11</td></tr>
+            <tr><td>stable state with RSA heater at 0 percent</td><td>2017-09-18 01:21:12</td><td>2017-09-18 03:15:14</td></tr>
+            <tr><td>power on REBs</td><td>2017-09-18 03:29:09</td><td>2017-09-18 03:57:30</td></tr>
+            <tr><td>single bias</td><td>2017-09-18 03:59:51</td><td>2017-09-18 04:01:59</td></tr>
+            <tr><td>stable after power and bias state</td><td>2017-09-18 04:02:00</td><td>2017-09-18 05:03:0</td></tr>
+            <tr><td>readout test with RSA at 0 percent</td><td>2017-09-18 05:03:05</td><td>2017-09-18 06:08:14</td></tr>
+            <tr><td>an hour of clearing</td><td>2017-09-18 06:08:15</td><td>2017-09-18 07:08:32</td></tr>
+            <tr><td>an hour of back to back bias frames</td><td>2017-09-18 07:12:007</td><td>2017-09-18 08:12:55</td></tr>
+
+        </table>
+        <div id="graph1" style="width:1000px;height:400px"></div>
+        <div id="graph2" style="width:1000px;height:400px"></div>
+        <div id="graph3" style="width:1000px;height:400px"></div>
+        <div id="graph4" style="width:1000px;height:400px"></div>
+        <div id="graph5" style="width:1000px;height:400px"></div>
+        <div id="graph6" style="width:1000px;height:400px"></div>
+        <div id="graph7" style="width:1000px;height:400px"></div>
+        <script type="text/javascript">
+            range = {start: new Date("2017-09-18 01:15:57 UTC"), end: new Date("2017-09-18 08:12:55 UTC")};
+            restURL = 'http://lsst-vw01.slac.stanford.edu:8080/rest/data/dataserver/'
+            g1 = new CCSTrendingPlot(
+                    document.getElementById("graph1"), {
+                title: 'CCD Temperatures',
+                range: range,
+                labelsUTC: true,
+                flavor: 'RAW', 
+                restURL: restURL,
+                data: {
+                    505: {title: 'R00.Reb0.CCDTemp1'},
+                    519: {title: 'R00.Reb1.CCDTemp1'},
+                    534: {title: 'R00.Reb2.CCDTemp1'},
+                }
+            });
+            g2 = new CCSTrendingPlot(
+                    document.getElementById("graph2"), {
+                title: 'REB Temperatures',
+                range: range,
+                labelsUTC: true,
+                flavor: 'RAW',   
+                restURL: restURL,  
+                data: {
+                    45: {title: 'R00.Reb0.Temp1'},
+                    27: {title: 'R00.Reb1.Temp1'},
+                    9: {title: 'R00.Reb2.Temp1'},
+                }
+            });
+            g3 = new CCSTrendingPlot(
+                    document.getElementById("graph3"), {
+                title: 'Baseplate RTD Temperatures',
+                range: range,
+                labelsUTC: true,
+                flavor: 'RAW',
+                restURL: restURL,  
+                data: {
+                    507: {title: 'R00.Reb0.RTDTemp'},
+                    521: {title: 'R00.Reb1.RTDTemp'},
+                    536: {title: 'R00.Reb2.RTDTemp1'},
+                }
+            });
+            g4 = new CCSTrendingPlot(
+                    document.getElementById("graph4"), {
+                title: 'Cold/Cryo Temperatures',
+                range: range,
+                labelsUTC: true,
+                flavor: 'RAW',  
+                restURL: restURL,
+                data: {
+                    495: {title: 'temp_a'},
+                    496: {title: 'temp_b'},
+                    497: {title: 'temp_c'},
+                    498: {title: 'temp_d'},
+                }
+            });
+            g5 = new CCSTrendingPlot(
+                    document.getElementById("graph5"), {
+                title: 'REB power',
+                range: range,
+                labelsUTC: true,
+                flavor: 'RAW',  
+                restURL: restURL,
+                data: {
+                    566: {title: 'R00.Reb0.Power'},
+                    567: {title: 'R00.Reb1.Power'},
+                    568: {title: 'R00.Reb2.Power'},
+                }
+            });
+            g6 = new CCSTrendingPlot(
+                    document.getElementById("graph6"), {
+                title: 'RSA heater voltage',
+                range: range,
+                labelsUTC: true,
+                flavor: 'RAW',  
+                restURL: restURL,
+                data: {
+                    554: {title: 'R00.Reb0.HtrV'},
+                    558: {title: 'R00.Reb2.HtrV'},
+                }
+            });
+            g7 = new CCSTrendingPlot(
+                    document.getElementById("graph7"), {
+                title: 'Cold and Cryo power',
+                range: range,
+                labelsUTC: true,
+                flavor: 'RAW',  
+                restURL: restURL,
+                data: {
+                    499: {title: 'htrread1'},
+                    500: {title: 'htrread2'},
+                }
+            });
+        </script>
+    </body>
+
+</html>

@@ -43,7 +43,7 @@ public class TrendingRestInterface {
 
     public TrendingRestInterface() throws IOException {
         if (restURL == null) {
-            restURL = new URL("http://lsst-vw01.slac.stanford.edu:8080/rest/data/dataserver/");
+            restURL = new URL("http://lsst-mcm.slac.stanford.edu:8080/rest/data/dataserver/");
             channelTree = new ChannelTree(restURL);
         }
     }
@@ -62,7 +62,8 @@ public class TrendingRestInterface {
     public Object trending(
             @QueryParam(value = "key") List<String> keys, @QueryParam(value = "period") String period,
             @QueryParam(value = "t1") Long t1, @QueryParam(value = "t2") Long t2, @QueryParam(value = "n") Integer nBins,
-            @QueryParam(value = "flavor") Flavor flavor, @QueryParam(value = "errorBars") ErrorBars errorBars) throws IOException {
+            @QueryParam(value = "flavor") Flavor flavor, @QueryParam(value = "errorBars") ErrorBars errorBars,
+            @QueryParam(value = "restURL") String restServer) throws IOException {
         long now = System.currentTimeMillis();
         long delta = 60 * 60 * 1000;
         if (period != null) {
@@ -83,6 +84,7 @@ public class TrendingRestInterface {
         if (errorBars == null) {
             errorBars = ErrorBars.NONE;
         }
+        URL localURL = restServer==null || restServer.isEmpty() ? restURL : new URL(restServer);
         TrendingMetaData meta = new TrendingMetaData(errorBars, nBins, t1, t2, flavor);
         MergedMap merged = new MergedMap(keys.size(), errorBars);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -90,7 +92,7 @@ public class TrendingRestInterface {
         for (String key : keys) {
             allKeys.append("id=").append(key).append('&');
         }
-        URL dataURL = new URL(restURL, String.format("data/?%st1=%s&t2=%s&n=%s&flavor=%s", allKeys, t1, t2, nBins, flavor.toString().toLowerCase()));
+        URL dataURL = new URL(localURL, String.format("data/?%st1=%s&t2=%s&n=%s&flavor=%s", allKeys, t1, t2, nBins, flavor.toString().toLowerCase()));
         logger.log(Level.INFO, "Reading: {0}", dataURL);
         try (InputStream in = dataURL.openStream()) {
             SAXParserFactory factory = SAXParserFactory.newInstance();

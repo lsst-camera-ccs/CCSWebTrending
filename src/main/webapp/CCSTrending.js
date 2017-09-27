@@ -40,7 +40,7 @@ function CCSTrendingPlot(element, options) {
                 labelsUTC: this.labelsUTC, 
                 drawPoints: true,
                 zoomCallback: function (minDate, maxDate, yRanges) {
-                    var args = $.param({"key": ccs.keys, "t1": Math.round(minDate), "t2": Math.round(maxDate), "n": ccs.nBins, 'errorBars': ccs.errorBars, 'flavor': ccs.flavor, 'restURL': this.restURL}, true);
+                    var args = $.param({"key": ccs.keys, "t1": Math.round(minDate), "t2": Math.round(maxDate), "n": ccs.nBins, 'errorBars': ccs.errorBars, 'flavor': ccs.flavor, 'restURL': ccs.restURL}, true);
                     updateData(args);
                 }
             });

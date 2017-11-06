@@ -62,37 +62,58 @@ and open the template in the editor.
                 <div class="split-pane-component" id="right-component">
                     <div class="pretty-split-pane-component-inner"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
                         <div id="graph" style="width:100%;height:400px"></div>
+                        <div class="drop" style="min-height:200px; min-width:200px; background:lime; border-radius:10px;">Drop here</div>
                     </div>
                 </div>
             </div>
         </div>
         <script type="text/javascript">
-            $('#channel_tree').jstree({
-                'plugins': ['dnd'],
-                'core': {
-                    'data': {
-                        'url': 'rest/channels',
-                        'data': function (node) {
-                            if (node.id === '#')
-                                return {};
-                            else
-                                return {'id': node.id};
+            $(function () {
+                $('#channel_tree').jstree({
+                    'plugins': ['dnd'],
+                    'core': {
+                        'data': {
+                            'url': 'rest/channels',
+                            'data': function (node) {
+                                if (node.id === '#')
+                                    return {};
+                                else
+                                    return {'id': node.id};
+                            }
                         }
                     }
-                }
-            });
-            var element = document.getElementById("graph")
-            g = new CCSTrendingPlot(element, {
-                title: 'TS7-1 vacuum and temperatures',
-                data: {
-                    1201: {title: 'cold_1'},
-                    1202: {title: 'cold_2'},
-                    1203: {title: 'cryo'},
-                    1215: {title: 'pressure', axis: 'y2'}
-                }
-            });
-            new ResizeSensor(element, function() {
-               g.resize();
+                });
+                $(document)
+                        .on('dnd_move.vakata', function (e, data) {
+                            var t = $(data.event.target);
+                            if (!t.closest('.jstree').length) {
+                                if (t.closest('.drop').length) {
+                                    data.helper.find('.jstree-icon').removeClass('jstree-er').addClass('jstree-ok');
+                                } else {
+                                    data.helper.find('.jstree-icon').removeClass('jstree-ok').addClass('jstree-er');
+                                }
+                            }
+                        })
+                        .on('dnd_stop.vakata', function (e, data) {
+                            var t = $(data.event.target);
+                            if (!t.closest('.jstree').length) {
+                                if (t.closest('.drop').length) {
+                                    $(data.element).clone().appendTo(t.closest('.drop'));
+                                    // node data: 
+                                    if (data.data.jstree && data.data.origin) {
+                                        var node = data.data.origin.get_node(data.element);
+                                        g.setData(node.data,node.text);
+                                    }
+                                }
+                            }
+                        });
+                var element = document.getElementById("graph")
+                g = new CCSTrendingPlot(element, {
+                    title: 'Plot',
+                });
+                new ResizeSensor(element, function () {
+                    g.resize();
+                });
             });
         </script>
     </body>

@@ -60,6 +60,16 @@ function CCSTrendingPlot(element, options) {
         }
     };
     
+    this.setData = function(key, label) {
+        this.keys = [key];
+        this.labels = ['time', label];
+        var series = {};
+        //series[label] = {'axis': 'y1'};
+        graph.updateOptions({'labels': this.labels, 'series': series});
+        var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
+        updateData(args);       
+    };
+    
     this.resize = function() {
         graph.resize();
     }

@@ -64,15 +64,23 @@ function CCSTrendingPlot(element, options) {
         this.keys = [key];
         this.labels = ['time', label];
         var series = {};
-        //series[label] = {'axis': 'y1'};
+        //series[label] = {'yAxis': 'y1'};
         graph.updateOptions({'labels': this.labels, 'series': series});
+        var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
+        updateData(args);       
+    };
+    
+    this.addData = function(key, label) {
+        this.keys.push(key);
+        this.labels.push(label);
+        graph.updateOptions({'labels': this.labels});
         var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
         updateData(args);       
     };
     
     this.resize = function() {
         graph.resize();
-    }
+    };
 
     function parseRange(range) {
         var now = Date.now();

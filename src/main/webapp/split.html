@@ -62,7 +62,8 @@ and open the template in the editor.
                 <div class="split-pane-component" id="right-component">
                     <div class="pretty-split-pane-component-inner"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
                         <div id="graph" style="width:100%;height:400px"></div>
-                        <div class="drop" style="min-height:200px; min-width:200px; background:lime; border-radius:10px;">Drop here</div>
+                        <div class="drop" id="add" style="min-height:100px; min-width:200px; background:lime; border-radius:10px;">Drop here to add</div>
+                        <div class="drop" id="overlay" style="min-height:100px; min-width:200px; background:lime; border-radius:10px;">Drop here to overlay</div>
                     </div>
                 </div>
             </div>
@@ -99,10 +100,13 @@ and open the template in the editor.
                             if (!t.closest('.jstree').length) {
                                 if (t.closest('.drop').length) {
                                     $(data.element).clone().appendTo(t.closest('.drop'));
-                                    // node data: 
                                     if (data.data.jstree && data.data.origin) {
                                         var node = data.data.origin.get_node(data.element);
-                                        g.setData(node.data,node.text);
+                                        if (t.closest('.drop')[0].id==='add') {
+                                            g.setData(node.data,node.text);
+                                        } else if (t.closest('.drop')[0].id==='overlay') {
+                                            g.addData(node.data,node.text);
+                                        }
                                     }
                                 }
                             }

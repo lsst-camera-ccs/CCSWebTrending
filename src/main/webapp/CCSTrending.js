@@ -70,14 +70,15 @@ function CCSTrendingPlot(element, options) {
         updateData(args);       
     };
     
-    this.addData = function(key, label) {
+    this.addData = function(key, label, options) {
         this.keys.push(key);
         this.labels.push(label);
+        series[label] = options;
         graph.updateOptions({'labels': this.labels});
         var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
         updateData(args);       
     };
-    
+  
     this.resize = function() {
         graph.resize();
     };

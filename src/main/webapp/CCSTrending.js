@@ -4,6 +4,7 @@ function CCSTrendingPlot(element, options) {
     var now = Date.now();
     this.title = (typeof options.title === 'undefined') ? 'Trending Plot' : options.title;
     this.range = (typeof options.range === 'undefined') ? parseRange('1d') : parseRange(options.range);
+    this.logscale = (typeof options.logscale === 'undefined') ? false : options.logscale;
     this.errorBars = 'NONE';
     this.data = options.data;
     this.nBins = 100;
@@ -33,6 +34,7 @@ function CCSTrendingPlot(element, options) {
                 series: series,
                 legend: 'always',
                 animatedZooms: true,
+                logscale: this.logscale,
                 connectSeparatedPoints: true,
                 drawPoints: true,
                 zoomCallback: function (minDate, maxDate, yRanges) {

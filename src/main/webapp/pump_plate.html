@@ -30,12 +30,10 @@
         <script type="text/javascript">
             g = new CCSTrendingPlot(
                     document.getElementById("graph"), {
-                title: 'TS7-1 vacuum and temperatures',
+                title: 'Pump plate vacuum',
+                logscale: true,
                 data: {
-                    1201: {title: 'cold_1'},
-                    1202: {title: 'cold_2'},
-                    1203: {title: 'cryo'},
-                    1215: {title: 'pressure', axis: 'y2'}
+                    7542: {title: 'pressure' }
                 }
             });
             $('#hour').click(function() { g.zoom(3600); }); 

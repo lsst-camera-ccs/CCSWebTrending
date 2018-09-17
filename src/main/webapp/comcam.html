@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TS7-1 vacuum and temperatures</title>
+        <title>ComCam temperatures</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
         <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
         <script src="CCSTrending.js"></script>
-        <style>
-            .dygraph-legend {
-                left: 70px !important;
-            }
-        </style>
     </head>
     <body>
         <div id="graph" style="width:100%;height:400px"></div>
@@ -34,28 +29,13 @@
         </div>
         <script type="text/javascript">
             g = new CCSTrendingPlot(
-            document.getElementById("graph"), {
-            title: 'TS8 temperatures',
-            data: {
-            2399: {title: 'Reb0.CCDTemp1' },
-            2382: {title: 'Reb0.Temp1' },
-            2391: {title: 'Reb0.Temp10' },
-            2384: {title: 'Reb0.Temp3' },
-            2387: {title: 'Reb0.Temp6' },
-            2500: {title: 'Reb1.CCDTemp1' },
-            2483: {title: 'Reb1.Temp1' },
-            2492: {title: 'Reb1.Temp10' },
-            2485: {title: 'Reb1.Temp3' },
-            2488: {title: 'Reb1.Temp6' },
-            2599: {title: 'Reb2.CCDTemp1' },
-            2582: {title: 'Reb2.Temp1' },
-            2591: {title: 'Reb2.Temp10' },
-            2584: {title: 'Reb2.Temp3' },
-            2585: {title: 'Reb2.Temp6' },
-            1201: {title: 'cold_1'},
-            1202: {title: 'cold_2'},
-            1203: {title: 'cryo'}
-            }
+                    document.getElementById("graph"), {
+                title: 'ComCam temperatures',
+                data: {
+                    12133: {title: 'Cold1Temp'},
+                    12136: {title: 'Cold2Temp'},
+                    12130: {title: 'CryoTemp'},
+                }
             });
             $('#hour').click(function() { g.zoom(3600); }); 
             $('#3hour').click(function() { g.zoom(3*3600); });

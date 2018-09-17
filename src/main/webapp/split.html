@@ -120,6 +120,7 @@ and open the template in the editor.
                                     $(data.element).clone().appendTo(t.closest('.drop'));
                                     if (data.data.jstree && data.data.origin) {
                                         var node = data.data.origin.get_node(data.element);
+                                        console.log(node.data);
                                         if (t.closest('.drop')[0].id === 'add') {
                                             g.setData(node.data, node.text);
                                         } else if (t.closest('.drop')[0].id === 'overlayY1') {

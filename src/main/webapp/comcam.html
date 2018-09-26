@@ -30,7 +30,9 @@
         <script type="text/javascript">
             g = new CCSTrendingPlot(
                     document.getElementById("graph"), {
-                title: 'ComCam temperatures',
+                title: 'ComCam vacuum and temperatures',
+                ylabel: 'Temperature (°C)',
+                y2label: 'Pressure (Torr)', 
                 data: {
                     12133: {title: 'Cold1Temp'},
                     12136: {title: 'Cold2Temp'},

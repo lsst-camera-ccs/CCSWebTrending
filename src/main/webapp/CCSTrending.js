@@ -33,6 +33,8 @@ function CCSTrendingPlot(element, options) {
                 labels: this.labels,
                 series: series,
                 legend: 'always',
+                ylabel: options.ylabel,
+                y2label: options.y2label,
                 animatedZooms: true,
                 logscale: this.logscale,
                 connectSeparatedPoints: true,

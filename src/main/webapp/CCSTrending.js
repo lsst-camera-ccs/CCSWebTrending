@@ -35,6 +35,7 @@ function CCSTrendingPlot(element, options) {
                 legend: 'always',
                 ylabel: options.ylabel,
                 y2label: options.y2label,
+                axes: options.axes,
                 animatedZooms: true,
                 logscale: this.logscale,
                 connectSeparatedPoints: true,

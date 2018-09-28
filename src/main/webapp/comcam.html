@@ -33,6 +33,17 @@
                 title: 'ComCam vacuum and temperatures',
                 ylabel: 'Temperature (°C)',
                 y2label: 'Pressure (Torr)', 
+                axes: { 
+                    y2: {
+                        valueFormatter: function(y2) {
+                           return y2.toExponential(3);
+                        },
+                        axisLabelFormatter: function(y2) {
+                           return y2.toExponential(3);
+                        },
+                        axisLabelWidth: 70
+                    }
+                },
                 data: {
                     12133: {title: 'Cold1Temp'},
                     12136: {title: 'Cold2Temp'},

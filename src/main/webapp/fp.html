@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Focal Plane power (2 ETU version)</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
+        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="CCSTrending.js"></script>
+        <style>
+            .dygraph-legend {
+                left: 70px !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="graph" style="width:100%;height:400px"></div>
+        <div class="link-interaction">
+            <style scoped>.link-interaction a:visited { color: blue; }</style>
+            <div id="div_g"></div>
+            <b>Zoom:</b>
+            <a href="#" id="hour">hour</a> 
+            <a href="#" id="3hour">3 hour</a> 
+            <a href="#" id="6hour">6 hour</a> 
+            <a href="#" id="12hour">12 hour</a> 
+            <a href="#" id="day">day</a> 
+            <a href="#" id="week">week</a> 
+            <a href="#" id="month">month</a>.
+            Or drag to select area for zoom, or shift drag to pan.<br>
+            <b>Error Bars:</b> 
+            <a href="#" id="none">none</a> 
+            <a href="#" id="minmax">min/max</a> 
+            <a href="#" id="rms">rms</a> 
+        </div>
+        <script type="text/javascript">
+            g = new CCSTrendingPlot(
+            document.getElementById("graph"), {
+            title: 'ETU REB power',
+            ylabel: 'Total Power/REB (W)',
+            range: 3600,
+            data: {
+            7705: {title: 'ETU2: Reb0' },
+            7740: {title: 'ETU2: Reb1' },
+            7775: {title: 'ETU2: Reb2' },
+            7810: {title: 'ETU1: Reb0' },
+            7845: {title: 'ETU1: Reb1' },
+            7880: {title: 'ETU1: Reb2' }
+            }
+            });
+            $('#hour').click(function() { g.zoom(3600); }); 
+            $('#3hour').click(function() { g.zoom(3*3600); });
+            $('#6hour').click(function() { g.zoom(6*3600); });
+            $('#12hour').click(function() { g.zoom(12*3600); });
+            $('#day').click(function() { g.zoom(86400); });
+            $('#week').click(function() { g.zoom(604800); });
+            $('#month').click(function() { g.zoom(30 * 86400); });
+            $('#none').click(function() { g.setErrorBars('NONE'); });
+            $('#minmax').click(function() { g.setErrorBars('MINMAX'); });
+            $('#rms').click(function() { g.setErrorBars('RMS'); });
+        </script>
+        <div id="graph2" style="width:100%;height:400px"></div>
+        <div class="link-interaction">
+            <style scoped>.link-interaction a:visited { color: blue; }</style>
+            <div id="div_g2"></div>
+            <b>Zoom:</b>
+            <a href="#" id="g2_hour">hour</a> 
+            <a href="#" id="g2_3hour">3 hour</a> 
+            <a href="#" id="g2_6hour">6 hour</a> 
+            <a href="#" id="g2_12hour">12 hour</a> 
+            <a href="#" id="g2_day">day</a> 
+            <a href="#" id="g2_week">week</a> 
+            <a href="#" id="g2_month">month</a>.
+            Or drag to select area for zoom, or shift drag to pan.<br>
+            <b>Error Bars:</b> 
+            <a href="#" id="g2_none">none</a> 
+            <a href="#" id="g2_minmax">min/max</a> 
+            <a href="#" id="g2_rms">rms</a> 
+        </div>
+        <script type="text/javascript">
+            g2 = new CCSTrendingPlot(
+            document.getElementById("graph2"), {
+            title: 'ETU REB temperature',
+            ylabel: 'Temperature (Temp2 - °C)',
+            range: 3600,
+            data: {
+            15525: {title: 'ETU2: Reb0' },
+            15341: {title: 'ETU2: Reb1' },
+            15282: {title: 'ETU2: Reb2' },
+            15657: {title: 'ETU1: Reb0' },
+            15741: {title: 'ETU1: Reb1' },
+            15299: {title: 'ETU1: Reb2' }
+            }
+            });
+            $('#g2_hour').click(function() { g2.zoom(3600); }); 
+            $('#g2_3hour').click(function() { g2.zoom(3*3600); });
+            $('#g2_6hour').click(function() { g2.zoom(6*3600); });
+            $('#g2_12hour').click(function() { g2.zoom(12*3600); });
+            $('#g2_day').click(function() { g2.zoom(86400); });
+            $('#g2_week').click(function() { g2.zoom(604800); });
+            $('#g2_month').click(function() { g2.zoom(30 * 86400); });
+            $('#g2_none').click(function() { g2.setErrorBars('NONE'); });
+            $('#g2_minmax').click(function() { g2.setErrorBars('MINMAX'); });
+            $('#g2_rms').click(function() { g2.setErrorBars('RMS'); });
+        </script>
+        <div id="graph3" style="width:100%;height:400px"></div>
+        <div class="link-interaction">
+            <style scoped>.link-interaction a:visited { color: blue; }</style>
+            <div id="div_g3"></div>
+            <b>Zoom:</b>
+            <a href="#" id="g3_hour">hour</a> 
+            <a href="#" id="g3_3hour">3 hour</a> 
+            <a href="#" id="g3_6hour">6 hour</a> 
+            <a href="#" id="g3_12hour">12 hour</a> 
+            <a href="#" id="g3_day">day</a> 
+            <a href="#" id="g3_week">week</a> 
+            <a href="#" id="g3_month">month</a>.
+            Or drag to select area for zoom, or shift drag to pan.<br>
+            <b>Error Bars:</b> 
+            <a href="#" id="g3_none">none</a> 
+            <a href="#" id="g3_minmax">min/max</a> 
+            <a href="#" id="g3_rms">rms</a> 
+        </div>
+        <script type="text/javascript">
+            g3 = new CCSTrendingPlot(
+            document.getElementById("graph3"), {
+            title: 'Cold plate temperature',
+            ylabel: 'Temperature (°C)',
+            range: 3600,
+            data: {
+            17478: {title: 'RTD-02' },
+            17477: {title: 'RTD-05' },
+            17476: {title: 'RTD-50' },
+            17475: {title: 'RTD-53' },
+            }
+            });
+            $('#g3_hour').click(function() { g3.zoom(3600); }); 
+            $('#g3_3hour').click(function() { g3.zoom(3*3600); });
+            $('#g3_6hour').click(function() { g3.zoom(6*3600); });
+            $('#g3_12hour').click(function() { g3.zoom(12*3600); });
+            $('#g3_day').click(function() { g3.zoom(86400); });
+            $('#g3_week').click(function() { g3.zoom(604800); });
+            $('#g3_month').click(function() { g3.zoom(30 * 86400); });
+            $('#g3_none').click(function() { g3.setErrorBars('NONE'); });
+            $('#g3_minmax').click(function() { g3.setErrorBars('MINMAX'); });
+            $('#g3_rms').click(function() { g3.setErrorBars('RMS'); });
+        </script>
+    </body>
+
+</html>

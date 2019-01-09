@@ -4,24 +4,32 @@
         <title>Cleanroom monitoring</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
-        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="CCSTrending.js"></script>
     </head>
     <body>
-        <div id="graph" style="width:1000px;height:400px"></div>
-        <script type="text/javascript">
-            g = new CCSTrendingPlot(
-                    document.getElementById("graph"), {
-                title: 'Lighthouse temperatures',
-                range: { start: new Date(1495929600000), end: new Date(1496016000000)},
-                data: {
-                    1918: {},
-                    1868: {},
-                    1898: {}
-                }
-            });
-        </script>
+        <h1>LSST Cleanroom monitoring</h1>
+        <h2>Camera</h2>
+        <ul>
+            <li><a href="fp.html">Focal Plane</a></li>
+            <li><a href="pump_plate.html">Pump Plate</a></li>
+        </ul>
+        <h2>ComCam</h2>
+        <ul>
+            <li><a href="comcam.html">ComCam</a></li>
+        </ul>
+        <h2>Test Stands</h2>
+        <ul>
+            <li><a href="ts8.html">Test Stand 8</a></li>
+            <li><a href="vacuum.html">Test Stand 7-1</a></li>
+        </ul>
+        <h2>Cleanroom</h2>
+        <ul>
+            <li><a href="lighthouse.html">Lighthouse</a></li>
+            <li><a href="doorman.html">Cooling Door</a></li>
+        </ul>
+        <h2>Build-your-own</h2>
+        <ul>
+            <li><a href="split.html">Trending Browser</a></li>
+        </ul>
     </body>
 
 </html>

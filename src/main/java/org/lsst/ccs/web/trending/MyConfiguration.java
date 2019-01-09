@@ -9,9 +9,10 @@ import org.glassfish.jersey.server.ResourceConfig;
  * @author tonyj
  */
 @ApplicationPath("/rest")
-public class MyConfiguration extends ResourceConfig {
+public final class MyConfiguration extends ResourceConfig {
 
     public MyConfiguration() {
+        register(CORSResponseFilter.class);
         register(TrendingRestInterface.class);
         register(JacksonFeature.class);
         register(JacksonConfigurator.class);

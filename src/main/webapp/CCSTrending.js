@@ -1,13 +1,13 @@
 /* global Dygraph */
 
 function CCSTrendingPlot(element, options) {
-    var now = Date.now();
     this.title = (typeof options.title === 'undefined') ? 'Trending Plot' : options.title;
     this.range = (typeof options.range === 'undefined') ? parseRange('1d') : parseRange(options.range);
     this.logscale = (typeof options.logscale === 'undefined') ? false : options.logscale;
     this.errorBars = 'NONE';
     this.data = options.data;
     this.nBins = 100;
+    this.restURL = (typeof options.restURL === 'undefined') ? 'rest' : options.restURL;
     this.keys = [];
     this.labels = ['time'];
     var series = {};
@@ -42,7 +42,7 @@ function CCSTrendingPlot(element, options) {
                 drawPoints: true,
                 zoomCallback: function (minDate, maxDate, yRanges) {
                     var args = $.param({"key": ccs.keys, "t1": Math.round(minDate), "t2": Math.round(maxDate), "n": ccs.nBins, 'errorBars': ccs.errorBars}, true);
-                    updateData(args);
+                    updateData(ccs.restURL, args);
                 }
             });
     graph.ccsInstance = this;
@@ -54,14 +54,14 @@ function CCSTrendingPlot(element, options) {
         this.range = { start: new Date(then), end: new Date(now) };
         graph.updateOptions({dateWindow: [then, now]});
         var args = $.param({"key": ccs.keys, "t1": then, "t2": now, "n": ccs.nBins}, true);
-        updateData(args);
+        updateData(ccs.restURL, args);
     };
 
     this.setErrorBars = function (errorBars) {
         if (errorBars !== this.errorBars) {
             this.errorBars = errorBars;
             var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
-            updateData(args);
+            updateData(this.restURL, args);
         }
     };
     
@@ -72,7 +72,7 @@ function CCSTrendingPlot(element, options) {
         //series[label] = {'yAxis': 'y1'};
         graph.updateOptions({'labels': this.labels, 'series': series});
         var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
-        updateData(args);       
+        updateData(this.restURL, args);       
     };
     
     this.addData = function(key, label, options) {
@@ -81,7 +81,7 @@ function CCSTrendingPlot(element, options) {
         series[label] = options;
         graph.updateOptions({'labels': this.labels});
         var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
-        updateData(args);       
+        updateData(this.restURL, args);       
     };
   
     this.resize = function() {
@@ -100,8 +100,8 @@ function CCSTrendingPlot(element, options) {
             return range;
         }
     }
-    function updateData(args) {
-        $.getJSON("rest", args)
+    function updateData(restURL, args) {
+        $.getJSON(restURL, args)
                 .done(function (newData) {
                     for (var i = 0; i < newData.data.length; i++) {
                         newData.data[i][0] = new Date(newData.data[i][0]);
@@ -117,7 +117,7 @@ function CCSTrendingPlot(element, options) {
     }
 
     var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
-    updateData(args);
+    updateData(this.restURL, args);
 
     CCSTrendingPlot.prototype._setupPanInteractionHandling = function () {
 
@@ -146,7 +146,7 @@ function CCSTrendingPlot(element, options) {
             //Trigger new detail load
             console.log("Pan detected");
             var args = $.param({"key": ccs.keys, "t1": Math.round(axisX[0]), "t2": Math.round(axisX[1]), "n": ccs.nBins, 'errorBars': ccs.errorBars}, true);
-            updateData(args);
+            updateData(ccs.restURL, args);
         };
         Dygraph.endPan = Dygraph.Interaction.endPan; //see dygraph-interaction-model.js
     };
@@ -162,4 +162,4 @@ var synchronize = function() {
       }
     }  
     Dygraph.synchronize(graphs,{zoom: true, range: false, selection: false});
-}
+};

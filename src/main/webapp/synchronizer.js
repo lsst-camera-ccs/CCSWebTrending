@@ -117,6 +117,16 @@ var synchronize = function(/* dygraphs..., opts */) {
           for (var k = callBackTypes.length - 1; k >= 0; k--) {
             prevCallbacks[j][callBackTypes[k]] = dygraphs[j].getFunctionOption(callBackTypes[k]);
           }
+          dygraphs[j].synchronizer = function() {
+            for (var k = 0; k < dygraphs.length; k++) {
+                var myInstance = dygraphs[k].ccsInstance;
+                var axisX = dygraphs[k].xAxisRange();
+                //Trigger new detail load
+                console.log("Pan detected");
+                var args = $.param({"key": myInstance.keys, "t1": Math.round(axisX[0]), "t2": Math.round(axisX[1]), "n": myInstance.nBins, 'errorBars': myInstance.errorBars}, true);
+                myInstance.updateData(myInstance.restURL, args);
+            }
+          };
         }
 
         // Listen for draw, highlight, unhighlight callbacks.
@@ -144,6 +154,7 @@ var synchronize = function(/* dygraphs..., opts */) {
             unhighlightCallback: prevCallbacks[i].unhighlightCallback
           });
         }
+        g.synchronizer = null;
       }
       // release references & make subsequent calls throw.
       dygraphs = null;
@@ -191,6 +202,13 @@ function attachZoomHandlers(gs, syncOpts, prevCallbacks) {
           }
 
           gs[j].updateOptions(opts);
+          //var ccsInstance = gs[j].ccsInstance;
+          //var axisX = gs[j].xAxisRange();
+
+          //Trigger new detail load
+          //console.log("Pan detected");
+          //var args = $.param({"key": ccsInstance.keys, "t1": Math.round(axisX[0]), "t2": Math.round(axisX[1]), "n": ccsInstance.nBins, 'errorBars': ccsInstance.errorBars}, true);
+          //ccsInstance.updateData(ccsInstance.restURL, args);
         }
         block = false;
       }

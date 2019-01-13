@@ -42,7 +42,7 @@ function CCSTrendingPlot(element, options) {
                 drawPoints: true,
                 zoomCallback: function (minDate, maxDate, yRanges) {
                     var args = $.param({"key": ccs.keys, "t1": Math.round(minDate), "t2": Math.round(maxDate), "n": ccs.nBins, 'errorBars': ccs.errorBars}, true);
-                    updateData(ccs.restURL, args);
+                    ccs.updateData(ccs.restURL, args);
                 }
             });
     graph.ccsInstance = this;
@@ -54,14 +54,14 @@ function CCSTrendingPlot(element, options) {
         this.range = { start: new Date(then), end: new Date(now) };
         graph.updateOptions({dateWindow: [then, now]});
         var args = $.param({"key": ccs.keys, "t1": then, "t2": now, "n": ccs.nBins}, true);
-        updateData(ccs.restURL, args);
+        this.updateData(ccs.restURL, args);
     };
 
     this.setErrorBars = function (errorBars) {
         if (errorBars !== this.errorBars) {
             this.errorBars = errorBars;
             var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
-            updateData(this.restURL, args);
+            this.updateData(this.restURL, args);
         }
     };
     
@@ -72,7 +72,7 @@ function CCSTrendingPlot(element, options) {
         //series[label] = {'yAxis': 'y1'};
         graph.updateOptions({'labels': this.labels, 'series': series});
         var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
-        updateData(this.restURL, args);       
+        this.updateData(this.restURL, args);       
     };
     
     this.addData = function(key, label, options) {
@@ -81,7 +81,7 @@ function CCSTrendingPlot(element, options) {
         series[label] = options;
         graph.updateOptions({'labels': this.labels});
         var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
-        updateData(this.restURL, args);       
+        this.updateData(this.restURL, args);       
     };
   
     this.resize = function() {
@@ -100,7 +100,7 @@ function CCSTrendingPlot(element, options) {
             return range;
         }
     }
-    function updateData(restURL, args) {
+    this.updateData = function(restURL, args) {
         $.getJSON(restURL, args)
                 .done(function (newData) {
                     for (var i = 0; i < newData.data.length; i++) {
@@ -117,8 +117,13 @@ function CCSTrendingPlot(element, options) {
     }
 
     var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
-    updateData(this.restURL, args);
+    this.updateData(this.restURL, args);
 
+    /*
+     * This is based on: https://kaliatech.github.io/dygraphs-dynamiczooming-example/example4.html
+     * But it only detects when pans are done using the shift+mouse, not oans doen by dragging or
+     * pans initiaited by synchronization between plots
+     */
     CCSTrendingPlot.prototype._setupPanInteractionHandling = function () {
 
         if (CCSTrendingPlot.isGlobalPanInteractionHandlerInstalled)
@@ -128,27 +133,50 @@ function CCSTrendingPlot(element, options) {
 
         //Save original endPan function
         var origEndPan = Dygraph.Interaction.endPan;
+        var origEndTouch = Dygraph.Interaction.endTouch;
 
         //Replace built-in handling with our own function
         Dygraph.Interaction.endPan = function (event, g, context) {
 
-            var myInstance = graph.ccsInstance;
-
             //Call the original to let it do it's magic
             origEndPan(event, g, context);
+            
+            if (g.synchronizer) {
+                g.synchronizer();
+            } else {
+                //Note that this _might_ not work as is in IE8. If not, might require a setTimeout hack that executes these
+                //next few lines after a few ms delay. Have not tested with IE8 yet.
+                var myInstance = g.ccsInstance;
+                //Extract new start/end from the x-axis
+                var axisX = g.xAxisRange();
+                //Trigger new detail load
+                console.log("Pan detected");
+                var args = $.param({"key": myInstance.keys, "t1": Math.round(axisX[0]), "t2": Math.round(axisX[1]), "n": myInstance.nBins, 'errorBars': myInstance.errorBars}, true);
+                myInstance.updateData(myInstance.restURL, args);
+            }
+        };
+        //Replace built-in handling with our own function
+        Dygraph.Interaction.endTouch = function (event, g, context) {
 
-            //Extract new start/end from the x-axis
+            //Call the original to let it do it's magic
+            origEndTouch(event, g, context);
 
-            //Note that this _might_ not work as is in IE8. If not, might require a setTimeout hack that executes these
-            //next few lines after a few ms delay. Have not tested with IE8 yet.
-            var axisX = g.xAxisRange();
-
-            //Trigger new detail load
-            console.log("Pan detected");
-            var args = $.param({"key": ccs.keys, "t1": Math.round(axisX[0]), "t2": Math.round(axisX[1]), "n": ccs.nBins, 'errorBars': ccs.errorBars}, true);
-            updateData(ccs.restURL, args);
+            if (g.synchronizer) {
+                g.synchronizer();
+            } else {
+                //Note that this _might_ not work as is in IE8. If not, might require a setTimeout hack that executes these
+                //next few lines after a few ms delay. Have not tested with IE8 yet.
+                var myInstance = g.ccsInstance;
+                //Extract new start/end from the x-axis
+                var axisX = g.xAxisRange();
+                //Trigger new detail load
+                console.log("Touch detected");
+                var args = $.param({"key": myInstance.keys, "t1": Math.round(axisX[0]), "t2": Math.round(axisX[1]), "n": myInstance.nBins, 'errorBars': myInstance.errorBars}, true);
+                myInstance.updateData(myInstance.restURL, args);
+            }
         };
         Dygraph.endPan = Dygraph.Interaction.endPan; //see dygraph-interaction-model.js
+        Dygraph.endTouch = Dygraph.Interaction.endTouch; //see dygraph-interaction-model.js
     };
 
     this._setupPanInteractionHandling();

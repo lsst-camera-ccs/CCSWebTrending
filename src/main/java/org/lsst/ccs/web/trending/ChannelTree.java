@@ -2,7 +2,6 @@ package org.lsst.ccs.web.trending;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,16 +32,15 @@ public class ChannelTree {
     private int nextHandle = 0;
     private final Map<Integer, TreeNode> nodeMap = new HashMap<>();
 
-    ChannelTree(URL restURL) throws IOException {
+    ChannelTree(InputStream in) throws IOException {
         root = new TreeNode(nextHandle++);
-        nodeMap.put(root.getHandle(),root);
-        buildTree(new URL(restURL,"listchannels"));
+        nodeMap.put(root.getHandle(), root);
+        buildTree(in);
     }
 
-
-    private void buildTree(URL url) throws IOException {
+    private void buildTree(InputStream in) throws IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        try (InputStream in = url.openStream()) {
+        try {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(in);
 
@@ -59,16 +57,11 @@ public class ChannelTree {
                     path.add(pathList.item(nn).getTextContent());
                 }
                 String id = (String) xpath.evaluate("id", node, XPathConstants.STRING);
-                addNode(id,path);
+                addNode(id, path);
             }
         } catch (SAXException | XPathExpressionException | ParserConfigurationException x) {
             throw new IOException("Error parsing channel list", x);
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        ChannelTree tree = new ChannelTree(new URL("http://lsst-mcm.slac.stanford.edu:8080/rest/data/dataserver/"));
-        System.out.println(tree.root.children);
     }
 
     private void addNode(String id, List<String> path) {
@@ -76,9 +69,9 @@ public class ChannelTree {
         for (String element : path) {
             TreeNode child = node.findChildByName(element);
             if (child == null) {
-                child = new TreeNode(nextHandle++,element);
+                child = new TreeNode(nextHandle++, element);
                 node.addChild(child);
-                nodeMap.put(child.getHandle(),child);
+                nodeMap.put(child.getHandle(), child);
             }
             node = child;
         }
@@ -99,7 +92,7 @@ public class ChannelTree {
         private Set<TreeNode> children;
         private final int handle;
         private String id;
-        
+
         private TreeNode(int handle) {
             this.name = null;
             this.handle = handle;
@@ -111,14 +104,18 @@ public class ChannelTree {
         }
 
         private void addChild(TreeNode child) {
-            if (children == null) children = new TreeSet<>();
+            if (children == null) {
+                children = new TreeSet<>();
+            }
             children.add(child);
         }
 
         private TreeNode findChildByName(String name) {
             if (children != null) {
                 for (TreeNode child : children) {
-                   if (name.equals(child.name)) return child;     
+                    if (name.equals(child.name)) {
+                        return child;
+                    }
                 }
             }
             return null;
@@ -153,6 +150,6 @@ public class ChannelTree {
         public int compareTo(TreeNode other) {
             return this.name.compareTo(other.name);
         }
-      
+
     }
 }

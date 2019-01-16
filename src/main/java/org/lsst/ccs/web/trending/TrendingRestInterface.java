@@ -1,17 +1,20 @@
 package org.lsst.ccs.web.trending;
 
+import com.jcraft.jsch.JSchException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -29,10 +32,21 @@ import org.xml.sax.helpers.DefaultHandler;
 @Produces(MediaType.APPLICATION_JSON)
 public class TrendingRestInterface {
 
-    private static URL restURL;
     private final static Logger logger = Logger.getLogger(TrendingRestInterface.class.getName());
-    private static ChannelTree channelTree;
-
+    private static final Map<String, Site> sites = new HashMap<>();
+    private static Site defaultSite;
+    static {
+        try {
+            Site ats = SiteATS.create();
+            Site ir2 = SiteIR2.create();
+            sites.put(ats.getName(), ats);
+            sites.put(ir2.getName(), ir2);
+            defaultSite = ir2;
+        } catch (MalformedURLException | JSchException ex) {
+            logger.log(Level.SEVERE, "Failed to initialize sites", ex);
+        }
+    }
+    
     public enum ErrorBars {
         NONE, MINMAX, RMS
     };
@@ -42,19 +56,27 @@ public class TrendingRestInterface {
     };
 
     public TrendingRestInterface() throws IOException {
-        if (restURL == null) {
-            restURL = new URL("http://lsst-mcm.slac.stanford.edu:8080/rest/data/dataserver/");
-            channelTree = new ChannelTree(restURL);
-        }
     }
 
     @GET
     @Path("/channels")
-    public Object channels(@QueryParam(value = "id") Integer handle) {
+    public Object channels(@QueryParam(value = "id") Integer handle) throws IOException {
+        return channels("",handle);
+    }
+
+    @GET
+    @Path("/{site}/channels")
+    public Object channels(@PathParam(value="site") String siteName, @QueryParam(value = "id") Integer handle) throws IOException {
+        Site site = defaultSite;
+        if (!siteName.isEmpty()) {
+            site = sites.get(siteName);
+            if (site == null) throw new RuntimeException("Unknown site "+siteName);
+        }
+
         if (handle == null) {
-            return channelTree.getRoot().getChildren();
+            return site.getChannelTree().getRoot().getChildren();
         } else {
-            return channelTree.findNode(handle).getChildren();
+            return site.getChannelTree().findNode(handle).getChildren();
         }
     }
 
@@ -63,6 +85,23 @@ public class TrendingRestInterface {
             @QueryParam(value = "key") List<String> keys, @QueryParam(value = "period") String period,
             @QueryParam(value = "t1") Long t1, @QueryParam(value = "t2") Long t2, @QueryParam(value = "n") Integer nBins,
             @QueryParam(value = "flavor") Flavor flavor, @QueryParam(value = "errorBars") ErrorBars errorBars) throws IOException {
+        return trending("",keys,period,t1,t2,nBins,flavor,errorBars);
+    }
+    
+    
+    @GET
+    @Path("{site}")
+    public Object trending(
+            @PathParam(value="site") String siteName, 
+            @QueryParam(value = "key") List<String> keys, @QueryParam(value = "period") String period,
+            @QueryParam(value = "t1") Long t1, @QueryParam(value = "t2") Long t2, @QueryParam(value = "n") Integer nBins,
+            @QueryParam(value = "flavor") Flavor flavor, @QueryParam(value = "errorBars") ErrorBars errorBars) throws IOException {
+
+        Site site = defaultSite;
+        if (!siteName.isEmpty()) {
+            site = sites.get(siteName);
+            if (site == null) throw new RuntimeException("Unknown site "+siteName);
+        }
         long now = System.currentTimeMillis();
         long delta = 60 * 60 * 1000;
         if (period != null) {
@@ -85,14 +124,13 @@ public class TrendingRestInterface {
         }
         TrendingMetaData meta = new TrendingMetaData(errorBars, nBins, t1, t2, flavor);
         MergedMap merged = new MergedMap(keys.size(), errorBars);
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         StringBuilder allKeys = new StringBuilder();
         for (String key : keys) {
             allKeys.append("id=").append(key).append('&');
         }
-        URL dataURL = new URL(restURL, String.format("data/?%st1=%s&t2=%s&n=%s&flavor=%s", allKeys, t1, t2, nBins, flavor.toString().toLowerCase()));
+        String dataURL = String.format("data/?%st1=%s&t2=%s&n=%s&flavor=%s", allKeys, t1, t2, nBins, flavor.toString().toLowerCase());
         logger.log(Level.INFO, "Reading: {0}", dataURL);
-        try (InputStream in = dataURL.openStream()) {
+        try (InputStream in = site.openURL(dataURL)) {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
             DefaultHandler handler = new DefaultHandler() {

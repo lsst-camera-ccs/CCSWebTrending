@@ -87,7 +87,7 @@
                     'plugins': ['dnd'],
                     'core': {
                         'data': {
-                            'url': 'rest/channels',
+                            'url': 'rest/ats/channels',
                             'data': function (node) {
                                 if (node.id === '#')
                                     return {};
@@ -130,6 +130,7 @@
                 var element = document.getElementById("graph")
                 g = new CCSTrendingPlot(element, {
                     title: 'Plot',
+                    restURL: 'rest/ats'
                 });
                 new ResizeSensor(element, function () {
                     g.resize();

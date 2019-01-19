@@ -6,9 +6,18 @@ import com.jcraft.jsch.Session;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,13 +28,17 @@ public class Site implements AutoCloseable {
     private final String name;
     private final boolean useSSH;
     private final URL restURL;
-    private String sshUsername;
-    private String sshHost;
-    private File sshKey;
-    private String sshKeyPassword;
-    private Session session;
-    private URL tunnelURL;
-    private ChannelTree channelTree;
+    private final String sshUsername;
+    private final String sshHost;
+    private final File sshKey;
+    private final String sshKeyPassword;
+    private volatile Session session;
+    private volatile URL tunnelURL;
+    private final AtomicReference<ChannelTree> channelTree = new AtomicReference<>();
+    private final AtomicBoolean channelTreeInitialized = new AtomicBoolean(false);
+    private final CountDownLatch channelTreeInitCompleteLatch = new CountDownLatch(1);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private static final Logger LOG = Logger.getLogger(Site.class.getName());
 
     public Site(Properties properties) throws MalformedURLException, JSchException {
         this.name = properties.getProperty("name");
@@ -39,10 +52,13 @@ public class Site implements AutoCloseable {
                 throw new RuntimeException("Invalid ssh key " + properties.getProperty("ssh.key"));
             }
             this.sshKeyPassword = properties.getProperty("ssh.key.password");
+        } else {
+            sshUsername = sshHost = sshKeyPassword = null;
+            sshKey = null;
         }
     }
 
-    private void establishConnection() throws MalformedURLException, IOException {
+    private synchronized void establishConnection() throws MalformedURLException, IOException {
         if (useSSH && (session == null || !session.isConnected())) {
             try {
                 JSch jsch = new JSch();
@@ -56,6 +72,7 @@ public class Site implements AutoCloseable {
                 session.connect(5000);
                 int port = session.setPortForwardingL(null, 0, restURL.getHost(), restURL.getPort());
                 tunnelURL = new URL("http", "localhost", port, restURL.getPath());
+                LOG.log(Level.INFO, "Tunnel to {0} for site {1} opened {2}", new Object[]{sshHost, name, tunnelURL});
             } catch (JSchException ex) {
                 throw new IOException("Error opening tunnel ", ex);
             }
@@ -75,18 +92,44 @@ public class Site implements AutoCloseable {
 
     @Override
     public void close() {
-        if (useSSH && session.isConnected()) {
+        if (useSSH && session != null && session.isConnected()) {
             session.disconnect();
         }
     }
 
     ChannelTree getChannelTree() throws IOException {
-        if (channelTree == null) {
-            try (InputStream in = openURL("listchannels?maxIdleSeconds=604800")) {
-                channelTree = new ChannelTree(in);
+        Runnable readChannelTree = new Runnable() {
+            @Override
+            public void run() {
+                try (InputStream in = openURL("listchannels?maxIdleSeconds=604800")) {
+                    channelTree.set(new ChannelTree(in));
+                    LOG.log(Level.INFO, "Read channel tree for site {0}", name);                
+                    scheduler.schedule(this, 12, TimeUnit.HOURS);
+                } catch (IOException x) {
+                    LOG.log(Level.WARNING, "Error reading channel tree for site "+name, x);                
+                    scheduler.schedule(this, 5, TimeUnit.MINUTES);
+                } 
+            }
+        };
+
+        if (!channelTreeInitialized.getAndSet(true)) {
+            try {
+                readChannelTree.run();
+            } finally {
+                channelTreeInitCompleteLatch.countDown();
+            }
+        } else {
+            try {
+                channelTreeInitCompleteLatch.await();
+            } catch (InterruptedException x) {
+                throw new InterruptedIOException();
             }
         }
-        return channelTree;
+        ChannelTree result = channelTree.get();
+        if (result == null) {
+            throw new IOException("Channel tree unavailable");
+        }
+        return result;
     }
 
     String getName() {

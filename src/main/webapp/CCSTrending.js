@@ -111,10 +111,10 @@ function CCSTrendingPlot(element, options) {
                     var errorBars = errorBarsType==='RMS';
                     graph.updateOptions({file: newData.data, customBars: customBars, errorBars: errorBars});
                 })
-                .fail(function (jqXHR, message) {
-                    alert("error " + message);
+                .fail(function (jqXHR, textStatus, error) {
+                    alert("error ("+restURL+" "+args+")" + error);
                 });
-    }
+    };
 
     var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
     this.updateData(this.restURL, args);

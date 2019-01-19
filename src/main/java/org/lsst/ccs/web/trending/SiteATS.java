@@ -20,10 +20,9 @@ public class SiteATS extends Site {
         props.setProperty("useSSH", "true");
         props.setProperty("restURL", "http://atsccs1.lsst.org:8080/rest/data/dataserver/");
 
-        props.setProperty("ssh.user", "tonyj");
-        props.setProperty("ssh.host", "atsccs1");
-        props.setProperty("ssh.key", "/home/tonyj/.ssh/id_rsa");
-        props.setProperty("ssh.key.password", "arun2000");
+        props.setProperty("ssh.user", "ccs");
+        props.setProperty("ssh.host", "140.252.32.130");
+        props.setProperty("ssh.key", "/nfs/slac/g/srs/.ssh/ccs");
         return new SiteATS(props);
     }
 }

@@ -35,18 +35,23 @@ public class TrendingRestInterface {
     private final static Logger logger = Logger.getLogger(TrendingRestInterface.class.getName());
     private static final Map<String, Site> sites = new HashMap<>();
     private static Site defaultSite;
+
     static {
         try {
-            Site ats = SiteATS.create();
             Site ir2 = SiteIR2.create();
-            sites.put(ats.getName(), ats);
             sites.put(ir2.getName(), ir2);
             defaultSite = ir2;
-        } catch (MalformedURLException | JSchException ex) {
+        } catch (JSchException | MalformedURLException | RuntimeException ex) {
+            logger.log(Level.SEVERE, "Failed to initialize sites", ex);
+        }
+        try {
+            Site ats = SiteATS.create();
+            sites.put(ats.getName(), ats);
+        } catch (JSchException | MalformedURLException | RuntimeException ex) {
             logger.log(Level.SEVERE, "Failed to initialize sites", ex);
         }
     }
-    
+
     public enum ErrorBars {
         NONE, MINMAX, RMS
     };
@@ -61,16 +66,18 @@ public class TrendingRestInterface {
     @GET
     @Path("/channels")
     public Object channels(@QueryParam(value = "id") Integer handle) throws IOException {
-        return channels("",handle);
+        return channels("", handle);
     }
 
     @GET
     @Path("/{site}/channels")
-    public Object channels(@PathParam(value="site") String siteName, @QueryParam(value = "id") Integer handle) throws IOException {
+    public Object channels(@PathParam(value = "site") String siteName, @QueryParam(value = "id") Integer handle) throws IOException {
         Site site = defaultSite;
         if (!siteName.isEmpty()) {
             site = sites.get(siteName);
-            if (site == null) throw new RuntimeException("Unknown site "+siteName);
+            if (site == null) {
+                throw new RuntimeException("Unknown site " + siteName);
+            }
         }
 
         if (handle == null) {
@@ -85,14 +92,13 @@ public class TrendingRestInterface {
             @QueryParam(value = "key") List<String> keys, @QueryParam(value = "period") String period,
             @QueryParam(value = "t1") Long t1, @QueryParam(value = "t2") Long t2, @QueryParam(value = "n") Integer nBins,
             @QueryParam(value = "flavor") Flavor flavor, @QueryParam(value = "errorBars") ErrorBars errorBars) throws IOException {
-        return trending("",keys,period,t1,t2,nBins,flavor,errorBars);
+        return trending("", keys, period, t1, t2, nBins, flavor, errorBars);
     }
-    
-    
+
     @GET
     @Path("{site}")
     public Object trending(
-            @PathParam(value="site") String siteName, 
+            @PathParam(value = "site") String siteName,
             @QueryParam(value = "key") List<String> keys, @QueryParam(value = "period") String period,
             @QueryParam(value = "t1") Long t1, @QueryParam(value = "t2") Long t2, @QueryParam(value = "n") Integer nBins,
             @QueryParam(value = "flavor") Flavor flavor, @QueryParam(value = "errorBars") ErrorBars errorBars) throws IOException {
@@ -100,7 +106,9 @@ public class TrendingRestInterface {
         Site site = defaultSite;
         if (!siteName.isEmpty()) {
             site = sites.get(siteName);
-            if (site == null) throw new RuntimeException("Unknown site "+siteName);
+            if (site == null) {
+                throw new RuntimeException("Unknown site " + siteName);
+            }
         }
         long now = System.currentTimeMillis();
         long delta = 60 * 60 * 1000;

@@ -6,10 +6,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="split-pane/split-pane.css" />
         <link rel="stylesheet" href="split-pane/pretty-split-pane.css" />        
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.7/themes/default/style.min.css" />
         <link rel="stylesheet" href="trending.css"/>
         <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.7/jstree.min.js"></script>
         <script src="split-pane/split-pane.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
         <script src="CCSTrending.js"></script>
@@ -39,6 +39,9 @@
                 left: 20em;
                 margin-left: 5px;
             }
+            .jstree-leaf .jstree-anchor .jstree-themeicon { background: url("new.png") no-repeat !important; background-repeat: no-repeat; }
+            .jstree-leaf .jstree-anchor .jstree-themeicon { background: url("new.png") no-repeat !important; background-repeat: no-repeat; }
+            .jstree-leaf .jstree-anchor .jstree-themeicon { background: url("new.png") no-repeat !important; background-repeat: no-repeat; }
         </style>
         <script>
             $(function () {
@@ -97,6 +100,12 @@
                             }
                         }
                     }
+                }).bind("dblclick.jstree", function (event) {
+                    var tree = $(this).jstree();
+                    var node = tree.get_node(event.target);
+                    if (node.data) {
+                        g.setData(node.data, node.text);
+                    }
                 });
                 $(document)
                         .on('dnd_move.vakata', function (e, data) {
@@ -128,23 +137,43 @@
                                 }
                             }
                         });
-                var element = document.getElementById("graph")
+                var element = document.getElementById("graph");
                 g = new CCSTrendingPlot(element, {
-                    title: 'Plot',
+                    title: 'Plot'
                 });
                 new ResizeSensor(element, function () {
                     g.resize();
                 });
-                $('#hour').click(function() { g.zoom(3600); }); 
-                $('#3hour').click(function() { g.zoom(3*3600); });
-                $('#6hour').click(function() { g.zoom(6*3600); });
-                $('#12hour').click(function() { g.zoom(12*3600); });
-                $('#day').click(function() { g.zoom(86400); });
-                $('#week').click(function() { g.zoom(604800); });
-                $('#month').click(function() { g.zoom(30 * 86400); });
-                $('#none').click(function() { g.setErrorBars('NONE'); });
-                $('#minmax').click(function() { g.setErrorBars('MINMAX'); });
-                $('#rms').click(function() { g.setErrorBars('RMS'); });
+                $('#hour').click(function () {
+                    g.zoom(3600);
+                });
+                $('#3hour').click(function () {
+                    g.zoom(3 * 3600);
+                });
+                $('#6hour').click(function () {
+                    g.zoom(6 * 3600);
+                });
+                $('#12hour').click(function () {
+                    g.zoom(12 * 3600);
+                });
+                $('#day').click(function () {
+                    g.zoom(86400);
+                });
+                $('#week').click(function () {
+                    g.zoom(604800);
+                });
+                $('#month').click(function () {
+                    g.zoom(30 * 86400);
+                });
+                $('#none').click(function () {
+                    g.setErrorBars('NONE');
+                });
+                $('#minmax').click(function () {
+                    g.setErrorBars('MINMAX');
+                });
+                $('#rms').click(function () {
+                    g.setErrorBars('RMS');
+                });
             });
         </script>
     </body>

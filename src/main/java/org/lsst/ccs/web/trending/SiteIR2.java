@@ -17,8 +17,14 @@ public class SiteIR2 extends Site {
     static Site create() throws MalformedURLException, JSchException {
         Properties props = new Properties();
         props.setProperty("name", "ir2");
-        props.setProperty("useSSH", "false");
+        props.setProperty("useSSH", "true");
         props.setProperty("restURL", "http://lsst-mcm.slac.stanford.edu:8080/rest/data/dataserver/");
+        
+        props.setProperty("ssh.user", "tonyj");
+        props.setProperty("ssh.host", "exodata01.slac.stanford.edu");
+        props.setProperty("ssh.key", "/home/tonyj/.ssh/id_rsa");
+        props.setProperty("ssh.key.password", "arun2000");
+
         return new SiteIR2(props);
     }
 }

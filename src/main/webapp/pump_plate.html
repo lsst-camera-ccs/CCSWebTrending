@@ -31,10 +31,14 @@
         <script type="text/javascript">
             g = new CCSTrendingPlot(
                     document.getElementById("graph"), {
-                title: 'Pump plate vacuum',
+                title: 'Camera vacuum monitoring',
                 logscale: true,
+                ylabel: 'Pressure (Torr)', 
                 data: {
-                    16716: {title: 'pressure' }
+                    16716: {title: 'Cryo' },
+                    16717: {title: 'Turbo' },
+                    16718: {title: 'Foreline' }
+
                 }
             });
             $('#hour').click(function() { g.zoom(3600); }); 

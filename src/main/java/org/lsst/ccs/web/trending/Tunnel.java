@@ -11,7 +11,7 @@ import java.net.MalformedURLException;
 public class Tunnel {
 
     public static void main(String[] args) throws JSchException, MalformedURLException, IOException {
-        try (Site site = SiteATS.create()) {
+        try (Site site = SiteIR2.create()) {
             ChannelTree channelTree = site.getChannelTree();
             System.out.println(channelTree);
         }

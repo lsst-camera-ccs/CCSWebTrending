@@ -4,12 +4,14 @@
         <title>Pump plate vacuum</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
-        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="dygraph/dygraph.js"></script>
         <script src="CCSTrending.js"></script>
         <link rel="stylesheet" href="trending.css"/>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.css" />
     </head>
     <body>
+        <div id="legend" style="width:100%"></div>
         <div id="graph" style="width:100%;height:400px"></div>
         <div class="link-interaction">
             <style scoped>.link-interaction a:visited { color: blue; }</style>
@@ -38,7 +40,6 @@
                     16716: {title: 'Cryo' },
                     16717: {title: 'Turbo' },
                     16718: {title: 'Foreline' }
-
                 }
             });
             $('#hour').click(function() { g.zoom(3600); }); 
@@ -51,6 +52,7 @@
             $('#none').click(function() { g.setErrorBars('NONE'); });
             $('#minmax').click(function() { g.setErrorBars('MINMAX'); });
             $('#rms').click(function() { g.setErrorBars('RMS'); });
+            $(document).on("click", ".legendElement", function(el) { g.toggleVisibility(parseInt(el.currentTarget.id))});
         </script>
     </body>
 

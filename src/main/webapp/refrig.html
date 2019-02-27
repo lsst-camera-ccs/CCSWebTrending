@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Refrigeration</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
+        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="CCSTrending.js"></script>
+        <style>
+            .dygraph-legend {
+                left: 70px !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="graph3" style="width:100%;height:400px"></div>
+        <div class="link-interaction">
+            <style scoped>.link-interaction a:visited { color: blue; }</style>
+            <div id="div_g3"></div>
+            <b>Zoom:</b>
+            <a href="#" id="g3_hour">hour</a> 
+            <a href="#" id="g3_3hour">3 hour</a> 
+            <a href="#" id="g3_6hour">6 hour</a> 
+            <a href="#" id="g3_12hour">12 hour</a> 
+            <a href="#" id="g3_day">day</a> 
+            <a href="#" id="g3_week">week</a> 
+            <a href="#" id="g3_month">month</a>.
+            Or drag to select area for zoom, or shift drag to pan.<br>
+            <b>Error Bars:</b> 
+            <a href="#" id="g3_none">none</a> 
+            <a href="#" id="g3_minmax">min/max</a> 
+            <a href="#" id="g3_rms">rms</a> 
+        </div>
+        <script type="text/javascript">
+            g3 = new CCSTrendingPlot(
+            document.getElementById("graph3"), {
+            title: 'Cold plate temperature',
+            ylabel: 'Temperature (°C)',
+            range: 3600,
+            data: {
+            21742: {title: 'RTD-00' },
+            21743: {title: 'RTD-02' },
+            21744: {title: 'RTD-03' },
+            21745: {title: 'RTD-05' },
+            21746: {title: 'RTD-50' },
+            21747: {title: 'RTD-52' },
+            21748: {title: 'RTD-53' },
+            21749: {title: 'RTD-55' },
+            }
+            });
+            $('#g3_hour').click(function() { g3.zoom(3600); }); 
+            $('#g3_3hour').click(function() { g3.zoom(3*3600); });
+            $('#g3_6hour').click(function() { g3.zoom(6*3600); });
+            $('#g3_12hour').click(function() { g3.zoom(12*3600); });
+            $('#g3_day').click(function() { g3.zoom(86400); });
+            $('#g3_week').click(function() { g3.zoom(604800); });
+            $('#g3_month').click(function() { g3.zoom(30 * 86400); });
+            $('#g3_none').click(function() { g3.setErrorBars('NONE'); });
+            $('#g3_minmax').click(function() { g3.setErrorBars('MINMAX'); });
+            $('#g3_rms').click(function() { g3.setErrorBars('RMS'); });
+        </script>
+        <div id="graph2" style="width:100%;height:400px"></div>
+        <div class="link-interaction">
+            <style scoped>.link-interaction a:visited { color: blue; }</style>
+            <div id="div_g2"></div>
+            <b>Zoom:</b>
+            <a href="#" id="g2_hour">hour</a> 
+            <a href="#" id="g2_3hour">3 hour</a> 
+            <a href="#" id="g2_6hour">6 hour</a> 
+            <a href="#" id="g2_12hour">12 hour</a> 
+            <a href="#" id="g2_day">day</a> 
+            <a href="#" id="g2_week">week</a> 
+            <a href="#" id="g2_month">month</a>.
+            Or drag to select area for zoom, or shift drag to pan.<br>
+            <b>Error Bars:</b> 
+            <a href="#" id="g2_none">none</a> 
+            <a href="#" id="g2_minmax">min/max</a> 
+            <a href="#" id="g2_rms">rms</a> 
+        </div>
+        <script type="text/javascript">
+            g2 = new CCSTrendingPlot(
+            document.getElementById("graph2"), {
+            title: 'Cryo plate temperature',
+            ylabel: 'Temperature (°C)',
+            range: 3600,
+            data: {
+            21750: {title: 'RTD-02' },
+            21751: {title: 'RTD-03' },
+            21752: {title: 'RTD-04' },
+            21753: {title: 'RTD-12' },
+            21754: {title: 'RTD-13' },
+            21755: {title: 'RTD-14' },
+            21756: {title: 'RTD-21' },
+            21757: {title: 'RTD-22' },
+            21758: {title: 'RTD-24' },
+            21759: {title: 'RTD-25' },
+            21760: {title: 'RTD-30' },
+            21761: {title: 'RTD-31' },
+            21762: {title: 'RTD-33' },
+            21763: {title: 'RTD-34' },
+            21764: {title: 'RTD-41' },
+            21765: {title: 'RTD-42' },
+            21766: {title: 'RTD-43' },
+            21767: {title: 'RTD-51' },
+            21768: {title: 'RTD-52' },
+            21769: {title: 'RTD-53' },
+            }
+            });
+            $('#g2_hour').click(function() { g3.zoom(3600); }); 
+            $('#g2_3hour').click(function() { g3.zoom(3*3600); });
+            $('#g2_6hour').click(function() { g3.zoom(6*3600); });
+            $('#g2_12hour').click(function() { g3.zoom(12*3600); });
+            $('#g2_day').click(function() { g3.zoom(86400); });
+            $('#g2_week').click(function() { g3.zoom(604800); });
+            $('#g2_month').click(function() { g3.zoom(30 * 86400); });
+            $('#g2_none').click(function() { g3.setErrorBars('NONE'); });
+            $('#g2_minmax').click(function() { g3.setErrorBars('MINMAX'); });
+            $('#g2_rms').click(function() { g3.setErrorBars('RMS'); });
+        </script>
+    </body>
+
+</html>

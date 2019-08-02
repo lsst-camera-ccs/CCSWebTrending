@@ -50,6 +50,12 @@ public class TrendingRestInterface {
         } catch (JSchException | MalformedURLException | RuntimeException ex) {
             logger.log(Level.SEVERE, "Failed to initialize sites", ex);
         }
+        try {
+            Site comcam = SiteComCamTucson.create();
+            sites.put(comcam.getName(), comcam);
+        } catch (JSchException | MalformedURLException | RuntimeException ex) {
+            logger.log(Level.SEVERE, "Failed to initialize sites", ex);
+        }
     }
 
     public enum ErrorBars {

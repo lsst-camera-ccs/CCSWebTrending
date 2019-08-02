@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CCS Trending Demo</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/CCSWebTrending/split-pane/split-pane.css" />
+        <link rel="stylesheet" href="/CCSWebTrending/split-pane/pretty-split-pane.css" />        
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+        <link rel="stylesheet" href="/CCSWebTrending/trending.css"/>
+        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+        <script src="/CCSWebTrending/split-pane/split-pane.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
+        <script src="/CCSWebTrending/CCSTrending.js"></script>
+        <script src="/CCSWebTrending/css-element-queries/ResizeSensor.js"></script>
+        <script src="/CCSWebTrending/css-element-queries/ElementQueries.js"></script>
+
+        <style type="text/css">
+
+            html, body {
+                height: 100%;
+                min-height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #left-component {
+                min-width: 10em;
+                width: 20em;
+            }
+
+            #my-divider {
+                left: 20em;
+                width: 5px;
+            }
+
+            #right-component {
+                left: 20em;
+                margin-left: 5px;
+            }
+        </style>
+        <script>
+            $(function () {
+                $('div.split-pane').splitPane();
+            });
+        </script>
+    </head>
+    <body>
+        <div class="pretty-split-pane-frame"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
+            <div class="split-pane fixed-left">
+                <div class="split-pane-component" id="left-component">
+                    <div class="pretty-split-pane-component-inner"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
+                        <div id="channel_tree"></div>
+                    </div>
+                </div>
+                <div class="split-pane-divider" id="my-divider"></div>
+                <div class="split-pane-component" id="right-component">
+                    <div class="pretty-split-pane-component-inner"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
+                        <div id="graph" style="width:100%;height:400px"></div>
+                        <span class="drop" id="add" style="background:lime; border-radius:10px;">Drop here to add: </span>
+                        <span class="drop" id="overlayY1" style="background:lime; border-radius:10px;">Drop here to overlay on Y1: </span>
+                        <span class="drop" id="overlayY2" style="background:lime; border-radius:10px;">Drop here to overlay on Y2: </span>
+                        <div class="link-interaction">
+                            <style scoped="">.link-interaction a:visited { color: blue; }</style>
+                            <div id="div_g"></div>
+                            <b>Zoom:</b>
+                            <a href="#" id="hour">hour</a> 
+                            <a href="#" id="3hour">3 hour</a> 
+                            <a href="#" id="6hour">6 hour</a> 
+                            <a href="#" id="12hour">12 hour</a> 
+                            <a href="#" id="day">day</a> 
+                            <a href="#" id="week">week</a> 
+                            <a href="#" id="month">month</a>.
+                            Or drag to select area for zoom, or shift drag to pan.<br>
+                            <b>Error Bars:</b> 
+                            <a href="#" id="none">none</a> 
+                            <a href="#" id="minmax">min/max</a> 
+                            <a href="#" id="rms">rms</a> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                $('#channel_tree').jstree({
+                    'plugins': ['dnd'],
+                    'core': {
+                        'data': {
+                            'url': '/CCSWebTrending/rest/comcam/channels',
+                            'data': function (node) {
+                                if (node.id === '#')
+                                    return {};
+                                else
+                                    return {'id': node.id};
+                            }
+                        }
+                    }
+                });
+                $(document)
+                        .on('dnd_move.vakata', function (e, data) {
+                            var t = $(data.event.target);
+                            if (!t.closest('.jstree').length) {
+                                if (t.closest('.drop').length) {
+                                    data.helper.find('.jstree-icon').removeClass('jstree-er').addClass('jstree-ok');
+                                } else {
+                                    data.helper.find('.jstree-icon').removeClass('jstree-ok').addClass('jstree-er');
+                                }
+                            }
+                        })
+                        .on('dnd_stop.vakata', function (e, data) {
+                            var t = $(data.event.target);
+                            if (!t.closest('.jstree').length) {
+                                if (t.closest('.drop').length) {
+                                    $(data.element).clone().appendTo(t.closest('.drop'));
+                                    if (data.data.jstree && data.data.origin) {
+                                        var node = data.data.origin.get_node(data.element);
+                                        console.log(node.data);
+                                        if (t.closest('.drop')[0].id === 'add') {
+                                            g.setData(node.data, node.text);
+                                        } else if (t.closest('.drop')[0].id === 'overlayY1') {
+                                            g.addData(node.data, node.text);
+                                        } else if (t.closest('.drop')[0].id === 'overlayY2') {
+                                            g.addData(node.data, node.text, {'axis': 'y2'});
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                var element = document.getElementById("graph")
+                g = new CCSTrendingPlot(element, {
+                    title: 'Plot',
+                    restURL: '/CCSWebTrending/rest/comcam'
+                });
+                new ResizeSensor(element, function () {
+                    g.resize();
+                });
+                $('#hour').click(function() { g.zoom(3600); }); 
+                $('#3hour').click(function() { g.zoom(3*3600); });
+                $('#6hour').click(function() { g.zoom(6*3600); });
+                $('#12hour').click(function() { g.zoom(12*3600); });
+                $('#day').click(function() { g.zoom(86400); });
+                $('#week').click(function() { g.zoom(604800); });
+                $('#month').click(function() { g.zoom(30 * 86400); });
+                $('#none').click(function() { g.setErrorBars('NONE'); });
+                $('#minmax').click(function() { g.setErrorBars('MINMAX'); });
+                $('#rms').click(function() { g.setErrorBars('RMS'); });
+            });
+        </script>
+    </body>
+</html>

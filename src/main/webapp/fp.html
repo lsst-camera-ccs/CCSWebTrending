@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Focal Plane power (2 ETU version)</title>
+        <title>Focal Plane power (9 raft version)</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
@@ -35,16 +35,38 @@
         <script type="text/javascript">
             g = new CCSTrendingPlot(
             document.getElementById("graph"), {
-            title: 'ETU REB power',
+            title: 'REB power',
             ylabel: 'Total Power/REB (W)',
             range: 3600,
             data: {
-            7705: {title: 'ETU2: Reb0' },
-            7740: {title: 'ETU2: Reb1' },
-            7775: {title: 'ETU2: Reb2' },
-            7810: {title: 'ETU1: Reb0' },
-            7845: {title: 'ETU1: Reb1' },
-            7880: {title: 'ETU1: Reb2' }
+            38018: {title: 'R00: RebG' },
+            38001: {title: 'R00: RebW' },
+            38232: {title: 'R04: RebG' },
+            38230: {title: 'R04: RebW' },
+            38134: {title: 'R40: RebG' },
+            38261: {title: 'R40: RebW' },
+            38066: {title: 'R44: RebG' },
+            38282: {title: 'R44: RebW' },
+            
+            35969: {title: 'R01: Reb0' },
+            35640: {title: 'R01: Reb1' },
+            35960: {title: 'R01: Reb2' },
+
+            35690: {title: 'R02: Reb0' },
+            36871: {title: 'R02: Reb1' },
+            35456: {title: 'R02: Reb2' },
+
+            15612: {title: 'R10: Reb0' },
+            15588: {title: 'R10: Reb1' },
+            15594: {title: 'R10: Reb2' },
+
+            12024: {title: 'R11: Reb0' },
+            11919: {title: 'R11: Reb1' },
+            11814: {title: 'R11: Reb2' },
+
+            12828: {title: 'R12: Reb0' },
+            12726: {title: 'R12: Reb1' },
+            12624: {title: 'R12: Reb2' },            
             }
             });
             $('#hour').click(function() { g.zoom(3600); }); 

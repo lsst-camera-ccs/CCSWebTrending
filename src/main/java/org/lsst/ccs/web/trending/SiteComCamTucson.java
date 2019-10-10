@@ -17,7 +17,7 @@ public class SiteComCamTucson extends Site {
         Properties props = new Properties();
         props.setProperty("name", "comcam");
         props.setProperty("useSSH", "true");
-        props.setProperty("restURL", "http://10.0.103.106:8080/rest/data/dataserver/");
+        props.setProperty("restURL", "http://140.252.34.74:8080/rest/data/dataserver/");
 
         props.setProperty("ssh.user", "tonyj");
         props.setProperty("ssh.host", "stargate.lsst.org");

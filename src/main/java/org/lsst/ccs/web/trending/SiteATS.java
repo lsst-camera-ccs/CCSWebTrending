@@ -12,6 +12,7 @@ public class SiteATS extends Site {
 
     private SiteATS(Properties props) throws MalformedURLException, JSchException {
         super(props);
+        setSSHTimeout(20000);
     }
 
     static Site create() throws MalformedURLException, JSchException {

@@ -43,7 +43,7 @@ function CCSTrendingPlot(element, options) {
                 connectSeparatedPoints: true,
                 drawPoints: true,
                 zoomCallback: function (minDate, maxDate, yRanges) {
-                    ccs.range = { "start": new Date(minDate), "end": new Date(maxDate)};
+                    ccs.range = {"start": new Date(minDate), "end": new Date(maxDate)};
                     ccs.reloadData();
                 }
             });
@@ -54,13 +54,54 @@ function CCSTrendingPlot(element, options) {
         this.range = seconds;
         this.reloadData();
     };
-    
-    this.reloadData = function() {
+
+    this.download = function () {
+        var filename = this.title + '.tsv';
+        var CSVContent = "";
+        //create header
+        for (var i = 0; i < this.labels.length; i++) {
+            if (i === 0)
+                CSVContent = CSVContent + this.labels[i];
+            else
+                CSVContent = CSVContent + '\t' + this.labels[i];
+        }
+
+        //get data
+        for (var i = 0; i < this.graph.rawData_.length; i++) {
+            CSVContent = CSVContent + '\r' + '\n';
+            for (var j = 0; j < this.graph.rawData_[i].length; j++) {
+                if (j === 0)
+                    CSVContent = CSVContent + ((this.graph.rawData_[i][j] / 86400000) + 25569);
+                else
+                    CSVContent = CSVContent + '\t' + this.graph.rawData_[i][j];
+            }
+        }
+
+        //send TSV content to download
+        var blob = new Blob([CSVContent], {type: 'text/csv;charset=utf-8;'});
+        if (navigator.msSaveBlob) { // IE 10+
+            navigator.msSaveBlob(blob, filename);
+        } else {
+            var link = document.createElement("a");
+            if (link.download !== undefined) { // feature detection
+                // Browsers that support HTML5 download attribute
+                var url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    };
+
+    this.reloadData = function () {
         var timeRange = toTimeRange(this.range);
         graph.updateOptions({dateWindow: [timeRange.start, timeRange.end]});
         var args = $.param({"key": this.keys, "t1": timeRange.start, "t2": timeRange.end, "n": this.nBins, 'errorBars': this.errorBars}, true);
-        this.updateData(ccs.restURL, args);       
-    }
+        this.updateData(ccs.restURL, args);
+    };
 
     this.setErrorBars = function (errorBars) {
         if (errorBars !== this.errorBars) {
@@ -68,8 +109,8 @@ function CCSTrendingPlot(element, options) {
             this.reloadData();
         }
     };
-    
-    this.setData = function(key, label) {
+
+    this.setData = function (key, label) {
         this.keys = [key];
         this.labels = ['time', label];
         var series = {};
@@ -77,57 +118,61 @@ function CCSTrendingPlot(element, options) {
         graph.updateOptions({'labels': this.labels, 'series': series});
         this.reloadData();
     };
-    
-    this.addData = function(key, label, options) {
+
+    this.addData = function (key, label, options) {
         this.keys.push(key);
         this.labels.push(label);
         series[label] = options;
         graph.updateOptions({'labels': this.labels});
-        this.reloadData(); 
+        this.reloadData();
     };
-  
-    this.resize = function() {
+
+    this.resize = function () {
         graph.resize();
     };
-    
+
     function toTimeRange(range) {
         if (typeof range === 'number') {
-           var now = Date.now();
-           var then = now - range*1000;
-           return  {start: then, end: now };
+            var now = Date.now();
+            var then = now - range * 1000;
+            return  {start: then, end: now};
         } else {
-            return {start: range.start.getTime(), end: range.end.getTime() };
+            return {start: range.start.getTime(), end: range.end.getTime()};
         }
-    };
+    }
+    ;
 
     function parseRange(range) {
         if (typeof range === 'string') {
-            return  24*60*60; // FIXME: This should not be hardwired
+            return  24 * 60 * 60; // FIXME: This should not be hardwired
         } else if (typeof range === 'number') {
             return range;
         } else {
             return range;
         }
     }
-    this.updateData = function(restURL, args) {
-        $.getJSON(restURL, args)
+    this.updateData = function (restURL, args) {
+        $.getJSON(restURL + '?callback=', args)
                 .done(function (newData) {
                     for (var i = 0; i < newData.data.length; i++) {
                         newData.data[i][0] = new Date(newData.data[i][0]);
                     }
                     var errorBarsType = newData.meta.errorBars;
-                    var customBars = errorBarsType==='MINMAX';
-                    var errorBars = errorBarsType==='RMS';
+                    var customBars = errorBarsType === 'MINMAX';
+                    var errorBars = errorBarsType === 'RMS';
                     graph.updateOptions({file: newData.data, customBars: customBars, errorBars: errorBars});
                 })
                 .fail(function (jqXHR, textStatus, error) {
-                    alert("error ("+restURL+" "+args+")" + error);
+                    alert("error (" + restURL + " " + args + ")" + error);
                 });
     };
     this.reloadData();
-    
+
     if (this.autoUpdate) {
-       setInterval(function(){if (typeof ccs.range === 'number') ccs.reloadData();},60000);
+        setInterval(function () {
+            if (typeof ccs.range === 'number')
+                ccs.reloadData();
+        }, 60000);
     }
 
     /*
@@ -151,7 +196,7 @@ function CCSTrendingPlot(element, options) {
 
             //Call the original to let it do it's magic
             origEndPan(event, g, context);
-            
+
             if (g.synchronizer) {
                 g.synchronizer();
             } else {
@@ -162,7 +207,7 @@ function CCSTrendingPlot(element, options) {
                 var axisX = g.xAxisRange();
                 //Trigger new detail load
                 console.log("Pan detected");
-                myInstance.range =  { "start": new Date(Math.round(axisX[0])), "end": new Date(Math.round(axisX[1]))};
+                myInstance.range = {"start": new Date(Math.round(axisX[0])), "end": new Date(Math.round(axisX[1]))};
                 myInstance.reloadData();
             }
         };
@@ -182,7 +227,7 @@ function CCSTrendingPlot(element, options) {
                 var axisX = g.xAxisRange();
                 //Trigger new detail load
                 console.log("Touch detected");
-                myInstance.range =  { "start": new Date(Math.round(axisX[0])), "end": new Date(Math.round(axisX[1]))};
+                myInstance.range = {"start": new Date(Math.round(axisX[0])), "end": new Date(Math.round(axisX[1]))};
                 myInstance.reloadData();
             }
         };
@@ -193,12 +238,12 @@ function CCSTrendingPlot(element, options) {
     this._setupPanInteractionHandling();
 }
 
-var synchronize = function() {
+var synchronize = function () {
     graphs = [];
     for (var i = 0; i < arguments.length; i++) {
-      if (arguments[i] instanceof CCSTrendingPlot) {
-          graphs.push(arguments[i].graph);
-      }
-    }  
-    Dygraph.synchronize(graphs,{zoom: true, range: false, selection: false});
+        if (arguments[i] instanceof CCSTrendingPlot) {
+            graphs.push(arguments[i].graph);
+        }
+    }
+    Dygraph.synchronize(graphs, {zoom: true, range: false, selection: false});
 };

@@ -8,21 +8,20 @@ import java.util.Properties;
  *
  * @author tonyj
  */
-public class SiteATS extends Site {
-
-    private SiteATS(Properties props) throws MalformedURLException, JSchException {
+public class SiteComCamTucson extends Site {
+    private SiteComCamTucson(Properties props) throws MalformedURLException, JSchException {
         super(props);
     }
 
     static Site create() throws MalformedURLException, JSchException {
         Properties props = new Properties();
-        props.setProperty("name", "ats");
+        props.setProperty("name", "comcam");
         props.setProperty("useSSH", "true");
-        props.setProperty("restURL", "http://atsccs1.cp.lsst.org:8080/rest/data/dataserver/");
+        props.setProperty("restURL", "http://140.252.34.74:8080/rest/data/dataserver/");
 
         props.setProperty("ssh.user", "tonyj");
         props.setProperty("ssh.host", "stargate.lsst.org");
         props.setProperty("ssh.key", "/nfs/slac/g/srs/.ssh/ccs");
-        return new SiteATS(props);
-    }
+        return new SiteComCamTucson(props);
+    }    
 }

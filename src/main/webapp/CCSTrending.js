@@ -8,6 +8,7 @@ function CCSTrendingPlot(element, options) {
     this.data = options.data;
     this.nBins = 100;
     this.restURL = (typeof options.restURL === 'undefined') ? 'rest' : options.restURL;
+    this.autoUpdate = true;
     this.keys = [];
     this.labels = ['time'];
     var series = {};
@@ -23,8 +24,9 @@ function CCSTrendingPlot(element, options) {
     }
 
     var dummyData = [Array.apply(null, Array(this.labels.length)).map(Number.prototype.valueOf, 0), Array.apply(null, Array(this.labels.length)).map(Number.prototype.valueOf, 0)];
-    dummyData[0][0] = this.range.start;
-    dummyData[1][0] = this.range.end;
+    var timeRange = toTimeRange(this.range);
+    dummyData[0][0] = new Date(timeRange.start);
+    dummyData[1][0] = new Date(timeRange.end);
 
     var ccs = this;
     var graph = new Dygraph(element, dummyData,
@@ -41,27 +43,29 @@ function CCSTrendingPlot(element, options) {
                 connectSeparatedPoints: true,
                 drawPoints: true,
                 zoomCallback: function (minDate, maxDate, yRanges) {
-                    var args = $.param({"key": ccs.keys, "t1": Math.round(minDate), "t2": Math.round(maxDate), "n": ccs.nBins, 'errorBars': ccs.errorBars}, true);
-                    ccs.updateData(ccs.restURL, args);
+                    ccs.range = { "start": new Date(minDate), "end": new Date(maxDate)};
+                    ccs.reloadData();
                 }
             });
     graph.ccsInstance = this;
     this.graph = graph;
 
     this.zoom = function (seconds) {
-        var now = Date.now();
-        var then = now - seconds * 1000;
-        this.range = { start: new Date(then), end: new Date(now) };
-        graph.updateOptions({dateWindow: [then, now]});
-        var args = $.param({"key": ccs.keys, "t1": then, "t2": now, "n": ccs.nBins}, true);
-        this.updateData(ccs.restURL, args);
+        this.range = seconds;
+        this.reloadData();
     };
+    
+    this.reloadData = function() {
+        var timeRange = toTimeRange(this.range);
+        graph.updateOptions({dateWindow: [timeRange.start, timeRange.end]});
+        var args = $.param({"key": this.keys, "t1": timeRange.start, "t2": timeRange.end, "n": this.nBins, 'errorBars': this.errorBars}, true);
+        this.updateData(ccs.restURL, args);       
+    }
 
     this.setErrorBars = function (errorBars) {
         if (errorBars !== this.errorBars) {
             this.errorBars = errorBars;
-            var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
-            this.updateData(this.restURL, args);
+            this.reloadData();
         }
     };
     
@@ -71,8 +75,7 @@ function CCSTrendingPlot(element, options) {
         var series = {};
         //series[label] = {'yAxis': 'y1'};
         graph.updateOptions({'labels': this.labels, 'series': series});
-        var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
-        this.updateData(this.restURL, args);       
+        this.reloadData();
     };
     
     this.addData = function(key, label, options) {
@@ -80,22 +83,28 @@ function CCSTrendingPlot(element, options) {
         this.labels.push(label);
         series[label] = options;
         graph.updateOptions({'labels': this.labels});
-        var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
-        this.updateData(this.restURL, args);       
+        this.reloadData(); 
     };
   
     this.resize = function() {
         graph.resize();
     };
+    
+    function toTimeRange(range) {
+        if (typeof range === 'number') {
+           var now = Date.now();
+           var then = now - range*1000;
+           return  {start: then, end: now };
+        } else {
+            return {start: range.start.getTime(), end: range.end.getTime() };
+        }
+    };
 
     function parseRange(range) {
-        var now = Date.now();
         if (typeof range === 'string') {
-            var then = now - 24*60*60*1000;
-            return  {start: new Date(then), end: new Date(now) };
+            return  24*60*60; // FIXME: This should not be hardwired
         } else if (typeof range === 'number') {
-            var then = now - range *1000;
-            return  {start: new Date(then), end: new Date(now) };
+            return range;
         } else {
             return range;
         }
@@ -115,9 +124,11 @@ function CCSTrendingPlot(element, options) {
                     alert("error ("+restURL+" "+args+")" + error);
                 });
     };
-
-    var args = $.param({"key": this.keys, "t1": this.range.start.getTime(), "t2": this.range.end.getTime(), "n": this.nBins, 'errorBars': this.errorBars}, true);
-    this.updateData(this.restURL, args);
+    this.reloadData();
+    
+    if (this.autoUpdate) {
+       setInterval(function(){if (typeof ccs.range === 'number') ccs.reloadData();},60000);
+    }
 
     /*
      * This is based on: https://kaliatech.github.io/dygraphs-dynamiczooming-example/example4.html
@@ -151,8 +162,8 @@ function CCSTrendingPlot(element, options) {
                 var axisX = g.xAxisRange();
                 //Trigger new detail load
                 console.log("Pan detected");
-                var args = $.param({"key": myInstance.keys, "t1": Math.round(axisX[0]), "t2": Math.round(axisX[1]), "n": myInstance.nBins, 'errorBars': myInstance.errorBars}, true);
-                myInstance.updateData(myInstance.restURL, args);
+                myInstance.range =  { "start": new Date(Math.round(axisX[0])), "end": new Date(Math.round(axisX[1]))};
+                myInstance.reloadData();
             }
         };
         //Replace built-in handling with our own function
@@ -171,8 +182,8 @@ function CCSTrendingPlot(element, options) {
                 var axisX = g.xAxisRange();
                 //Trigger new detail load
                 console.log("Touch detected");
-                var args = $.param({"key": myInstance.keys, "t1": Math.round(axisX[0]), "t2": Math.round(axisX[1]), "n": myInstance.nBins, 'errorBars': myInstance.errorBars}, true);
-                myInstance.updateData(myInstance.restURL, args);
+                myInstance.range =  { "start": new Date(Math.round(axisX[0])), "end": new Date(Math.round(axisX[1]))};
+                myInstance.reloadData();
             }
         };
         Dygraph.endPan = Dygraph.Interaction.endPan; //see dygraph-interaction-model.js

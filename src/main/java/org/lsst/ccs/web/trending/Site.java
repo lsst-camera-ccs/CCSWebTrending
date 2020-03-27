@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -39,6 +40,8 @@ public class Site implements AutoCloseable {
     private final CountDownLatch channelTreeInitCompleteLatch = new CountDownLatch(1);
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private static final Logger LOG = Logger.getLogger(Site.class.getName());
+    private static final int SSH_TIMEOUT = 10000;
+    private static final int SSH_RETRIES = 2;
 
     public Site(Properties properties) throws MalformedURLException, JSchException {
         this.name = properties.getProperty("name");
@@ -84,9 +87,20 @@ public class Site implements AutoCloseable {
             URL url = new URL(restURL, relativePath);
             return url.openStream();
         } else {
-            establishConnection();
-            URL url = new URL(tunnelURL, relativePath);
-            return url.openStream();
+            for (int i=0;i<SSH_RETRIES;i++) {
+                establishConnection();
+                URL url = new URL(tunnelURL, relativePath);
+                try {
+                    URLConnection connection = url.openConnection();
+                    connection.setConnectTimeout(SSH_TIMEOUT);
+                    connection.setReadTimeout(SSH_TIMEOUT);
+                    return connection.getInputStream();
+                } catch (Exception x) {
+                    LOG.log(Level.WARNING, "Failed to connect via ssh to "+url+" (attempt "+i+")", x);
+                    session.disconnect();
+                }
+            }
+            throw new IOException("Unable to establish ssh connection after "+SSH_RETRIES+" retries");
         }
     }
 

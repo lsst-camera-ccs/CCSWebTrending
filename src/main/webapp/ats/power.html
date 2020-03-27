@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>AuxTel Camera Temperatures</title>
+        <title>AuxTel WREB Voltages as measured on WREB</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined-dev.js"></script>
@@ -22,6 +22,7 @@
             <a href="#" id="day">day</a> 
             <a href="#" id="week">week</a> 
             <a href="#" id="month">month</a>.
+            <a href="#" id="2month">2 month</a>.
             Or drag to select area for zoom, or shift drag to pan
         </div>
         <div id="graph1" style="width:1000px;height:300px"></div>
@@ -32,39 +33,49 @@
                     document.getElementById("graph1"), {
                 range: '1d',
                 restURL: '/CCSWebTrending/rest/ats',
-                ylabel: 'Temperature (°C)',
-                title: 'CCD temperatures',
+                ylabel: 'Voltage',
+                title: 'WREB PS Voltages',
                 data: {
-                    566: {title: "Cryocon CCD Temerature"},
-                    26:  {title: "WREB CCD Temperature"},
+                    30: {title: "Analog"},
+                    28: {title: "Digital"},
+                    32: {title: "ClkHigh"},
+                    223: {title: "ClkLow"},
+                    227: {title: "DPHI"},
+                    36: {title: "Heater"},
+                    34: {title: "OD"},
                 }
             });
             g2 = new CCSTrendingPlot(
                     document.getElementById("graph2"), {
                 range: '1d',
                 restURL: '/CCSWebTrending/rest/ats',
-                ylabel: 'Temperature (°C)',
-                title: 'WREB board temperatures',
+                ylabel: 'Voltage',
+                title: 'WREB PS Voltages',
                 data: {
-                    18: {title: "Temp 1"},
-                    19: {title: "Temp 2"},
-                    20: {title: "Temp 3"},
-                    21: {title: "Temp 4"},
-                    22: {title: "Temp 5"},
-                    23: {title: "Temp 6"},
-                    24: {title: "Aspic U"},
-                    25: {title: "Aspic L"},
-               }
+                    30: {title: "Parallel Clock Low"},
+                    41: {title: "Serial Clock Low"},
+                    40: {title: "Serial Clock High"},
+                    32: {title: "GD"},
+                    46: {title: "RG"},
+                    48: {title: "RD"},
+                    10: {title: "OG"},
+                    47: {title: "OD"},
+                }
             });
             g3 = new CCSTrendingPlot(
                     document.getElementById("graph3"), {
                 range: '1d',
                 restURL: '/CCSWebTrending/rest/ats',
-                ylabel: 'Temperature (°C)',
-                title: 'Cold/Cryo temperatures',
+                ylabel: 'Current (mA)',
+                title: 'Power supply currents',
                 data: {
-                    568: {title: "Cold"},
-                    567: {title: "Cryo"}
+                    31: {title: "Analog"},
+                    29: {title: "Digital"},
+                    33: {title: "ClkHigh"},
+                    223: {title: "ClkLow"},
+                    227: {title: "DPHI"},
+                    37: {title: "Heater"},
+                    35: {title: "OD"},
                 }
             });
             synchronize(g1,g2,g3);
@@ -76,6 +87,7 @@
             $('#day').click(function() { zoom(86400); });
             $('#week').click(function() { zoom(604800); });
             $('#month').click(function() { zoom(30 * 86400); });
+            $('#2month').click(function() { zoom(61 * 86400); });
         </script>
     </body>
 

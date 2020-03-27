@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiConsumer;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -32,9 +35,13 @@ public class ChannelTree {
     private int nextHandle = 0;
     private final Map<Integer, TreeNode> nodeMap = new HashMap<>();
 
-    ChannelTree(InputStream in) throws IOException {
+    private ChannelTree() {
         root = new TreeNode(nextHandle++);
         nodeMap.put(root.getHandle(), root);
+    }
+    
+    ChannelTree(InputStream in) throws IOException {
+        this();
         buildTree(in);
     }
 
@@ -51,6 +58,9 @@ public class ChannelTree {
             NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
             for (int n = 0; n < nl.getLength(); n++) {
                 Node node = nl.item(n);
+                // The next line gives a huge performaance increase. 
+                // See: https://stackoverflow.com/questions/3782618
+                node.getParentNode().removeChild(node);
                 NodeList pathList = (NodeList) pathExpression.evaluate(node, XPathConstants.NODESET);
                 List<String> path = new ArrayList<>(pathList.getLength());
                 for (int nn = 0; nn < pathList.getLength(); nn++) {
@@ -85,6 +95,37 @@ public class ChannelTree {
     TreeNode findNode(Integer handle) {
         return nodeMap.get(handle);
     }
+     
+    private void traverseTree(TreeNode start, List<String> initialPath, BiConsumer<List<String>, TreeNode> visitor) {
+        final Set<TreeNode> children = start.getChildren();
+        List<String> path =  new ArrayList(initialPath);
+        if (start.getName() != null) path.add(start.getName());
+        if (children.isEmpty()) {
+            visitor.accept(path, start);
+        } else {
+
+            children.forEach((child) -> {
+                traverseTree(child, path, visitor);
+            });
+        }
+    } 
+    
+    ChannelTree filter(Pattern pattern) {
+        ChannelTree result = new ChannelTree();
+        traverseTree(root, Collections.EMPTY_LIST, (path, node) -> {
+            String fullPath = path.stream().collect(Collectors.joining("/"));
+            if (pattern.matcher(fullPath).matches()) {
+                result.addNode(node.getId(), path);
+            }
+        });
+        return result;
+    }
+    
+    void dump() {
+        traverseTree(root, Collections.EMPTY_LIST, (path, node) -> System.out.printf("%s: %s\n", path, node.id));
+    }
+    
+    
 
     public static class TreeNode implements Comparable<TreeNode> {
 

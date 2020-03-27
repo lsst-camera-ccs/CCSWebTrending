@@ -4,17 +4,17 @@
         <title>CCS Trending Demo</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="split-pane/split-pane.css" />
-        <link rel="stylesheet" href="split-pane/pretty-split-pane.css" />        
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.7/themes/default/style.min.css" />
-        <link rel="stylesheet" href="trending.css"/>
+        <link rel="stylesheet" href="/CCSWebTrending/split-pane/split-pane.css" />
+        <link rel="stylesheet" href="/CCSWebTrending/split-pane/pretty-split-pane.css" />        
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+        <link rel="stylesheet" href="/CCSWebTrending/trending.css"/>
         <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.9/jstree.min.js"></script>
-        <script src="split-pane/split-pane.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+        <script src="/CCSWebTrending/split-pane/split-pane.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
-        <script src="CCSTrending.js"></script>
-        <script src="css-element-queries/ResizeSensor.js"></script>
-        <script src="css-element-queries/ElementQueries.js"></script>
+        <script src="/CCSWebTrending/CCSTrending.js"></script>
+        <script src="/CCSWebTrending/css-element-queries/ResizeSensor.js"></script>
+        <script src="/CCSWebTrending/css-element-queries/ElementQueries.js"></script>
 
         <style type="text/css">
 
@@ -39,7 +39,6 @@
                 left: 20em;
                 margin-left: 5px;
             }
-            .jstree-leaf .jstree-anchor .jstree-themeicon { background: url("data.png") 6px 0px no-repeat !important; background-repeat: no-repeat; }
         </style>
         <script>
             $(function () {
@@ -49,10 +48,8 @@
     </head>
     <body>
         <div class="pretty-split-pane-frame"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
-            <div><label for="filter">Filter:&nbsp;</label><input type="search" id="filter" name="filter"></div>
             <div class="split-pane fixed-left">
                 <div class="split-pane-component" id="left-component">
-
                     <div class="pretty-split-pane-component-inner"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
                         <div id="channel_tree"></div>
                     </div>
@@ -91,7 +88,7 @@
                     'plugins': ['dnd'],
                     'core': {
                         'data': {
-                            'url': 'rest/channels',
+                            'url': '/CCSWebTrending/rest/comcam/channels',
                             'data': function (node) {
                                 if (node.id === '#')
                                     return {};
@@ -99,12 +96,6 @@
                                     return {'id': node.id};
                             }
                         }
-                    }
-                }).bind("dblclick.jstree", function (event) {
-                    var tree = $(this).jstree();
-                    var node = tree.get_node(event.target);
-                    if (node.data) {
-                        g.setData(node.data, node.text);
                     }
                 });
                 $(document)
@@ -137,49 +128,24 @@
                                 }
                             }
                         });
-                var element = document.getElementById("graph");
+                var element = document.getElementById("graph")
                 g = new CCSTrendingPlot(element, {
-                    title: 'Plot'
+                    title: 'Plot',
+                    restURL: '/CCSWebTrending/rest/comcam'
                 });
                 new ResizeSensor(element, function () {
                     g.resize();
                 });
-                $('#hour').click(function () {
-                    g.zoom(3600);
-                });
-                $('#3hour').click(function () {
-                    g.zoom(3 * 3600);
-                });
-                $('#6hour').click(function () {
-                    g.zoom(6 * 3600);
-                });
-                $('#12hour').click(function () {
-                    g.zoom(12 * 3600);
-                });
-                $('#day').click(function () {
-                    g.zoom(86400);
-                });
-                $('#week').click(function () {
-                    g.zoom(604800);
-                });
-                $('#month').click(function () {
-                    g.zoom(30 * 86400);
-                });
-                $('#none').click(function () {
-                    g.setErrorBars('NONE');
-                });
-                $('#minmax').click(function () {
-                    g.setErrorBars('MINMAX');
-                });
-                $('#rms').click(function () {
-                    g.setErrorBars('RMS');
-                });
-                $('#filter').on('search', function() {
-                    var filter = $('#filter').val();
-                    var instance = $('#channel_tree').jstree(true);
-                    instance.settings.core.data.url = `rest/channels?filter=${filter}`;
-                    instance.refresh();
-                });
+                $('#hour').click(function() { g.zoom(3600); }); 
+                $('#3hour').click(function() { g.zoom(3*3600); });
+                $('#6hour').click(function() { g.zoom(6*3600); });
+                $('#12hour').click(function() { g.zoom(12*3600); });
+                $('#day').click(function() { g.zoom(86400); });
+                $('#week').click(function() { g.zoom(604800); });
+                $('#month').click(function() { g.zoom(30 * 86400); });
+                $('#none').click(function() { g.setErrorBars('NONE'); });
+                $('#minmax').click(function() { g.setErrorBars('MINMAX'); });
+                $('#rms').click(function() { g.setErrorBars('RMS'); });
             });
         </script>
     </body>

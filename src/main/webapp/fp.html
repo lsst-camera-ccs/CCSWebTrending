@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Focal Plane power (2 ETU version)</title>
+        <title>Focal Plane power (9 raft version)</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
@@ -35,16 +35,44 @@
         <script type="text/javascript">
             g = new CCSTrendingPlot(
             document.getElementById("graph"), {
-            title: 'ETU REB power',
+            title: 'REB power',
             ylabel: 'Total Power/REB (W)',
             range: 3600,
             data: {
-            7705: {title: 'ETU2: Reb0' },
-            7740: {title: 'ETU2: Reb1' },
-            7775: {title: 'ETU2: Reb2' },
-            7810: {title: 'ETU1: Reb0' },
-            7845: {title: 'ETU1: Reb1' },
-            7880: {title: 'ETU1: Reb2' }
+                38018: {title: 'R00: RebG' },
+                38001: {title: 'R00: RebW' },
+                35969: {title: 'R01: Reb0' },
+                35640: {title: 'R01: Reb1' },
+                35960: {title: 'R01: Reb2' },
+                35690: {title: 'R02: Reb0' },
+                36871: {title: 'R02: Reb1' },
+                35456: {title: 'R02: Reb2' },
+                38232: {title: 'R04: RebG' },
+                38230: {title: 'R04: RebW' },
+                15588: {title: 'R10: Reb1' },
+                15594: {title: 'R10: Reb2' },
+                12024: {title: 'R11: Reb0' },
+                11919: {title: 'R11: Reb1' },
+                11814: {title: 'R11: Reb2' },
+                12828: {title: 'R12: Reb0' },
+                12726: {title: 'R12: Reb1' },
+                12624: {title: 'R12: Reb2' },
+                36950: {title: 'R20: Reb0' },
+                36531: {title: 'R20: Reb1' },
+                35888: {title: 'R20: Reb2' },
+                37271: {title: 'R21: Reb0' },
+                36337: {title: 'R21: Reb1' },
+                36537: {title: 'R21: Reb2' },
+                15447: {title: 'R22: Reb0' },
+                15148: {title: 'R22: Reb1' },
+                15502: {title: 'R22: Reb2' },
+                36555: {title: 'R30: Reb0' },
+                35491: {title: 'R30: Reb1' },
+                36185: {title: 'R30: Reb2' },
+                38134: {title: 'R40: RebG' },
+                38261: {title: 'R40: RebW' },
+                38066: {title: 'R44: RebG' },
+                38282: {title: 'R44: RebW' }
             }
             });
             $('#hour').click(function() { g.zoom(3600); }); 
@@ -79,16 +107,35 @@
         <script type="text/javascript">
             g2 = new CCSTrendingPlot(
             document.getElementById("graph2"), {
-            title: 'ETU REB temperature',
+            title: 'REB temperature',
             ylabel: 'Temperature (Temp2 - °C)',
             range: 3600,
             data: {
-            15525: {title: 'ETU2: Reb0' },
-            15341: {title: 'ETU2: Reb1' },
-            15282: {title: 'ETU2: Reb2' },
-            15657: {title: 'ETU1: Reb0' },
-            15741: {title: 'ETU1: Reb1' },
-            15299: {title: 'ETU1: Reb2' }
+                38204: {title: 'R00: RebG' },
+                35276: {title: 'R01: Reb1' },
+                37188: {title: 'R02: Reb1' },
+                56045: {title: 'R03: Reb1' },
+                38184: {title: 'R04: RebG' },
+                15341: {title: 'R10: Reb1' },
+                11888: {title: 'R11: Reb1' },
+                12698: {title: 'R12: Reb1' },
+                56121: {title: 'R13: Reb1' },
+                54162: {title: 'R14: Reb1' },
+                37030: {title: 'R20: Reb1' },
+                37038: {title: 'R21: Reb1' },
+                15741: {title: 'R22: Reb1' },
+                56638: {title: 'R23: Reb1' },
+                53538: {title: 'R24: Reb1' },
+                36251: {title: 'R30: Reb1' },
+                57040: {title: 'R31: Reb1' },
+                54155: {title: 'R32: Reb1' },
+                56901: {title: 'R33: Reb1' },
+                56996: {title: 'R34: Reb1' },
+                38174: {title: 'R40: RebG' },
+                55202: {title: 'R41: Reb1' },
+                56010: {title: 'R42: Reb1' },
+                57251: {title: 'R43: Reb1' },
+                38300: {title: 'R44: RebG' },
             }
             });
             $('#g2_hour').click(function() { g2.zoom(3600); }); 
@@ -127,10 +174,14 @@
             ylabel: 'Temperature (°C)',
             range: 3600,
             data: {
-            17478: {title: 'RTD-02' },
-            17477: {title: 'RTD-05' },
-            17476: {title: 'RTD-50' },
-            17475: {title: 'RTD-53' },
+                21742: {title: 'RTD-00' },
+                21743: {title: 'RTD-02' },
+                21744: {title: 'RTD-03' },
+                21745: {title: 'RTD-05' },
+                21746: {title: 'RTD-50' },
+                21747: {title: 'RTD-52' },
+                21748: {title: 'RTD-53' },
+                21749: {title: 'RTD-55' }
             }
             });
             $('#g3_hour').click(function() { g3.zoom(3600); }); 

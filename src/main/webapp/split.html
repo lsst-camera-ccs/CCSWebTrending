@@ -49,11 +49,10 @@
     </head>
     <body>
         <div class="pretty-split-pane-frame"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
-            <div><label for="filter">Filter:&nbsp;</label><input type="search" id="filter" name="filter"></div>
             <div class="split-pane fixed-left">
                 <div class="split-pane-component" id="left-component">
-
                     <div class="pretty-split-pane-component-inner"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
+                        <div><label for="filter">Filter:&nbsp;</label><input type="search" id="filter" name="filter"></div>
                         <div id="channel_tree"></div>
                     </div>
                 </div>
@@ -105,6 +104,7 @@
                     var node = tree.get_node(event.target);
                     if (node.data) {
                         g.setData(node.data, node.text);
+                        g.reloadData();
                     }
                 });
                 $(document)
@@ -122,18 +122,22 @@
                             var t = $(data.event.target);
                             if (!t.closest('.jstree').length) {
                                 if (t.closest('.drop').length) {
-                                    $(data.element).clone().appendTo(t.closest('.drop'));
-                                    if (data.data.jstree && data.data.origin) {
-                                        var node = data.data.origin.get_node(data.element);
-                                        console.log(node.data);
+                                    console.log(data);
+                                    data.data.nodes.forEach(function(nodeId, index) {
+                                        var node = data.data.origin.get_node(nodeId);
+                                        console.log(node);
+                                        console.log(t.closest('.drop')[0].id);
+                                        console.log(data.data.origin.get_node(node.parent).id);
                                         if (t.closest('.drop')[0].id === 'add') {
-                                            g.setData(node.data, node.text);
+                                            if (index === 0) { g.setData(node.data, node.text); }
+                                            else { g.addData(node.data, node.text); }
                                         } else if (t.closest('.drop')[0].id === 'overlayY1') {
                                             g.addData(node.data, node.text);
                                         } else if (t.closest('.drop')[0].id === 'overlayY2') {
                                             g.addData(node.data, node.text, {'axis': 'y2'});
                                         }
-                                    }
+                                    });
+                                    g.reloadData();
                                 }
                             }
                         });
@@ -174,7 +178,7 @@
                 $('#rms').click(function () {
                     g.setErrorBars('RMS');
                 });
-                $('#filter').on('search', function() {
+                $('#filter').on('search', function () {
                     var filter = $('#filter').val();
                     var instance = $('#channel_tree').jstree(true);
                     instance.settings.core.data.url = `rest/channels?filter=${filter}`;

@@ -75,15 +75,15 @@ function CCSTrendingPlot(element, options) {
         var series = {};
         //series[label] = {'yAxis': 'y1'};
         graph.updateOptions({'labels': this.labels, 'series': series});
-        this.reloadData();
+        //this.reloadData();
     };
     
     this.addData = function(key, label, options) {
         this.keys.push(key);
         this.labels.push(label);
-        series[label] = options;
+        //series[label] = options;
         graph.updateOptions({'labels': this.labels});
-        this.reloadData(); 
+        //this.reloadData(); 
     };
   
     this.resize = function() {

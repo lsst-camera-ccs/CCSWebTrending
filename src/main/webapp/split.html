@@ -39,6 +39,17 @@
                 left: 20em;
                 margin-left: 5px;
             }
+            
+            #filter-div {
+                display: table;
+                width: 100%;
+            }
+            #filter-div label, filter-div input {
+                display: table-cell;            
+            }
+            #filter-div input {
+               width: 100%;
+            }
             .jstree-leaf .jstree-anchor .jstree-themeicon { background: url("data.png") 6px 0px no-repeat !important; background-repeat: no-repeat; }
         </style>
         <script>
@@ -52,7 +63,7 @@
             <div class="split-pane fixed-left">
                 <div class="split-pane-component" id="left-component">
                     <div class="pretty-split-pane-component-inner"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
-                        <div><label for="filter">Filter:&nbsp;</label><input type="search" id="filter" name="filter"></div>
+                        <div id="filter-div"><label for="filter">Filter:&nbsp;</label><input type="search" id="filter" name="filter"></div>
                         <div id="channel_tree"></div>
                     </div>
                 </div>

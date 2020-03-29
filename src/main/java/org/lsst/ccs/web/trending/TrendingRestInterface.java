@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,29 +34,29 @@ import org.xml.sax.helpers.DefaultHandler;
 @Produces(MediaType.APPLICATION_JSON)
 public class TrendingRestInterface {
 
-    private final static Logger logger = Logger.getLogger(TrendingRestInterface.class.getName());
+    private final static Logger LOG = Logger.getLogger(TrendingRestInterface.class.getName());
     private static final Map<String, Site> sites = new HashMap<>();
     private static Site defaultSite;
-
+    private final static Pattern SYNTAX_FILTER_PATTERN = Pattern.compile("(?:([a-z]+):)?(.*)");
     static {
         try {
             Site ir2 = SiteIR2.create();
             sites.put(ir2.getName(), ir2);
             defaultSite = ir2;
         } catch (JSchException | MalformedURLException | RuntimeException ex) {
-            logger.log(Level.SEVERE, "Failed to initialize sites", ex);
+            LOG.log(Level.SEVERE, "Failed to initialize sites", ex);
         }
         try {
             Site ats = SiteATS.create();
             sites.put(ats.getName(), ats);
         } catch (JSchException | MalformedURLException | RuntimeException ex) {
-            logger.log(Level.SEVERE, "Failed to initialize sites", ex);
+            LOG.log(Level.SEVERE, "Failed to initialize sites", ex);
         }
         try {
             Site comcam = SiteComCamTucson.create();
             sites.put(comcam.getName(), comcam);
         } catch (JSchException | MalformedURLException | RuntimeException ex) {
-            logger.log(Level.SEVERE, "Failed to initialize sites", ex);
+            LOG.log(Level.SEVERE, "Failed to initialize sites", ex);
         }
     }
 
@@ -93,9 +94,27 @@ public class TrendingRestInterface {
         
         ChannelTree tree = site.getChannelTree();
         if (filter != null && !filter.isEmpty()) {
-            tree = tree.filter(Pattern.compile(filter));
+            try {
+                Matcher matcher = SYNTAX_FILTER_PATTERN.matcher(filter);
+                if (!matcher.matches()) {
+                    throw new RuntimeException("Unknown syntax: "+filter);
+                }
+                String syntax = matcher.group(1);
+                String regexp = matcher.group(2);
+                if (syntax == null || syntax.isEmpty() || "glob".equals(syntax)) {
+                    regexp = Globs.toUnixRegexPattern(regexp);
+                } else if (!"regex".equals(syntax)) {
+                    throw new RuntimeException("Unknown syntax: "+syntax);
+                }
+                tree = tree.filter(Pattern.compile(regexp));
+            } catch (RuntimeException x) {
+                return new ChannelTree("Invalid filter: "+x.getMessage()).getRoot().getChildren();
+            }
         }
-
+        if (tree.getRoot().getChildren().isEmpty()) {
+            return new ChannelTree("Filter returned no results").getRoot().getChildren();
+        }
+        
         if (handle == null) {
             return tree.getRoot().getChildren();
         } else {
@@ -153,7 +172,7 @@ public class TrendingRestInterface {
             allKeys.append("id=").append(key).append('&');
         }
         String dataURL = String.format("data/?%st1=%s&t2=%s&n=%s&flavor=%s", allKeys, t1, t2, nBins, flavor.toString().toLowerCase());
-        logger.log(Level.INFO, "Reading: {0}", dataURL);
+        LOG.log(Level.INFO, "Reading: {0}", dataURL);
         try (InputStream in = site.openURL(dataURL)) {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();

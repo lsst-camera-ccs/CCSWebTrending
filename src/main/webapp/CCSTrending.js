@@ -55,12 +55,19 @@ function CCSTrendingPlot(element, options) {
         this.reloadData();
     };
     
+    this.setTitle = function(title, labels) {
+        this.title = title;
+        this.labels = ['time'].concat(labels);
+        graph.updateOptions({'title': this.title, 'labels': this.labels});
+        
+    };
+    
     this.reloadData = function() {
         var timeRange = toTimeRange(this.range);
         graph.updateOptions({dateWindow: [timeRange.start, timeRange.end]});
         var args = $.param({"key": this.keys, "t1": timeRange.start, "t2": timeRange.end, "n": this.nBins, 'errorBars': this.errorBars}, true);
         this.updateData(ccs.restURL, args);       
-    }
+    };
 
     this.setErrorBars = function (errorBars) {
         if (errorBars !== this.errorBars) {

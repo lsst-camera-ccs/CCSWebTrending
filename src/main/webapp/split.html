@@ -85,6 +85,70 @@
             </div>
         </div>
         <script type="text/javascript">
+            function pathForNode(jsTree, node) {
+                let result = [node.text];
+                for (const id of node.parents) {
+                    let text = jsTree.get_node(id).text;
+                    if (typeof text !== 'undefined')
+                        result.unshift(text);
+                }
+                return result;
+            }
+            function NameHelper() {
+                this.computeNames = function () {
+                    let l = this.paths.length;
+                    if (l === 0) {
+                        this.title = "No data";
+                        this.names = ["No data"];
+                    } else if (l === 1) {
+                        this.title = this.paths[0].slice(0, -1).join('/');
+                        this.names = this.paths[0].slice(-1);
+                    } else {
+                        let matches = this.paths[0].slice(0);
+                        this.paths.slice(1).forEach(function (path) {
+                            path.forEach(function (token, index) {
+                                if (token !== matches[index]) {
+                                    matches[index] = '*';
+                                }
+                            });
+                        });
+                        this.title = matches.join('/');
+                        let x = this.names = [];
+                        this.paths.forEach(function (path, index) {
+                            let name = [];
+                            path.forEach(function (token, tindex) {
+                                if (matches[tindex] === '*') {
+                                    name.push(token);
+                                }
+                            });
+                            x.push(name.join('/'));
+                        });
+                    }
+                };
+                this.clear = function () {
+                    this.paths = [];
+                    this.computeNames();
+                };
+
+                this.clear();
+
+                this.addPath = function (path) {
+                    this.paths.push(path);
+                    this.computeNames();
+                };
+
+
+
+                this.getTitle = function () {
+                    return this.title;
+                };
+
+                this.getNames = function () {
+                    return this.names;
+                };
+
+
+            }
             $(function () {
                 $('#channel_tree').jstree({
                     'plugins': ['dnd'],
@@ -103,7 +167,11 @@
                     var tree = $(this).jstree();
                     var node = tree.get_node(event.target);
                     if (node.data) {
+                        let nh = g['NameHelper'];
+                        nh.clear();
+                        nh.addPath(pathForNode(tree, node));
                         g.setData(node.data, node.text);
+                        g.setTitle(nh.getTitle(), nh.getNames());
                         g.reloadData();
                     }
                 });
@@ -122,21 +190,24 @@
                             var t = $(data.event.target);
                             if (!t.closest('.jstree').length) {
                                 if (t.closest('.drop').length) {
-                                    console.log(data);
-                                    data.data.nodes.forEach(function(nodeId, index) {
+                                    let nh = g['NameHelper'];
+                                    data.data.nodes.forEach(function (nodeId, index) {
                                         var node = data.data.origin.get_node(nodeId);
-                                        console.log(node);
-                                        console.log(t.closest('.drop')[0].id);
-                                        console.log(data.data.origin.get_node(node.parent).id);
                                         if (t.closest('.drop')[0].id === 'add') {
-                                            if (index === 0) { g.setData(node.data, node.text); }
-                                            else { g.addData(node.data, node.text); }
+                                            if (index === 0) {
+                                                g.setData(node.data, node.text);
+                                                nh.clear();
+                                            } else {
+                                                g.addData(node.data, node.text);
+                                            }
                                         } else if (t.closest('.drop')[0].id === 'overlayY1') {
                                             g.addData(node.data, node.text);
                                         } else if (t.closest('.drop')[0].id === 'overlayY2') {
                                             g.addData(node.data, node.text, {'axis': 'y2'});
                                         }
+                                        nh.addPath(pathForNode(data.data.origin, node));
                                     });
+                                    g.setTitle(nh.getTitle(), nh.getNames());
                                     g.reloadData();
                                 }
                             }
@@ -145,6 +216,7 @@
                 g = new CCSTrendingPlot(element, {
                     title: 'Plot'
                 });
+                g['NameHelper'] = new NameHelper();
                 new ResizeSensor(element, function () {
                     g.resize();
                 });

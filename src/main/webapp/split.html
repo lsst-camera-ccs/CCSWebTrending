@@ -39,7 +39,7 @@
                 left: 20em;
                 margin-left: 5px;
             }
-            
+
             #filter-div {
                 display: table;
                 width: 100%;
@@ -48,8 +48,30 @@
                 display: table-cell;            
             }
             #filter-div input {
-               width: 100%;
+                width: 100%;
             }
+            #drop-target {
+                display: none;
+            }
+            .drop {
+                background:lime; 
+                border-radius: 10px; 
+                padding: 15px;
+            }
+            #plot-container {
+                display: grid;
+                justify-items: center;
+                align-items: center;
+            }
+
+            #plot-container div {
+                grid-area: 1 / 1;
+            }
+
+            #plot-container #drop-target {
+                z-index: 10;
+            }
+
             .jstree-leaf .jstree-anchor .jstree-themeicon { background: url("data.png") 6px 0px no-repeat !important; background-repeat: no-repeat; }
         </style>
         <script>
@@ -70,10 +92,14 @@
                 <div class="split-pane-divider" id="my-divider"></div>
                 <div class="split-pane-component" id="right-component">
                     <div class="pretty-split-pane-component-inner"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
-                        <div id="graph" style="width:100%;height:400px"></div>
-                        <span class="drop" id="add" style="background:lime; border-radius:10px;">Drop here to add: </span>
-                        <span class="drop" id="overlayY1" style="background:lime; border-radius:10px;">Drop here to overlay on Y1: </span>
-                        <span class="drop" id="overlayY2" style="background:lime; border-radius:10px;">Drop here to overlay on Y2: </span>
+                        <div id="plot-container">
+                            <div id="graph" style="width:100%;height:400px"></div>
+                            <div id="drop-target">
+                                <span class="drop" id="add">Drop here to plot</span>
+                                <span class="drop" id="overlayY1">Drop here to overlay on Y1</span>
+                                <span class="drop" id="overlayY2">Drop here to overlay on Y2</span>
+                            </div>
+                        </div>
                         <div class="link-interaction">
                             <style scoped="">.link-interaction a:visited { color: blue; }</style>
                             <div id="div_g"></div>
@@ -197,6 +223,9 @@
                                 }
                             }
                         })
+                        .on('dnd_start.vakata', function (e, data) {
+                            $('#drop-target').css("display", "block");
+                        })
                         .on('dnd_stop.vakata', function (e, data) {
                             var t = $(data.event.target);
                             if (!t.closest('.jstree').length) {
@@ -222,6 +251,7 @@
                                     g.reloadData();
                                 }
                             }
+                            $('#drop-target').css("display", "none");
                         });
                 var element = document.getElementById("graph");
                 g = new CCSTrendingPlot(element, {

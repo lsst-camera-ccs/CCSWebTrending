@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Component Test</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="dygraph/dygraph.js"></script>
+        <script src="ccs-trending.js"></script>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.css" />
+    </head>
+    <body>
+        <trending-plot title="Camera vacuum monitoring" ylabel="Pressure (Torr)" logscale>
+            <trending-data key="16716">Cryo</trending-data>
+            <trending-data key="16717">Turbo</trending-data>
+            <trending-data key="16718">Foreline</trending-data>
+        </trending-plot>
+        <trending-controller></trending-controller>    
+    </body>
+</html>

@@ -6752,7 +6752,7 @@ this.graphDiv.appendChild(this.hidden_);this.graphDiv.appendChild(this.canvas_);
 this.layout_ = new _dygraphLayout2['default'](this);var dygraph=this;this.mouseMoveHandler_ = function(e){dygraph.mouseMove_(e);};this.mouseOutHandler_ = function(e){ // The mouse has left the chart if:
 // 1. e.target is inside the chart
 // 2. e.relatedTarget is outside the chart
-var target=e.target || e.fromElement;var relatedTarget=e.relatedTarget || e.toElement;if(utils.isNodeContainedBy(target,dygraph.graphDiv) && !utils.isNodeContainedBy(relatedTarget,dygraph.graphDiv)){dygraph.mouseOut_(e);}};this.addAndTrackEvent(window,'mouseout',this.mouseOutHandler_);this.addAndTrackEvent(this.mouseEventElement_,'mousemove',this.mouseMoveHandler_); // Don't recreate and register the resize handler on subsequent calls.
+var target=e.target || e.fromElement;var relatedTarget=e.relatedTarget || e.toElement;if(utils.isNodeContainedBy(target,dygraph.graphDiv) && !utils.isNodeContainedBy(relatedTarget,dygraph.graphDiv)){dygraph.mouseOut_(e);}};this.addAndTrackEvent(this.graphDiv.parentNode,'mouseout',this.mouseOutHandler_);this.addAndTrackEvent(this.mouseEventElement_,'mousemove',this.mouseMoveHandler_); // Don't recreate and register the resize handler on subsequent calls.
 // This happens when the graph is resized.
 if(!this.resizeHandler_){this.resizeHandler_ = function(e){dygraph.resize();}; // Update when the window is resized.
 // TODO(danvk): drop frames depending on complexity of the chart.

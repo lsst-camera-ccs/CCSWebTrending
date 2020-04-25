@@ -16,12 +16,9 @@ public class SiteComCamTucson extends Site {
     static Site create() throws MalformedURLException, JSchException {
         Properties props = new Properties();
         props.setProperty("name", "comcam");
-        props.setProperty("useSSH", "true");
-        props.setProperty("restURL", "http://140.252.34.74:8080/rest/data/dataserver/");
+        props.setProperty("useSSH", "false");
+        props.setProperty("restURL", "http://comcam-db01.ls.lsst.org:8080/rest/data/dataserver/");
 
-        props.setProperty("ssh.user", "tonyj");
-        props.setProperty("ssh.host", "stargate.lsst.org");
-        props.setProperty("ssh.key", "/nfs/slac/g/srs/.ssh/ccs");
         return new SiteComCamTucson(props);
     }    
 }

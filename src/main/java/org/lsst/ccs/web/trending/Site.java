@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -39,6 +40,10 @@ public class Site implements AutoCloseable {
     private final CountDownLatch channelTreeInitCompleteLatch = new CountDownLatch(1);
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private static final Logger LOG = Logger.getLogger(Site.class.getName());
+    private static final int SSH_TIMEOUT = 10000;
+    private static final int SSH_RETRIES = 2;
+    private int sshTimeout = SSH_TIMEOUT;
+    private int sshRetries = SSH_RETRIES;
 
     public Site(Properties properties) throws MalformedURLException, JSchException {
         this.name = properties.getProperty("name");
@@ -56,6 +61,38 @@ public class Site implements AutoCloseable {
             sshUsername = sshHost = sshKeyPassword = null;
             sshKey = null;
         }
+    }
+
+    public Session getSession() {
+        return session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
+    }
+
+    public URL getTunnelURL() {
+        return tunnelURL;
+    }
+
+    public void setTunnelURL(URL tunnelURL) {
+        this.tunnelURL = tunnelURL;
+    }
+
+    public int getSSHTimeout() {
+        return sshTimeout;
+    }
+
+    public final void setSSHTimeout(int sshTimeout) {
+        this.sshTimeout = sshTimeout;
+    }
+
+    public int getSSHRetries() {
+        return sshRetries;
+    }
+
+    public final void setSSHRetries(int sshRetries) {
+        this.sshRetries = sshRetries;
     }
 
     private synchronized void establishConnection() throws MalformedURLException, IOException {
@@ -84,9 +121,22 @@ public class Site implements AutoCloseable {
             URL url = new URL(restURL, relativePath);
             return url.openStream();
         } else {
-            establishConnection();
-            URL url = new URL(tunnelURL, relativePath);
-            return url.openStream();
+            IOException cause = null;
+            for (int i=0;i<sshRetries;i++) {
+                establishConnection();
+                URL url = new URL(tunnelURL, relativePath);
+                try {
+                    URLConnection connection = url.openConnection();
+                    connection.setConnectTimeout(sshTimeout);
+                    connection.setReadTimeout(sshTimeout);
+                    return connection.getInputStream();
+                } catch (IOException x) {
+                    cause = x;
+                    LOG.log(Level.WARNING, "Failed to connect via ssh to "+url+" (attempt "+i+")", x);
+                    session.disconnect();
+                }
+            }
+            throw new IOException("Unable to establish ssh connection after "+sshRetries+" retries", cause);
         }
     }
 

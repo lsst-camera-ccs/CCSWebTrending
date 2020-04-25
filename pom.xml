@@ -55,6 +55,129 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>npm link</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>    
+                        <configuration>
+                            <workingDirectory>/home/tonyj/projects/misc/shibui-dropdown-menu-new/</workingDirectory>
+                            <arguments>link</arguments>
+                        </configuration>                    
+                    </execution>
+                    <execution>
+                        <id>npm link2</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>    
+                        <configuration>
+                            <arguments>link @tonyj321/shibui-dropdown-menu</arguments>
+                        </configuration>                    
+                    </execution>
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <nodeVersion>v8.11.3</nodeVersion>
+                    <workingDirectory>${basedir}/target/frontendStagingDir</workingDirectory>
+                    <installDirectory>${basedir}/target/frontendStagingDir</installDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <!-- 
+                        Copy of the /frontendResources directory, coming from GIT, in /target directory
+                        executed before the compiling and build of frontend resources
+                        That dir will be the working directory of npm, bower, grunt
+                        in order to avoid the creation of the direcotries node, node_modules, bower_components, ...
+                        (they may be committed in repository)
+                    -->
+                    <execution>
+                        <id>copy-frontendResources-toStagingDir-beforeBuild</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/frontendStagingDir</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>${basedir}/src/main/frontend</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                    <!-- 
+                        Copy of the /frontendResourcesStagingDir directory in /target/ directory
+                        executed after build of frontend resources and before the war pachage creation
+                        it contains the output of npm install execution
+                    -->
+                    <execution>
+                        <id>copy-frontendResources-afterBuild</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/${project.artifactId}-${project.version}/node_modules</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>${basedir}/target/frontendStagingDir/node_modules</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.3</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>${basedir}/target/${project.artifactId}-${project.version}/node_modules/**/*.js</include>
+                    </includes>
+                    <quiet>false</quiet>
+                    <regexFlags>MULTILINE</regexFlags>
+                    <replacements> 
+                        <replacement> 
+                            <token>^(\s*(?:import|export).*)\s+'([^\./][a-z0-9\-]+)'\s*;?$</token>
+                            <value>$1 '/CCSWebTrending/node_modules/$2/$2.js';</value>
+                        </replacement>
+                        <replacement> 
+                            <token>^(\s*(?:import|export).*)\s+'([^\./].+[\./].+)'\s*;?$</token>
+                            <value>$1 '/CCSWebTrending/node_modules/$2';</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     

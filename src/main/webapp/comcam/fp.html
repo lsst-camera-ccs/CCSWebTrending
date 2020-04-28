@@ -1,103 +1,22 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Focal Plane power (ComCam version)</title>
+        <title>Focal Plane power and temperatures (ComCam version)</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
-        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="/CCSWebTrending/CCSTrending.js"></script>
-        <style>
-            .dygraph-legend {
-                left: 70px !important;
-            }
-        </style>
+        <script type="module" src="../ccs-trending.js"></script>
     </head>
     <body>
-        <div id="graph" style="width:100%;height:400px"></div>
-        <div class="link-interaction">
-            <style scoped>.link-interaction a:visited { color: blue; }</style>
-            <div id="div_g"></div>
-            <b>Zoom:</b>
-            <a href="#" id="hour">hour</a> 
-            <a href="#" id="3hour">3 hour</a> 
-            <a href="#" id="6hour">6 hour</a> 
-            <a href="#" id="12hour">12 hour</a> 
-            <a href="#" id="day">day</a> 
-            <a href="#" id="week">week</a> 
-            <a href="#" id="month">month</a>.
-            Or drag to select area for zoom, or shift drag to pan.<br>
-            <b>Error Bars:</b> 
-            <a href="#" id="none">none</a> 
-            <a href="#" id="minmax">min/max</a> 
-            <a href="#" id="rms">rms</a> 
-        </div>
-        <script type="text/javascript">
-            g = new CCSTrendingPlot(
-            document.getElementById("graph"), {
-            title: 'ComCam REB power',
-            ylabel: 'Total Power/REB (W)',
-            restURL: '/CCSWebTrending/rest/comcam',
-            range: 3600,
-            data: {
-            1772: {title: 'ComCam: Reb0' },
-            1769: {title: 'ComCam: Reb1' },
-            1825: {title: 'ComCam: Reb2' }
-            }
-            });
-            $('#hour').click(function() { g.zoom(3600); }); 
-            $('#3hour').click(function() { g.zoom(3*3600); });
-            $('#6hour').click(function() { g.zoom(6*3600); });
-            $('#12hour').click(function() { g.zoom(12*3600); });
-            $('#day').click(function() { g.zoom(86400); });
-            $('#week').click(function() { g.zoom(604800); });
-            $('#month').click(function() { g.zoom(30 * 86400); });
-            $('#none').click(function() { g.setErrorBars('NONE'); });
-            $('#minmax').click(function() { g.setErrorBars('MINMAX'); });
-            $('#rms').click(function() { g.setErrorBars('RMS'); });
-        </script>
-        <div id="graph2" style="width:100%;height:400px"></div>
-        <div class="link-interaction">
-            <style scoped>.link-interaction a:visited { color: blue; }</style>
-            <div id="div_g2"></div>
-            <b>Zoom:</b>
-            <a href="#" id="g2_hour">hour</a> 
-            <a href="#" id="g2_3hour">3 hour</a> 
-            <a href="#" id="g2_6hour">6 hour</a> 
-            <a href="#" id="g2_12hour">12 hour</a> 
-            <a href="#" id="g2_day">day</a> 
-            <a href="#" id="g2_week">week</a> 
-            <a href="#" id="g2_month">month</a>.
-            Or drag to select area for zoom, or shift drag to pan.<br>
-            <b>Error Bars:</b> 
-            <a href="#" id="g2_none">none</a> 
-            <a href="#" id="g2_minmax">min/max</a> 
-            <a href="#" id="g2_rms">rms</a> 
-        </div>
-        <script type="text/javascript">
-            g2 = new CCSTrendingPlot(
-            document.getElementById("graph2"), {
-            title: 'ComCam REB temperature',
-            ylabel: 'Temperature (Temp2 - °C)',
-            restURL: '/CCSWebTrending/rest/comcam',
-            range: 3600,
-            data: {
-            1728: {title: 'ComCam: Reb0' },
-            1701: {title: 'ComCam: Reb1' },
-            1659: {title: 'ComCam: Reb2' },
-            }
-            });
-            $('#g2_hour').click(function() { g2.zoom(3600); }); 
-            $('#g2_3hour').click(function() { g2.zoom(3*3600); });
-            $('#g2_6hour').click(function() { g2.zoom(6*3600); });
-            $('#g2_12hour').click(function() { g2.zoom(12*3600); });
-            $('#g2_day').click(function() { g2.zoom(86400); });
-            $('#g2_week').click(function() { g2.zoom(604800); });
-            $('#g2_month').click(function() { g2.zoom(30 * 86400); });
-            $('#g2_none').click(function() { g2.setErrorBars('NONE'); });
-            $('#g2_minmax').click(function() { g2.setErrorBars('MINMAX'); });
-            $('#g2_rms').click(function() { g2.setErrorBars('RMS'); });
-        </script>
+        <trending-plot title="ComCam REB power" ylabel="Total Power/REB (W)" restURL="../rest/comcam" useUTC>
+            <trending-data key="1772">ComCam: Reb0</trending-data>
+            <trending-data key="1769">ComCam: Reb1</trending-data>
+            <trending-data key="1825">ComCam: Reb2</trending-data>
+        </trending-plot>
+        <trending-plot title="ComCam REB temperature" ylabel="Temperature (Temp2 - °C)" restURL="../rest/comcam" useUTC>
+            <trending-data key="1728">ComCam: Reb0</trending-data>
+            <trending-data key="1701">ComCam: Reb1</trending-data>
+            <trending-data key="1659">ComCam: Reb2</trending-data>
+        </trending-plot>    
+        <trending-controller></trending-controller>
     </body>
-
 </html>

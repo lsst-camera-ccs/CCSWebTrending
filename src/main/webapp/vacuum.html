@@ -4,51 +4,15 @@
         <title>TS7-1 vacuum</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
-        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="CCSTrending.js"></script>
+        <script type="module" src="ccs-trending.js"></script>
     </head>
     <body>
-        <div id="graph" style="width:100%;height:400px"></div>
-        <div class="link-interaction">
-            <style scoped>.link-interaction a:visited { color: blue; }</style>
-            <div id="div_g"></div>
-            <b>Zoom:</b>
-            <a href="#" id="hour">hour</a> 
-            <a href="#" id="3hour">3 hour</a> 
-            <a href="#" id="6hour">6 hour</a> 
-            <a href="#" id="12hour">12 hour</a> 
-            <a href="#" id="day">day</a> 
-            <a href="#" id="week">week</a> 
-            <a href="#" id="month">month</a>.
-            Or drag to select area for zoom, or shift drag to pan.<br>
-            <b>Error Bars:</b> 
-            <a href="#" id="none">none</a> 
-            <a href="#" id="minmax">min/max</a> 
-            <a href="#" id="rms">rms</a> 
-        </div>
-        <script type="text/javascript">
-            g = new CCSTrendingPlot(
-                    document.getElementById("graph"), {
-                title: 'TS7-1 vacuum and temperatures',
-                data: {
-                    1201: {title: 'cold_1'},
-                    1202: {title: 'cold_2'},
-                    1203: {title: 'cryo'},
-                    1215: {title: 'pressure', axis: 'y2'}
-                }
-            });
-            $('#hour').click(function() { g.zoom(3600); }); 
-            $('#3hour').click(function() { g.zoom(3*3600); });
-            $('#6hour').click(function() { g.zoom(6*3600); });
-            $('#12hour').click(function() { g.zoom(12*3600); });
-            $('#day').click(function() { g.zoom(86400); });
-            $('#week').click(function() { g.zoom(604800); });
-            $('#month').click(function() { g.zoom(30 * 86400); });
-            $('#none').click(function() { g.setErrorBars('NONE'); });
-            $('#minmax').click(function() { g.setErrorBars('MINMAX'); });
-            $('#rms').click(function() { g.setErrorBars('RMS'); });
-        </script>
+        <trending-plot title="TS7-1 vacuum and temperatures">
+            <trending-data key="1201">cold_1</trending-data>
+            <trending-data key="1202">cold_2</trending-data>
+            <trending-data key="1203">cryo</trending-data>
+            <trending-data key="1215" axis="y2">pressure</trending-data>
+        </trending-plot>
+        <trending-controller><trending-controller>
     </body>
-
 </html>

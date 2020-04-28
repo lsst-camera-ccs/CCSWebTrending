@@ -1,5 +1,6 @@
 import './node_modules/@tonyj321/shibui-dropdown-menu/shibui-dropdown-menu.js';
 import './node_modules/@polymer/iron-icons/iron-icons.js';
+import Dygraph from './node_modules/@tonyj321/dygraphs/index.js';
 import { html, css, LitElement } from './node_modules/lit-element/lit-element.js';
 
 class RangeSynchronizer {
@@ -73,7 +74,7 @@ class TrendingPlot extends LitElement {
            <div class="menu-bar"><div class="title">${this.title}</div>       
                 <shibui-dropdown-menu alignment="right">
                     <iron-icon slot="trigger" icon="menu"></iron-icon>
-                    <label for="useUTC"><input @click=${() => this.useUTC = !this.useUTC} type="checkbox" id="useUTC" ?checked=${this.useUtC}>Use UTC</label>
+                    <label for="useUTC"><input @click=${() => this.useUTC = !this.useUTC} type="checkbox" id="useUTC" ?checked=${this.useUTC}>Use UTC</label>
                     <label for="logscale"><input @click=${() => this.logscale = !this.logscale} type="checkbox" id="logscale" ?checked=${this.logscale}>Log scale</label>
                     <a @click=${this.download}>Download data as .csv</a>                       
                 </shibui-dropdown-menu>
@@ -120,7 +121,11 @@ class TrendingPlot extends LitElement {
             useUTC: {
                 type: Boolean,
                 notify: true,
-                reflect: true
+                reflect: true,
+            },
+
+            restURL: {
+                type: String
             }
         };
     }
@@ -134,16 +139,20 @@ class TrendingPlot extends LitElement {
         this.useUTC = false;
         this.nBins = 100;
         this.keys = [];
-        this.range = 24*60*60*1000;
+        this.range = 24 * 60 * 60 * 1000;
         this.autoUpdate = true;
         _rangeSynchronizer.add(this);
         this.synchronizer = _rangeSynchronizer;
+        this.series = {};
 
         document.addEventListener("DOMContentLoaded", () => {
             let data = this.querySelectorAll('trending-data');
             data.forEach((node) => {
                 this.keys.push(node.key);
                 this.labels.push(node.label);
+                if (node.axis === "y2") {
+                    this.series[node.label] = {"axis": "y2"};
+                }
             });
             this._updateData();
         });
@@ -161,6 +170,7 @@ class TrendingPlot extends LitElement {
         this.graph = new Dygraph(this.shadowRoot.querySelector('.graph'), dummyData, {
             labels: this.labels,
             legend: 'always',
+            series: this.series,
             ylabel: this.ylabel,
             y2label: this.y2label,
             labelsDiv: this.shadowRoot.querySelector('.legend'),
@@ -171,10 +181,10 @@ class TrendingPlot extends LitElement {
             drawPoints: true,
             legendFormatter: this._legendFormatter,
             endPanCallback: (minDate, maxDate, yRanges) => {
-                this.range = { start: Math.round(minDate), end: Math.round(maxDate)};
+                this.range = {start: Math.round(minDate), end: Math.round(maxDate)};
             },
             zoomCallback: (minDate, maxDate, yRanges) => {
-                this.range = { start: Math.round(minDate), end: Math.round(maxDate)};
+                this.range = {start: Math.round(minDate), end: Math.round(maxDate)};
             }
         });
         if (this.autoUpdate) {
@@ -190,7 +200,7 @@ class TrendingPlot extends LitElement {
         if (this.auoUpdate) {
             clearTimeout(this.timer);
         }
-    }  
+    }
 
     set range(value) {
         if (value !== this.range) {
@@ -202,11 +212,11 @@ class TrendingPlot extends LitElement {
             }
         }
     }
-    
+
     get range() {
         return this._range;
     }
-    
+
     updated(changedProperties) {
         super.updated(changedProperties);
         changedProperties.forEach((oldValue, name) => {
@@ -220,7 +230,7 @@ class TrendingPlot extends LitElement {
                 this.graph.updateOptions({logscale: this.logscale});
             }
         });
-      }
+    }
 
     // Called when autoupdate wants to update the data.
     _reloadData() {
@@ -233,13 +243,13 @@ class TrendingPlot extends LitElement {
         } else {
             var now = Date.now();
             var then = now - range;
-            return { start: then, end: now };
+            return {start: then, end: now};
         }
     };
-
+    
     _updateRange() {
         let timeRange = this._toTimeRange(this.range);
-        this.graph.updateOptions({ dateWindow: [timeRange.start, timeRange.end] });
+        this.graph.updateOptions({dateWindow: [timeRange.start, timeRange.end]});
         this._updateData();
     }
 
@@ -253,7 +263,7 @@ class TrendingPlot extends LitElement {
 
     _updateData() {
         let timeRange = this._toTimeRange(this.range);
-        let args = this._parseUrlParams({ "key": this.keys, "t1": timeRange.start, "t2": timeRange.end, "n": this.nBins, 'errorBars': this.errorbars }, true);
+        let args = this._parseUrlParams({"key": this.keys, "t1": timeRange.start, "t2": timeRange.end, "n": this.nBins, 'errorBars': this.errorbars}, true);
         if (typeof (this.graph) !== "undefined") {
             let request = new XMLHttpRequest();
             request.open('GET', this.restURL + '?' + args, true);
@@ -267,7 +277,7 @@ class TrendingPlot extends LitElement {
                     let errorBarsType = newData.meta.errorBars;
                     let customBars = errorBarsType === 'MINMAX';
                     let errorBars = errorBarsType === 'RMS';
-                    this.graph.updateOptions({ file: newData.data, customBars: customBars, errorBars: errorBars, labels: this.labels });
+                    this.graph.updateOptions({file: newData.data, customBars: customBars, errorBars: errorBars, labels: this.labels});
                 } else {
                     alert(`error ( ${this.restURL} ${args} returned ${request.status}`);
                 }
@@ -373,31 +383,28 @@ class TrendingPlot extends LitElement {
                 document.body.removeChild(link);
             }
         }
-    };
-
+    }
+    ;
 }
 
-class TrendingData extends HTMLElement {
-    constructor() {
-        super();
-    }
-    connectedCallback() {
-        console.log("data connected");
-    }
+class TrendingData extends LitElement {
 
-    get key() {
-        const value = this.getAttribute('key');
-        return value === null ? 0 : value;
-    }
+    static get properties() {
+        return {
+            axis: {
+                type: String
+            },
 
-    set key(value) {
-        this.setAttribute('key', value);
+            key: {
+                type: Number
+            }
+        };
     }
 
     get label() {
         return this.innerHTML;
     }
-}
+};
 
 
 class TrendingController extends LitElement {
@@ -412,18 +419,18 @@ class TrendingController extends LitElement {
         return html`
             <div class="link-interaction">
                 <b>Zoom:</b>
-                <a href="#" @click=${()=>this._zoom(60)} id="hour">hour</a> 
-                <a href="#" @click=${()=>this._zoom(3*60)} id="3hour">3 hour</a> 
-                <a href="#" @click=${()=>this._zoom(6*60)} id="6hour">6 hour</a> 
-                <a href="#" @click=${()=>this._zoom(12*60)} id="12hour">12 hour</a> 
-                <a href="#" @click=${()=>this._zoom(24*60)} id="day">day</a> 
-                <a href="#" @click=${()=>this._zoom(7*24*60)} id="week">week</a> 
-                <a href="#" @click=${()=>this._zoom(31*24*60)} id="month">month</a>.
+                <a href="#" @click=${() => this._zoom(60)} id="hour">hour</a> 
+                <a href="#" @click=${() => this._zoom(3 * 60)} id="3hour">3 hour</a> 
+                <a href="#" @click=${() => this._zoom(6 * 60)} id="6hour">6 hour</a> 
+                <a href="#" @click=${() => this._zoom(12 * 60)} id="12hour">12 hour</a> 
+                <a href="#" @click=${() => this._zoom(24 * 60)} id="day">day</a> 
+                <a href="#" @click=${() => this._zoom(7 * 24 * 60)} id="week">week</a> 
+                <a href="#" @click=${() => this._zoom(31 * 24 * 60)} id="month">month</a>.
                 Or drag to select area for zoom, or shift drag to pan.<br>
                 <b>Error Bars:</b> 
-                <a href="#" @click=${()=>this._setErrorBars('NONE')} id="none">none</a> 
-                <a href="#" @click=${()=>this._setErrorBars('MINMAX')} id="minmax">min/max</a> 
-                <a href="#" @click=${()=>this._setErrorBars('RMS')} id="rms">rms</a> 
+                <a href="#" @click=${() => this._setErrorBars('NONE')} id="none">none</a> 
+                <a href="#" @click=${() => this._setErrorBars('MINMAX')} id="minmax">min/max</a> 
+                <a href="#" @click=${() => this._setErrorBars('RMS')} id="rms">rms</a> 
             </div>
         `;
     }
@@ -437,7 +444,8 @@ class TrendingController extends LitElement {
             plot.errorbars = type;
         });
     }
-};
+}
+;
 
 customElements.define('trending-plot', TrendingPlot);
 customElements.define('trending-data', TrendingData);

@@ -2,7 +2,11 @@
     "elements": {
         "trending-plot": {
             "attributes": {
+                "restURL": {},
                 "ylabel": {},
+                "useUTC": {},
+                "y2label": {},
+                "range": {},
                 "title": {},
                 "logscale": {}
             }
@@ -11,6 +15,7 @@
         "trending-data": {
             "attributes": {
                 "id": {},
+                "axis": {},
                 "key": {}
             }
         },

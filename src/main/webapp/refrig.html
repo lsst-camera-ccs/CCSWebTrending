@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Refrigeration</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="module" src="ccs-trending.js"></script>
+        <style>
+            .wrapper {
+                display: grid;
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+        <trending-plot title="Cold plate temperature" ylabel="Temperature (°C)">
+            <trending-data key="21742">RTD-00</trending-data>
+            <trending-data key="21743">RTD-02</trending-data>
+            <trending-data key="21744">RTD-03</trending-data>
+            <trending-data key="21745">RTD-05</trending-data>
+            <trending-data key="21746">RTD-50</trending-data>
+            <trending-data key="21747">RTD-52</trending-data>
+            <trending-data key="21748">RTD-53</trending-data>
+            <trending-data key="21749">RTD-55</trending-data>
+        </trending-plot>
+        <trending-plot title="Cryo plate temperature" ylabel="Temperature (°C)">
+            <trending-data key="21750">RTD-02</trending-data>
+            <trending-data key="21751">RTD-03</trending-data>
+            <trending-data key="21752">RTD-04</trending-data>
+            <trending-data key="21753">RTD-12</trending-data>
+            <trending-data key="21754">RTD-13</trending-data>
+            <trending-data key="21755">RTD-14</trending-data>
+            <trending-data key="21756">RTD-21</trending-data>
+            <trending-data key="21757">RTD-22</trending-data>
+            <trending-data key="21758">RTD-24</trending-data>
+            <trending-data key="21759">RTD-25</trending-data>
+            <trending-data key="21760">RTD-30</trending-data>
+            <trending-data key="21761">RTD-31</trending-data>
+            <trending-data key="21762">RTD-34</trending-data>
+            <trending-data key="21763">RTD-14</trending-data>
+            <trending-data key="21764">RTD-41</trending-data>
+            <trending-data key="21765">RTD-42</trending-data>            
+            <trending-data key="21766">RTD-43</trending-data>
+            <trending-data key="21767">RTD-51</trending-data>
+            <trending-data key="21768">RTD-52</trending-data>
+            <trending-data key="21769">RTD-53</trending-data>     
+        </trending-plot>
+        <trending-controller></trending-controller>    
+        </div>
+    </body>
+</html>

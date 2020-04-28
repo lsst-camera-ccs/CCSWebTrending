@@ -272,6 +272,7 @@ class TrendingPlot extends LitElement {
     }
 
     _updateData() {
+        if (this.keys.length === 0) return;
         let timeRange = this._toTimeRange(this.range);
         let args = this._parseUrlParams({"key": this.keys, "t1": timeRange.start, "t2": timeRange.end, "n": this.nBins, 'errorBars': this.errorbars}, true);
         if (typeof (this.graph) !== "undefined") {

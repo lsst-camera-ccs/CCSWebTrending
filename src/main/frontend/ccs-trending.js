@@ -1,7 +1,8 @@
-import './node_modules/@tonyj321/shibui-dropdown-menu/shibui-dropdown-menu.js';
-import './node_modules/@polymer/iron-icons/iron-icons.js';
-import Dygraph from './node_modules/@tonyj321/dygraphs/index.js';
-import { html, css, LitElement } from './node_modules/lit-element/lit-element.js';
+import '@tonyj321/shibui-dropdown-menu/shibui-dropdown-menu.js';
+import '@polymer/iron-icons';
+import Dygraph from '@tonyj321/dygraphs';
+import { html, css, LitElement } from 'lit-element';
+var parse = require('parse-duration');
 
 class RangeSynchronizer {
     constructor() {
@@ -115,7 +116,16 @@ class TrendingPlot extends LitElement {
             range: {
                 type: Object,
                 notify: true,
-                reflect: true
+                reflect: true,
+                converter: { 
+                   fromAttribute: (value, type) => {
+                      if (value.startsWith('{')) {
+                         return JSON.parse(value);
+                      } else {
+                         return parse(value);                       
+                      }
+                   }
+                }
             },
 
             useUTC: {
@@ -444,8 +454,7 @@ class TrendingController extends LitElement {
             plot.errorbars = type;
         });
     }
-}
-;
+};
 
 customElements.define('trending-plot', TrendingPlot);
 customElements.define('trending-data', TrendingData);

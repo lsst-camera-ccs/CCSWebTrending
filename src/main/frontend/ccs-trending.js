@@ -7,11 +7,14 @@ var parse = require('parse-duration');
 class RangeSynchronizer {
     constructor() {
         this.plots = [];
-        this._range = 24 * 60 * 60 * 1000;
+        this._range = '1d';
+        this._errorbars = 'MINMAX';
+        this._useUTC = false;
     }
 
     add(plot) {
         this.plots.push(plot);
+        this._observer.observe(plot,{attributes: true});
     }
 
     remove(plot) {
@@ -25,6 +28,24 @@ class RangeSynchronizer {
 
     get range() {
         return this._range;
+    }
+
+    set errorbars(value) {
+        this._errorbars = value;
+        this.plots.forEach((plot) => plot.errorbars = value);
+    }
+
+    get errorbars() {
+        return this._errorbars;
+    }
+
+    set useUTC(value) {
+        this._useUTC = value;
+        this.plots.forEach((plot) => plot.useUTC = value);
+    }
+
+    get useUTC() {
+        return this._useUTC;
     }
 }
 
@@ -91,7 +112,7 @@ class TrendingPlot extends LitElement {
                 </shibui-dropdown-menu>
             </div>
             <div class="legend">Legend</div>
-            <div class="graph"></div>
+            <div class="graph" title="Drag to select range for zoom, or shift drag to pan."></div>
         `;
     }
     static get properties() {
@@ -126,22 +147,13 @@ class TrendingPlot extends LitElement {
             range: {
                 type: Object,
                 notify: true,
-                reflect: true,
-                converter: { 
-                   fromAttribute: (value, type) => {
-                      if (value.startsWith('{')) {
-                         return JSON.parse(value);
-                      } else {
-                         return parse(value);                       
-                      }
-                   }
-                }
+                reflect: true
             },
 
             useUTC: {
                 type: Boolean,
                 notify: true,
-                reflect: true,
+                reflect: true
             },
 
             restURL: {
@@ -152,16 +164,16 @@ class TrendingPlot extends LitElement {
 
     constructor() {
         super();
-        this.errorbars = 'NONE';
+        _rangeSynchronizer.add(this);
+        this.errorbars = _rangeSynchronizer.errorbars;
+        this.useUTC = _rangeSynchronizer.useUTC;
+        this.range = _rangeSynchronizer.range;
         this.logscale = false;
         this.labels = ['time'];
         this.restURL = 'rest';
-        this.useUTC = false;
         this.nBins = 100;
         this.keys = [];
-        this.range = 24 * 60 * 60 * 1000;
         this.autoUpdate = true;
-        _rangeSynchronizer.add(this);
         this.synchronizer = _rangeSynchronizer;
         this.series = {};
 
@@ -258,16 +270,15 @@ class TrendingPlot extends LitElement {
     }
 
     _toTimeRange(range) {
-        if (isNaN(range)) {
+        if (typeof range === 'object') {
             return range;
         } else {
             var now = Date.now();
-            var then = now - range;
+            var then = now - (isNaN(range) ? parse(range) : range);
             return {start: then, end: now};
         }
-    };
-    
-    _updateRange() {
+    }
+            _updateRange() {
         let timeRange = this._toTimeRange(this.range);
         this.graph.updateOptions({dateWindow: [timeRange.start, timeRange.end]});
         this._updateData();
@@ -282,7 +293,8 @@ class TrendingPlot extends LitElement {
     }
 
     _updateData() {
-        if (this.keys.length === 0) return;
+        if (this.keys.length === 0)
+            return;
         let timeRange = this._toTimeRange(this.range);
         let args = this._parseUrlParams({"key": this.keys, "t1": timeRange.start, "t2": timeRange.end, "n": this.nBins, 'errorBars': this.errorbars}, true);
         if (typeof (this.graph) !== "undefined") {
@@ -393,10 +405,10 @@ class TrendingPlot extends LitElement {
         if (navigator.msSaveBlob) { // IE 10+
             navigator.msSaveBlob(blob, filename);
         } else {
-            var link = document.createElement("a");
+            let link = document.createElement("a");
             if (link.download !== undefined) { // feature detection
                 // Browsers that support HTML5 download attribute
-                var url = URL.createObjectURL(blob);
+                let url = URL.createObjectURL(blob);
                 link.setAttribute("href", url);
                 link.setAttribute("download", filename);
                 link.style.visibility = 'hidden';
@@ -406,7 +418,6 @@ class TrendingPlot extends LitElement {
             }
         }
     }
-    ;
 }
 
 class TrendingData extends LitElement {
@@ -431,40 +442,104 @@ class TrendingData extends LitElement {
 
 class TrendingController extends LitElement {
 
-    static get styles() {
-        return css`
-           @host .link-interaction a:visited { color: blue; }
-        `;
+    static get properties() {
+        return {
+            errorbars: {
+                type: String,
+                notify: true,
+                reflect: true
+            },
+
+            range: {
+                type: Object,
+                notify: true,
+                reflect: true
+            },
+
+            useUTC: {
+                type: Boolean,
+                notify: true,
+                reflect: true
+            }
+        };
     }
 
     render() {
         return html`
             <div class="link-interaction">
-                <b>Zoom:</b>
-                <a href="#" @click=${() => this._zoom(60)} id="hour">hour</a> 
-                <a href="#" @click=${() => this._zoom(3 * 60)} id="3hour">3 hour</a> 
-                <a href="#" @click=${() => this._zoom(6 * 60)} id="6hour">6 hour</a> 
-                <a href="#" @click=${() => this._zoom(12 * 60)} id="12hour">12 hour</a> 
-                <a href="#" @click=${() => this._zoom(24 * 60)} id="day">day</a> 
-                <a href="#" @click=${() => this._zoom(7 * 24 * 60)} id="week">week</a> 
-                <a href="#" @click=${() => this._zoom(31 * 24 * 60)} id="month">month</a>.
-                Or drag to select area for zoom, or shift drag to pan.<br>
+                <b>Range:</b>
+                <select id="rangeSelector" @change=${this._zoom}>
+                    <option value="1h"     ?selected=${this._quantizedRange === '1h'}>Hour</option>
+                    <option value="3h"     ?selected=${this._quantizedRange === '3h'}>3 Hour</option>
+                    <option value="6h"     ?selected=${this._quantizedRange === '6h'}>6 hour</option>
+                    <option value="12h"    ?selected=${this._quantizedRange === '12h'}>12 Hour</option>
+                    <option value="1d"     ?selected=${this._quantizedRange === '1d'}>Day</option>
+                    <option value="1w"     ?selected=${this._quantizedRange === '1w'}>Week</option>
+                    <option value="1month" ?selected=${this._quantizedRange === '1month'}>Month</option>
+                    <option disabled       ?selected=${this._quantizedRange === 'custom'}>Custom</option>
+                </select>
                 <b>Error Bars:</b> 
-                <a href="#" @click=${() => this._setErrorBars('NONE')} id="none">none</a> 
-                <a href="#" @click=${() => this._setErrorBars('MINMAX')} id="minmax">min/max</a> 
-                <a href="#" @click=${() => this._setErrorBars('RMS')} id="rms">rms</a> 
+                <select id="errorBarSelector" @change=${this._setErrorBars}>
+                    <option value="NONE"   ?selected=${this.errorbars === 'NONE'}>None</option>
+                    <option value="MINMAX" ?selected=${this.errorbars === 'MINMAX'}>MinMax</option>
+                    <option value="RMS"    ?selected=${this.errorbars === 'RMS'}>RMS</option>
+                </select>
+                <b>Timezone:</b> 
+                <select id="timeZoneSelector" @change=${this._setTimeZone}>
+                    <option value="false" ?selected=${!this.useUTC}>Local (${Intl.DateTimeFormat().resolvedOptions().timeZone})</option>
+                    <option value="true"  ?selected=${this.useUTC}>UTC</option>
+                </select>
             </div>
         `;
     }
 
-    _zoom(minutes) {
-        _rangeSynchronizer.range = minutes * 60 * 1000;
+    constructor() {
+       super();
+       _rangeSynchronizer.add(this);
+       this.range = "1d";
+       this.useUTC = false;
+       this.errorbars = "MINMAX";
+    }
+    
+    set range(value) {
+        const oldValue = this.range;
+        this._range = value;
+        this._quantizedRange = this._computeQuantizedRange();
+        this.requestUpdate('range', oldValue);
     }
 
-    _setErrorBars(type) {
-        document.querySelectorAll("trending-plot").forEach(function (plot) {
-            plot.errorbars = type;
-        });
+    get range() {
+        return this._range;
+    }
+    
+    _zoom() {
+        _rangeSynchronizer.range = this.shadowRoot.querySelector("#rangeSelector").value;
+    }
+
+    _setErrorBars() {
+        _rangeSynchronizer.errorbars = this.shadowRoot.querySelector("#errorBarSelector").value;
+    }
+
+    _setTimeZone() {
+        _rangeSynchronizer.useUTC = this.shadowRoot.querySelector("#timeZoneSelector").value === 'true';
+    }
+    
+    _computeQuantizedRange() {
+        try {
+            let rangeInMinutes = Math.round(parse(this.range)/1000/60);
+            switch (rangeInMinutes) {
+                case 60:  return '1h';
+                case 60*3: return '3h';
+                case 60*6: return '6h';
+                case 60*12: return '12h';
+                case 60*24: return '1d';
+                case 60*24*7: return '1w';
+                case 60*24*7*30: return '1month';
+                default: return 'custom';
+            }
+        } catch (typeerror) {
+            return 'custom';
+        }
     }
 };
 

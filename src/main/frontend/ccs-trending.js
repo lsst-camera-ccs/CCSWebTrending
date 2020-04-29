@@ -48,6 +48,16 @@ class TrendingPlot extends LitElement {
                 width: 100%;
                 font-size: 14px;
             }
+            .legend .legendElement {
+                display: inline;
+            }
+            .legend .legendElement input {
+                vertical-align: middle; 
+                display: none;
+            }
+            .legend:hover .legendElement input {
+                display: inline;
+            }         
             .menu-bar {
                 background: green;
                 width: 100%;
@@ -337,9 +347,10 @@ class TrendingPlot extends LitElement {
         if (typeof (data.x) === "undefined") {
             // This happens when there's no selection and {legend: 'always'} is set.
             return data.series.map(function (series, i) {
-                return `<div class="legendElement" style="display: inline; color: ${series.color};">
-                        <input id="${i}" style="vertical-align: middle;" type="checkbox" ${series.isVisible ? "checked" : ""} 
-                               onclick="this.closest('.legend').toggleVisibility(this.id)">${series.dashHTML} ${series.labelHTML}</div>`;
+                return `<div class="legendElement" style="color: ${series.color};">
+                        <label for="${i}">
+                        <input id="${i}" type="checkbox" ${series.isVisible ? "checked" : ""} 
+                               onclick="this.closest('.legend').toggleVisibility(this.id)">${series.dashHTML} ${series.labelHTML}</label></div>`;
             }).join('&nbsp;');
         }
         var html = data.xHTML + ":&nbsp;";
@@ -350,7 +361,7 @@ class TrendingPlot extends LitElement {
             if (series.isHighlighted) {
                 labeledData = '<b>' + labeledData + '</b>';
             }
-            html += `<div style="display: inline; color: ${series.color};">${series.dashHTML} ${labeledData}</div>&nbsp;`;
+            html += `<div class="legendElement" style="color: ${series.color};">${series.dashHTML} ${labeledData}</div>&nbsp;`;
         });
         return html;
     }

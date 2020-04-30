@@ -7,13 +7,13 @@
         <script type="module" src="../ccs-trending.js"></script>
     </head>
     <body>
-    <trending-plot title="ComCam Ambient temperatures" ylabel="Temperature (°C)" restURL="../rest/comcam" useUTC>
+    <trending-plot title="ComCam Ambient temperatures" ylabel="Temperature (°C)" restURL="../rest/comcam">
         <trending-data key="12223">Cold1Reject</trending-data>
         <trending-data key="12231">Cold2Reject</trending-data>
         <trending-data key="12215">CryoReject</trending-data>
         <trending-data key="12238">TurboAir</trending-data>   
     </trending-plot>
-    <trending-controller></trending-controller>
+    <trending-controller useUTC></trending-controller>
 </body>
 
 </html>

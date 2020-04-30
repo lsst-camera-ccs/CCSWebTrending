@@ -7,16 +7,16 @@
         <script type="module" src="../ccs-trending.js"></script>
     </head>
     <body>
-        <trending-plot title="ComCam REB power" ylabel="Total Power/REB (W)" restURL="../rest/comcam" useUTC range="1h">
+        <trending-plot title="ComCam REB power" ylabel="Total Power/REB (W)" restURL="../rest/comcam">
             <trending-data key="1772">ComCam: Reb0</trending-data>
             <trending-data key="1769">ComCam: Reb1</trending-data>
             <trending-data key="1825">ComCam: Reb2</trending-data>
         </trending-plot>
-        <trending-plot title="ComCam REB temperature" ylabel="Temperature (Temp2 - °C)" restURL="../rest/comcam" useUTC>
+        <trending-plot title="ComCam REB temperature" ylabel="Temperature (Temp2 - °C)" restURL="../rest/comcam">
             <trending-data key="1728">ComCam: Reb0</trending-data>
             <trending-data key="1701">ComCam: Reb1</trending-data>
             <trending-data key="1659">ComCam: Reb2</trending-data>
         </trending-plot>    
-        <trending-controller></trending-controller>
+        <trending-controller useUTC range="1h"></trending-controller>
     </body>
 </html>

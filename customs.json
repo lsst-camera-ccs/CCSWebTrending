@@ -19,7 +19,12 @@
                 "key": {}
             }
         },
-        "trending-controller": {}
+        "trending-controller": {
+            "attributes": {
+                "useUTC": {},
+                "range": {}
+            }
+        }
     },
     "attributes": {}
 }

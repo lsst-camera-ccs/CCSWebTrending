@@ -14,7 +14,6 @@ class RangeSynchronizer {
 
     add(plot) {
         this.plots.push(plot);
-        this._observer.observe(plot,{attributes: true});
     }
 
     remove(plot) {
@@ -57,15 +56,26 @@ class TrendingPlot extends LitElement {
         return css`
             :host {
                 background: orange;
-                display: flex;
-                flex-direction: column;
+                display: grid;
+                grid-template-rows: auto auto 1fr;
                 width: 100%;
             }
             .graph {
+                grid-row: 3;
+                grid-column: 1;
                 background: red;
                 width: 100% !important;
             }
             .legend {
+                width: 100%;
+                font-size: 14px;
+            }
+            .message {
+                pointer-events: none;
+                text-align: center;
+                grid-row: 3;
+                grid-column: 1;
+                z-index: 50;
                 width: 100%;
                 font-size: 14px;
             }
@@ -111,8 +121,9 @@ class TrendingPlot extends LitElement {
                     <a @click=${this.download}>Download data as .csv</a>                       
                 </shibui-dropdown-menu>
             </div>
-            <div class="legend">Legend</div>
+            <div class="legend">Legend</div>   
             <div class="graph" title="Drag to select range for zoom, or shift drag to pan."></div>
+            <div class="message">${this._message}</div>   
         `;
     }
     static get properties() {
@@ -145,7 +156,7 @@ class TrendingPlot extends LitElement {
             },
 
             range: {
-                type: Object,
+                type: String,
                 notify: true,
                 reflect: true
             },
@@ -176,6 +187,7 @@ class TrendingPlot extends LitElement {
         this.autoUpdate = true;
         this.synchronizer = _rangeSynchronizer;
         this.series = {};
+        this._message = "";
 
         document.addEventListener("DOMContentLoaded", () => {
             let data = this.querySelectorAll('trending-data');
@@ -233,6 +245,15 @@ class TrendingPlot extends LitElement {
             clearTimeout(this.timer);
         }
     }
+    
+    set _message(value) {
+        this.__message = value;
+        this.requestUpdate();
+    }
+
+    get _message() {
+        return this.__message;
+    }
 
     set range(value) {
         if (value !== this.range) {
@@ -270,8 +291,8 @@ class TrendingPlot extends LitElement {
     }
 
     _toTimeRange(range) {
-        if (typeof range === 'object') {
-            return range;
+        if (range.startsWith('{')) {
+            return JSON.parse(range);
         } else {
             var now = Date.now();
             var then = now - (isNaN(range) ? parse(range) : range);
@@ -295,6 +316,7 @@ class TrendingPlot extends LitElement {
     _updateData() {
         if (this.keys.length === 0)
             return;
+        this._message = "Loading data...";
         let timeRange = this._toTimeRange(this.range);
         let args = this._parseUrlParams({"key": this.keys, "t1": timeRange.start, "t2": timeRange.end, "n": this.nBins, 'errorBars': this.errorbars}, true);
         if (typeof (this.graph) !== "undefined") {
@@ -311,12 +333,13 @@ class TrendingPlot extends LitElement {
                     let customBars = errorBarsType === 'MINMAX';
                     let errorBars = errorBarsType === 'RMS';
                     this.graph.updateOptions({file: newData.data, customBars: customBars, errorBars: errorBars, labels: this.labels});
+                    this._message = "";
                 } else {
-                    alert(`error ( ${this.restURL} ${args} returned ${request.status}`);
+                    this._message = `error ( ${this.restURL} ${args} returned ${request.status}`;
                 }
             };
             request.onerror = () => {
-                alert(`error ( ${this.restURL} ${args} returned ${request.status}`);
+                this._message = `error ( ${this.restURL} ${args} returned ${request.status}`;
             };
             request.send();
         }
@@ -451,7 +474,7 @@ class TrendingController extends LitElement {
             },
 
             range: {
-                type: Object,
+                type: String,
                 notify: true,
                 reflect: true
             },
@@ -496,10 +519,16 @@ class TrendingController extends LitElement {
     constructor() {
        super();
        _rangeSynchronizer.add(this);
-       this.range = "1d";
-       this.useUTC = false;
-       this.errorbars = "MINMAX";
+       this.range = _rangeSynchronizer.range;
+       this.useUTC = _rangeSynchronizer.useUTC;
+       this.errorbars = _rangeSynchronizer.errorbars;
     }
+    
+    firstUpdated(changedProperties) {
+       _rangeSynchronizer.range = this.range;
+       _rangeSynchronizer.useUTC = this.useUTC;
+       _rangeSynchronizer.errorbars = this.errorbars ;  
+    };
     
     set range(value) {
         const oldValue = this.range;

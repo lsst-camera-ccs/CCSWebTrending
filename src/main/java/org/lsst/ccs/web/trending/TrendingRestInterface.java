@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -71,13 +72,17 @@ public class TrendingRestInterface {
 
     @GET
     @Path("/channels")
-    public Object channels(@QueryParam(value = "id") Integer handle) throws IOException {
-        return channels("", handle);
+    public Object channels(
+            @QueryParam(value = "id") Integer handle,
+            @QueryParam(value = "filter") String filter) throws IOException {
+        return channels("", handle, filter);
     }
 
     @GET
     @Path("/{site}/channels")
-    public Object channels(@PathParam(value = "site") String siteName, @QueryParam(value = "id") Integer handle) throws IOException {
+    public Object channels(@PathParam(value = "site") String siteName,
+            @QueryParam(value = "id") Integer handle, 
+            @QueryParam(value = "filter") String filter) throws IOException {
         Site site = defaultSite;
         if (!siteName.isEmpty()) {
             site = sites.get(siteName);
@@ -85,11 +90,16 @@ public class TrendingRestInterface {
                 throw new RuntimeException("Unknown site " + siteName);
             }
         }
+        
+        ChannelTree tree = site.getChannelTree();
+        if (filter != null && !filter.isEmpty()) {
+            tree = tree.filter(Pattern.compile(filter));
+        }
 
         if (handle == null) {
-            return site.getChannelTree().getRoot().getChildren();
+            return tree.getRoot().getChildren();
         } else {
-            return site.getChannelTree().findNode(handle).getChildren();
+            return tree.findNode(handle).getChildren();
         }
     }
 

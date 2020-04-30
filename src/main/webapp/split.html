@@ -6,13 +6,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="split-pane/split-pane.css" />
         <link rel="stylesheet" href="split-pane/pretty-split-pane.css" />        
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
-        <link rel="stylesheet" href="trending.css"/>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.7/themes/default/style.min.css" />
         <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.9/jstree.min.js"></script>
         <script src="split-pane/split-pane.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
-        <script src="CCSTrending.js"></script>
         <script src="css-element-queries/ResizeSensor.js"></script>
         <script src="css-element-queries/ElementQueries.js"></script>
 
@@ -39,6 +36,7 @@
                 left: 20em;
                 margin-left: 5px;
             }
+            .jstree-leaf .jstree-anchor .jstree-themeicon { background: url("data.png") 6px 0px no-repeat !important; background-repeat: no-repeat; }
         </style>
         <script>
             $(function () {
@@ -51,6 +49,7 @@
             <div class="split-pane fixed-left">
                 <div class="split-pane-component" id="left-component">
                     <div class="pretty-split-pane-component-inner"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
+                        <div><label for="filter">Filter:&nbsp;</label><input type="search" id="filter" name="filter"></div>
                         <div id="channel_tree"></div>
                     </div>
                 </div>
@@ -83,6 +82,70 @@
             </div>
         </div>
         <script type="text/javascript">
+            function pathForNode(jsTree, node) {
+                let result = [node.text];
+                for (const id of node.parents) {
+                    let text = jsTree.get_node(id).text;
+                    if (typeof text !== 'undefined')
+                        result.unshift(text);
+                }
+                return result;
+            }
+            function NameHelper() {
+                this.computeNames = function () {
+                    let l = this.paths.length;
+                    if (l === 0) {
+                        this.title = "No data";
+                        this.names = ["No data"];
+                    } else if (l === 1) {
+                        this.title = this.paths[0].slice(0, -1).join('/');
+                        this.names = this.paths[0].slice(-1);
+                    } else {
+                        let matches = this.paths[0].slice(0);
+                        this.paths.slice(1).forEach(function (path) {
+                            path.forEach(function (token, index) {
+                                if (token !== matches[index]) {
+                                    matches[index] = '*';
+                                }
+                            });
+                        });
+                        this.title = matches.join('/');
+                        let x = this.names = [];
+                        this.paths.forEach(function (path, index) {
+                            let name = [];
+                            path.forEach(function (token, tindex) {
+                                if (matches[tindex] === '*') {
+                                    name.push(token);
+                                }
+                            });
+                            x.push(name.join('/'));
+                        });
+                    }
+                };
+                this.clear = function () {
+                    this.paths = [];
+                    this.computeNames();
+                };
+
+                this.clear();
+
+                this.addPath = function (path) {
+                    this.paths.push(path);
+                    this.computeNames();
+                };
+
+
+
+                this.getTitle = function () {
+                    return this.title;
+                };
+
+                this.getNames = function () {
+                    return this.names;
+                };
+
+
+            }
             $(function () {
                 $('#channel_tree').jstree({
                     'plugins': ['dnd'],
@@ -96,6 +159,17 @@
                                     return {'id': node.id};
                             }
                         }
+                    }
+                }).bind("dblclick.jstree", function (event) {
+                    var tree = $(this).jstree();
+                    var node = tree.get_node(event.target);
+                    if (node.data) {
+                        let nh = g['NameHelper'];
+                        nh.clear();
+                        nh.addPath(pathForNode(tree, node));
+                        g.setData(node.data, node.text);
+                        g.setTitle(nh.getTitle(), nh.getNames());
+                        g.reloadData();
                     }
                 });
                 $(document)
@@ -113,38 +187,72 @@
                             var t = $(data.event.target);
                             if (!t.closest('.jstree').length) {
                                 if (t.closest('.drop').length) {
-                                    $(data.element).clone().appendTo(t.closest('.drop'));
-                                    if (data.data.jstree && data.data.origin) {
-                                        var node = data.data.origin.get_node(data.element);
-                                        console.log(node.data);
+                                    let nh = g['NameHelper'];
+                                    data.data.nodes.forEach(function (nodeId, index) {
+                                        var node = data.data.origin.get_node(nodeId);
                                         if (t.closest('.drop')[0].id === 'add') {
-                                            g.setData(node.data, node.text);
+                                            if (index === 0) {
+                                                g.setData(node.data, node.text);
+                                                nh.clear();
+                                            } else {
+                                                g.addData(node.data, node.text);
+                                            }
                                         } else if (t.closest('.drop')[0].id === 'overlayY1') {
                                             g.addData(node.data, node.text);
                                         } else if (t.closest('.drop')[0].id === 'overlayY2') {
                                             g.addData(node.data, node.text, {'axis': 'y2'});
                                         }
-                                    }
+                                        nh.addPath(pathForNode(data.data.origin, node));
+                                    });
+                                    g.setTitle(nh.getTitle(), nh.getNames());
+                                    g.reloadData();
                                 }
                             }
                         });
-                var element = document.getElementById("graph")
+                var element = document.getElementById("graph");
                 g = new CCSTrendingPlot(element, {
-                    title: 'Plot',
+                    title: 'Plot'
                 });
+                g['NameHelper'] = new NameHelper();
                 new ResizeSensor(element, function () {
                     g.resize();
                 });
-                $('#hour').click(function() { g.zoom(3600); }); 
-                $('#3hour').click(function() { g.zoom(3*3600); });
-                $('#6hour').click(function() { g.zoom(6*3600); });
-                $('#12hour').click(function() { g.zoom(12*3600); });
-                $('#day').click(function() { g.zoom(86400); });
-                $('#week').click(function() { g.zoom(604800); });
-                $('#month').click(function() { g.zoom(30 * 86400); });
-                $('#none').click(function() { g.setErrorBars('NONE'); });
-                $('#minmax').click(function() { g.setErrorBars('MINMAX'); });
-                $('#rms').click(function() { g.setErrorBars('RMS'); });
+                $('#hour').click(function () {
+                    g.zoom(3600);
+                });
+                $('#3hour').click(function () {
+                    g.zoom(3 * 3600);
+                });
+                $('#6hour').click(function () {
+                    g.zoom(6 * 3600);
+                });
+                $('#12hour').click(function () {
+                    g.zoom(12 * 3600);
+                });
+                $('#day').click(function () {
+                    g.zoom(86400);
+                });
+                $('#week').click(function () {
+                    g.zoom(604800);
+                });
+                $('#month').click(function () {
+                    g.zoom(30 * 86400);
+                });
+                $('#none').click(function () {
+                    g.setErrorBars('NONE');
+                });
+                $('#minmax').click(function () {
+                    g.setErrorBars('MINMAX');
+                });
+                $('#rms').click(function () {
+                    g.setErrorBars('RMS');
+                });
+                $('#filter').on('search', function () {
+                    var filter = $('#filter').val();
+                    var instance = $('#channel_tree').jstree(true);
+                    instance.settings.core.data.url = `rest/channels?filter=${filter}`;
+                    instance.refresh();
+                });
             });
         </script>
     </body>

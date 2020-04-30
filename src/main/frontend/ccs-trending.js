@@ -225,10 +225,10 @@ class TrendingPlot extends LitElement {
             drawPoints: true,
             legendFormatter: this._legendFormatter,
             endPanCallback: (minDate, maxDate, yRanges) => {
-                this.range = {start: Math.round(minDate), end: Math.round(maxDate)};
+                this.range = JSON.stringify({start: Math.round(minDate), end: Math.round(maxDate)});
             },
             zoomCallback: (minDate, maxDate, yRanges) => {
-                this.range = {start: Math.round(minDate), end: Math.round(maxDate)};
+                this.range = JSON.stringify({start: Math.round(minDate), end: Math.round(maxDate)});
             }
         });
         if (this.autoUpdate) {

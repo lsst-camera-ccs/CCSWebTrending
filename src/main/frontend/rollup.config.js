@@ -1,5 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve';
 import common from '@rollup/plugin-commonjs';
+import { terser } from "rollup-plugin-terser";
 
 export default {
   input: 'ccs-trending.js',
@@ -9,6 +10,7 @@ export default {
   },
   plugins: [
     common(),
-    resolve()
+    resolve(),
+    terser()
   ]
 };

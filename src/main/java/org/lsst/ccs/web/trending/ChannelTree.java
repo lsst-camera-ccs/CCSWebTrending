@@ -40,6 +40,11 @@ public class ChannelTree {
         nodeMap.put(root.getHandle(), root);
     }
     
+    ChannelTree(String message) {
+        root = new TreeNode(nextHandle++);
+        root.addChild(new TreeNode(nextHandle++, message));
+    }
+    
     ChannelTree(InputStream in) throws IOException {
         this();
         buildTree(in);

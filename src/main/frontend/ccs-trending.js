@@ -1,6 +1,7 @@
 import '@tonyj321/shibui-dropdown-menu/shibui-dropdown-menu.js';
 import '@polymer/iron-icons';
 import Dygraph from '@tonyj321/dygraphs';
+import { ResizeObserver } from '@juggle/resize-observer';
 import { html, css, LitElement } from 'lit-element';
 var parse = require('parse-duration');
 
@@ -58,6 +59,7 @@ class TrendingPlot extends LitElement {
                 background: orange;
                 display: grid;
                 grid-template-rows: auto auto 1fr;
+                grid-template-columns: 100%;
                 width: 100%;
             }
             .graph {
@@ -188,18 +190,6 @@ class TrendingPlot extends LitElement {
         this.synchronizer = _rangeSynchronizer;
         this.series = {};
         this._message = "";
-
-        document.addEventListener("DOMContentLoaded", () => {
-            let data = this.querySelectorAll('trending-data');
-            data.forEach((node) => {
-                this.keys.push(node.key);
-                this.labels.push(node.label);
-                if (node.axis === "y2") {
-                    this.series[node.label] = {"axis": "y2"};
-                }
-            });
-            this._updateData();
-        });
     }
 
     firstUpdated(changedProperties) {
@@ -231,9 +221,14 @@ class TrendingPlot extends LitElement {
                 this.range = JSON.stringify({start: Math.round(minDate), end: Math.round(maxDate)});
             }
         });
+        this._ro = new ResizeObserver((entries, observer) => {
+           this.graph.resize();
+        });
+        this._ro.observe(this);
+        
         if (this.autoUpdate) {
             this.timer = setInterval(() => {
-                if (!isNaN(this.range))
+                if (!this.range.startsWith('{'))
                     this._reloadData();
             }, 60000);
         }
@@ -244,6 +239,7 @@ class TrendingPlot extends LitElement {
         if (this.auoUpdate) {
             clearTimeout(this.timer);
         }
+        this._ro.disconnect();
     }
     
     set _message(value) {
@@ -456,7 +452,32 @@ class TrendingData extends LitElement {
             }
         };
     }
-
+    
+    connectedCallback() {
+        super.connectedCallback();
+        this._plot = this.closest("trending-plot");
+        this._plot.keys.push(this.key);
+        this._plot.labels.push(this.label);
+        if (this.axis === "y2") {
+            this._plot.series[this.label] = {"axis": "y2"};
+        }
+    }
+    
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        const index = this._plot.keys.indexOf(this.key);
+        if (index > -1) {
+           this._plot.keys.splice(index, 1);
+        }
+        const index2 = this._plot.labels.indexOf(this.label);
+        if (index2 > -1) {
+           this._plot.labels.splice(index2, 1);
+        }
+        if (this.axis === "y2") {
+            this._plot.series[this.label] = {};
+        }
+    }   
+    
     get label() {
         return this.innerHTML;
     }

@@ -10,8 +10,7 @@
         <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.9/jstree.min.js"></script>
         <script src="split-pane/split-pane.js"></script>
-        <script src="css-element-queries/ResizeSensor.js"></script>
-        <script src="css-element-queries/ElementQueries.js"></script>
+        <script type="module" src="ccs-trending.js"></script>
 
         <style type="text/css">
 
@@ -57,15 +56,17 @@
             }
             #plot-container {
                 display: grid;
+                grid-template-columns: 100%;
                 justify-items: center;
                 align-items: center;
             }
 
-            #plot-container div {
+            #plot-container #graph {
                 grid-area: 1 / 1;
             }
 
             #plot-container #drop-target {
+                grid-area: 1 / 1;
                 z-index: 10;
             }
 
@@ -90,30 +91,14 @@
                 <div class="split-pane-component" id="right-component">
                     <div class="pretty-split-pane-component-inner"><!-- This div is added for styling purposes only. It's not part of the split-pane plugin. -->
                         <div id="plot-container">
-                            <div id="graph" style="width:100%;height:400px"></div>
+                            <trending-plot id="graph" title="Plot"></trending-plot>
                             <div id="drop-target">
                                 <span class="drop" id="add">Drop here to plot</span>
                                 <span class="drop" id="overlayY1">Drop here to overlay on Y1</span>
                                 <span class="drop" id="overlayY2">Drop here to overlay on Y2</span>
                             </div>
                         </div>
-                        <div class="link-interaction">
-                            <style scoped="">.link-interaction a:visited { color: blue; }</style>
-                            <div id="div_g"></div>
-                            <b>Zoom:</b>
-                            <a href="#" id="hour">hour</a> 
-                            <a href="#" id="3hour">3 hour</a> 
-                            <a href="#" id="6hour">6 hour</a> 
-                            <a href="#" id="12hour">12 hour</a> 
-                            <a href="#" id="day">day</a> 
-                            <a href="#" id="week">week</a> 
-                            <a href="#" id="month">month</a>.
-                            Or drag to select area for zoom, or shift drag to pan.<br>
-                            <b>Error Bars:</b> 
-                            <a href="#" id="none">none</a> 
-                            <a href="#" id="minmax">min/max</a> 
-                            <a href="#" id="rms">rms</a> 
-                        </div>
+                        <trending-controller></trending-controller>
                     </div>
                 </div>
             </div>
@@ -128,8 +113,13 @@
                 }
                 return result;
             }
-            function NameHelper() {
-                this.computeNames = function () {
+            class NameHelper {
+ 
+                constructor() {
+                   this.clear();
+                }
+ 
+                _computeNames() {
                     let l = this.paths.length;
                     if (l === 0) {
                         this.title = "No data";
@@ -159,29 +149,31 @@
                         });
                     }
                 };
-                this.clear = function () {
+                clear() {
                     this.paths = [];
-                    this.computeNames();
+                    this.keys = [];
+                    this.axes = [];
+                    this._computeNames();
                 };
 
-                this.clear();
-
-                this.addPath = function (path) {
+                addData(path, key, axis) {
                     this.paths.push(path);
-                    this.computeNames();
+                    this.keys.push(key);
+                    this.axes.push(axis);
+                    this._computeNames();
                 };
 
-
-
-                this.getTitle = function () {
+                getTitle() {
                     return this.title;
                 };
 
-                this.getNames = function () {
-                    return this.names;
+                getTrendingData() {
+                    let result = "";
+                    for (let i=0; i<this.paths.length; i++) {
+                        result += `<trending-data key=${this.keys[i]} axis=${this.axes[i]}>${this.names[i]}</trending-data>`;
+                    }
+                    return result;
                 };
-
-
             }
             $(function () {
                 $('#channel_tree').jstree({
@@ -203,10 +195,10 @@
                     if (node.data) {
                         let nh = g['NameHelper'];
                         nh.clear();
-                        nh.addPath(pathForNode(tree, node));
-                        g.setData(node.data, node.text);
-                        g.setTitle(nh.getTitle(), nh.getNames());
-                        g.reloadData();
+                        nh.addData(pathForNode(tree, node), node.data, "y1");
+                        g.innerHTML = nh.getTrendingData();
+                        g.title = nh.getTitle();
+                        g._updateData();
                     }
                 });
                 $(document)
@@ -232,62 +224,26 @@
                                         var node = data.data.origin.get_node(nodeId);
                                         if (t.closest('.drop')[0].id === 'add') {
                                             if (index === 0) {
-                                                g.setData(node.data, node.text);
                                                 nh.clear();
+                                                nh.addData(pathForNode(data.data.origin, node), node.data, "y1");
                                             } else {
-                                                g.addData(node.data, node.text);
+                                                nh.addData(pathForNode(data.data.origin, node), node.data, "y1");
                                             }
                                         } else if (t.closest('.drop')[0].id === 'overlayY1') {
-                                            g.addData(node.data, node.text);
+                                            nh.addData(pathForNode(data.data.origin, node), node.data, "y1");
                                         } else if (t.closest('.drop')[0].id === 'overlayY2') {
-                                            g.addData(node.data, node.text, {'axis': 'y2'});
+                                            nh.addData(pathForNode(data.data.origin, node), node.data, "y2");
                                         }
-                                        nh.addPath(pathForNode(data.data.origin, node));
                                     });
-                                    g.setTitle(nh.getTitle(), nh.getNames());
-                                    g.reloadData();
+                                    g.innerHTML = nh.getTrendingData();
+                                    g.title = nh.getTitle();
+                                    g._updateData();
                                 }
                             }
                             $('#drop-target').css("display", "none");
                         });
-                var element = document.getElementById("graph");
-                g = new CCSTrendingPlot(element, {
-                    title: 'Plot'
-                });
+                var g = document.getElementById("graph");
                 g['NameHelper'] = new NameHelper();
-                new ResizeSensor(element, function () {
-                    g.resize();
-                });
-                $('#hour').click(function () {
-                    g.zoom(3600);
-                });
-                $('#3hour').click(function () {
-                    g.zoom(3 * 3600);
-                });
-                $('#6hour').click(function () {
-                    g.zoom(6 * 3600);
-                });
-                $('#12hour').click(function () {
-                    g.zoom(12 * 3600);
-                });
-                $('#day').click(function () {
-                    g.zoom(86400);
-                });
-                $('#week').click(function () {
-                    g.zoom(604800);
-                });
-                $('#month').click(function () {
-                    g.zoom(30 * 86400);
-                });
-                $('#none').click(function () {
-                    g.setErrorBars('NONE');
-                });
-                $('#minmax').click(function () {
-                    g.setErrorBars('MINMAX');
-                });
-                $('#rms').click(function () {
-                    g.setErrorBars('RMS');
-                });
                 $('#filter').on('search', function () {
                     var filter = $('#filter').val();
                     var instance = $('#channel_tree').jstree(true);

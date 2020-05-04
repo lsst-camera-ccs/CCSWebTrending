@@ -56,7 +56,6 @@ class TrendingPlot extends LitElement {
     static get styles() {
         return css`
             :host {
-                background: orange;
                 display: grid;
                 grid-template-rows: auto auto 1fr;
                 grid-template-columns: 100%;
@@ -65,7 +64,6 @@ class TrendingPlot extends LitElement {
             .graph {
                 grid-row: 3;
                 grid-column: 1;
-                background: red;
                 width: 100% !important;
             }
             .legend {
@@ -92,7 +90,6 @@ class TrendingPlot extends LitElement {
                 display: inline;
             }         
             .menu-bar {
-                background: green;
                 width: 100%;
                 display: flex;
                 flex-direction: row;

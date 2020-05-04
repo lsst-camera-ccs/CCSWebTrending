@@ -106,7 +106,8 @@ public class TrendingRestInterface {
                 } else if (!"regex".equals(syntax)) {
                     throw new RuntimeException("Unknown syntax: "+syntax);
                 }
-                tree = tree.filter(Pattern.compile(regexp));
+                tree = tree.filter(Pattern.compile(regexp, Pattern.CASE_INSENSITIVE));
+                tree = tree.flatten();
             } catch (RuntimeException x) {
                 return new ChannelTree("Invalid filter: "+x.getMessage()).getRoot().getChildren();
             }

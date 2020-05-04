@@ -105,11 +105,14 @@
         </div>
         <script type="text/javascript">
             function pathForNode(jsTree, node) {
-                let result = [node.text];
+                let result = node.text.split('/');
                 for (const id of node.parents) {
                     let text = jsTree.get_node(id).text;
-                    if (typeof text !== 'undefined')
-                        result.unshift(text);
+                    if (typeof text !== 'undefined') {
+                        let split = text.split('/');
+                        for (const s of split.reverse())
+                           result.unshift(s);
+                    }
                 }
                 return result;
             }

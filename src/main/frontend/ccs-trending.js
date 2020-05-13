@@ -508,28 +508,34 @@ class TrendingController extends LitElement {
     render() {
         return html`
             <div class="link-interaction">
-                <b>Range:</b>
-                <select id="rangeSelector" @change=${this._zoom}>
-                    <option value="1h"     ?selected=${this._quantizedRange === '1h'}>Hour</option>
-                    <option value="3h"     ?selected=${this._quantizedRange === '3h'}>3 Hour</option>
-                    <option value="6h"     ?selected=${this._quantizedRange === '6h'}>6 hour</option>
-                    <option value="12h"    ?selected=${this._quantizedRange === '12h'}>12 Hour</option>
-                    <option value="1d"     ?selected=${this._quantizedRange === '1d'}>Day</option>
-                    <option value="1w"     ?selected=${this._quantizedRange === '1w'}>Week</option>
-                    <option value="1month" ?selected=${this._quantizedRange === '1month'}>Month</option>
-                    <option disabled       ?selected=${this._quantizedRange === 'custom'}>Custom</option>
-                </select>
-                <b>Error Bars:</b> 
-                <select id="errorBarSelector" @change=${this._setErrorBars}>
-                    <option value="NONE"   ?selected=${this.errorbars === 'NONE'}>None</option>
-                    <option value="MINMAX" ?selected=${this.errorbars === 'MINMAX'}>MinMax</option>
-                    <option value="RMS"    ?selected=${this.errorbars === 'RMS'}>RMS</option>
-                </select>
-                <b>Timezone:</b> 
-                <select id="timeZoneSelector" @change=${this._setTimeZone}>
-                    <option value="false" ?selected=${!this.useUTC}>Local (${Intl.DateTimeFormat().resolvedOptions().timeZone})</option>
-                    <option value="true"  ?selected=${this.useUTC}>UTC</option>
-                </select>
+                <nobr>
+                    <b>Range:</b>
+                    <select id="rangeSelector" @change=${this._zoom}>
+                        <option value="1h"     ?selected=${this._quantizedRange === '1h'}>Hour</option>
+                        <option value="3h"     ?selected=${this._quantizedRange === '3h'}>3 Hour</option>
+                        <option value="6h"     ?selected=${this._quantizedRange === '6h'}>6 hour</option>
+                        <option value="12h"    ?selected=${this._quantizedRange === '12h'}>12 Hour</option>
+                        <option value="1d"     ?selected=${this._quantizedRange === '1d'}>Day</option>
+                        <option value="1w"     ?selected=${this._quantizedRange === '1w'}>Week</option>
+                        <option value="1month" ?selected=${this._quantizedRange === '1month'}>Month</option>
+                        <option disabled       ?selected=${this._quantizedRange === 'custom'}>Custom</option>
+                    </select>
+                </nobr>
+                <nobr>
+                    <b>Error Bars:</b> 
+                    <select id="errorBarSelector" @change=${this._setErrorBars}>
+                        <option value="NONE"   ?selected=${this.errorbars === 'NONE'}>None</option>
+                        <option value="MINMAX" ?selected=${this.errorbars === 'MINMAX'}>MinMax</option>
+                        <option value="RMS"    ?selected=${this.errorbars === 'RMS'}>RMS</option>
+                    </select>
+                </nobr>
+                <nobr>
+                    <b>Timezone:</b> 
+                    <select id="timeZoneSelector" @change=${this._setTimeZone}>
+                        <option value="false" ?selected=${!this.useUTC}>Local (${Intl.DateTimeFormat().resolvedOptions().timeZone})</option>
+                        <option value="true"  ?selected=${this.useUTC}>UTC</option>
+                    </select>
+                </nobr>
             </div>
         `;
     }
@@ -590,6 +596,53 @@ class TrendingController extends LitElement {
     }
 };
 
+class TrendingGrid extends LitElement {
+    static get styles() {
+        return css`
+            :host {
+                display: grid;
+                grid-template-rows: auto auto 1fr;
+                grid-template-columns: 100%;
+                width: 100%;
+            }
+        `;
+    }
+
+    render() {
+
+        return html`
+            <style>
+                .plot-grid {
+                    --colNum: ${this.columns};
+                    display: grid; 
+                    grid-template-columns: repeat(var(--colNum), calc(100% / var(--colNum))); 
+                    width: 100%;
+                }
+            </style> 
+            <div class="plot-grid">
+                <slot></slot>
+            </div>
+        `;
+    }
+
+
+    static get properties() {
+        return {
+            columns: {
+                type: Number,
+                notify: true,
+                reflect: true
+            }
+        };
+    }
+    
+    constructor() {
+        super();
+        this.columns = 2;
+    }
+}
+
+customElements.define('trending-grid', TrendingGrid);
 customElements.define('trending-plot', TrendingPlot);
 customElements.define('trending-data', TrendingData);
 customElements.define('trending-controller', TrendingController);

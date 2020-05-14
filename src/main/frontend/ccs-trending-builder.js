@@ -47,16 +47,16 @@ class TrendingBuilder extends LitElement {
                         <trending-controller range=${this.range} ?useUTC=${this.useUTC}></trending-controller>
                         <div>
                             <button @click=${() => this.plots += 1}>Add Plot</button>
-                            <button @click=${() => this.plots -= 1} ?disabled=${this.plots==1}>Remove Plot</button>
+                            <button @click=${() => this.plots -= 1} ?disabled=${this.plots == 1}>Remove Plot</button>
                             <button @click=${() => this.columns += 1}>Add Column</button>
-                            <button @click=${() => this.columns -= 1} ?disabled=${this.columns==1}>Remove Column</button>
+                            <button @click=${() => this.columns -= 1} ?disabled=${this.columns == 1}>Remove Column</button>
                             <button @click=${this.savePage}>Save page</button>
                         </div>
                     </div>
                     <div class="plot-grid">                   
                         ${Array(this.plots).fill().map((_, i) =>
-                            html`<drop-target-plot restURL=${this.restURL} ?useUTC=${this.useUTC} range=${this.range}></drop-target-plot>`
-                        )}
+            html`<drop-target-plot restURL=${this.restURL} ?useUTC=${this.useUTC} range=${this.range}></drop-target-plot>`
+        )}
                     </div>
                 </div>
             </vaadin-split-layout>
@@ -93,7 +93,7 @@ class TrendingBuilder extends LitElement {
                 notify: true,
                 reflect: true
             },
-            
+
             baseURL: {
                 type: String
             }
@@ -156,6 +156,7 @@ class TrendingBuilder extends LitElement {
         this.plots = 1;
         this.columns = 1;
         this.baseURL = "./";
+        this.nextPlot = 0;
     }
 
     createRenderRoot() {
@@ -168,6 +169,11 @@ class TrendingBuilder extends LitElement {
 
     disconnectedCallback() {
         super.disconnectedCallback();
+    }
+    
+    _displayNode(tree, node) {
+        let plots = this.querySelectorAll("drop-target-plot");
+        plots[this.nextPlot++ % plots.length]._displayNode(tree, node);
     }
 }
 
@@ -207,25 +213,25 @@ class NameHelper {
             });
         }
     }
-    
+
     clear() {
         this.paths = [];
         this.keys = [];
         this.axes = [];
         this._computeNames();
     }
-    
+
     addData(path, key, axis) {
         this.paths.push(path);
         this.keys.push(key);
         this.axes.push(axis);
         this._computeNames();
     }
-    
+
     getTitle() {
         return this.title;
     }
-    
+
     getTrendingData() {
         let result = "";
         for (let i = 0; i < this.paths.length; i++) {
@@ -381,6 +387,17 @@ class DropTargetPlot extends LitElement {
 
     }
 
+    _displayNode(tree, node) {
+        if (node.data) {
+            let g = this.querySelector("trending-plot");
+            this._nh.clear();
+            this._nh.addData(this._pathForNode(tree, node), node.data, "y1");
+            g.innerHTML = this._nh.getTrendingData();
+            g.title = this._nh.getTitle();
+            g._updateData();
+        }
+    }
+
     _pathForNode(jsTree, node) {
         let result = node.text.split('/');
         for (const id of node.parents) {
@@ -440,7 +457,11 @@ class ChannelTree extends LitElement {
                 }        
             </style>
             <div id="left">
-                <div id="filter-div"><label for="filter" @change=${this._search}>Filter:&nbsp;<input type="search" id="filter-tree" placeholder="**/*memory"></label></div>
+                <div id="filter-div">
+                   <label for="filter" @search=${this._search} @change=${this._search}>
+                      Filter:&nbsp;<input type="search" id="filter-tree" placeholder="**/*memory" results="5" autosave="ccs-tree-filter">
+                   </label>
+                </div>
                 <div id="channel_tree"></div>
             </div>
         `;
@@ -450,7 +471,7 @@ class ChannelTree extends LitElement {
             restURL: {
                 type: String
             },
-            
+
             baseURL: {
                 type: String
             }
@@ -483,9 +504,9 @@ class ChannelTree extends LitElement {
                 }
             }
         }).bind("dblclick.jstree", (event) => {
-            var node = this.tree.get_node(event.target);
+            let node = this.tree.get_node(event.target);
             if (node.data) {
-                console.log("Double Click");
+                this.closest("trending-builder")._displayNode(this.tree, node);
             }
         });
         this.tree = jQuery("#channel_tree").jstree(true);
@@ -493,8 +514,11 @@ class ChannelTree extends LitElement {
 
     _search() {
         let filter = this.querySelector('#filter-tree').value;
-        this.tree.settings.core.data.url = `${this.restURL}/channels?filter=${filter}`;
-        this.tree.refresh();
+        if (filter !== this._lastFilter) {
+            this._lastFiler = filter;
+            this.tree.settings.core.data.url = `${this.restURL}/channels?filter=${filter}`;
+            this.tree.refresh();
+        }
     }
 }
 

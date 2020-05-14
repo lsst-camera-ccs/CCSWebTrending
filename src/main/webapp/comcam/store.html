@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <title>ComCam 2-day store</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-plot restURL="../rest/comcam" useUTC title="DAQ 2-day store" ylabel="GBytes">
+      <trending-data key="14015" axis="y1">FreeSpace</trending-data>
+    </trending-plot>
+  </body>
+</html>

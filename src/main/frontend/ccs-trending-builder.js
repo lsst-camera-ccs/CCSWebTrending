@@ -118,7 +118,7 @@ class TrendingBuilder extends LitElement {
                     <base href="${window.location.href}" target="_blank">
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <script type="module" src="${this.baseURL}trending.ccs"></script>
+                    <script type="module" src="${this.baseURL}ccs-trending.js"></script>
                 </head>
                 <body>
                     <trending-controller ${controller.useUTC ? "useUTC" : ""} range="${controller.range}" errorbars="${controller.errorbars}"></trending-controller>

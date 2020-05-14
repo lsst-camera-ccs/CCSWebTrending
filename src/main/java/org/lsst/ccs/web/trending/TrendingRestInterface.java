@@ -4,6 +4,7 @@ import com.jcraft.jsch.JSchException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +44,9 @@ public class TrendingRestInterface {
             Site ir2 = SiteIR2.create();
             sites.put(ir2.getName(), ir2);
             defaultSite = ir2;
-        } catch (JSchException | MalformedURLException | RuntimeException ex) {
+        } catch (JSchException | MalformedURLException | RuntimeException | UnknownHostException ex) {
             LOG.log(Level.SEVERE, "Failed to initialize sites", ex);
-        }
+        } 
         try {
             Site ats = SiteATS.create();
             sites.put(ats.getName(), ats);

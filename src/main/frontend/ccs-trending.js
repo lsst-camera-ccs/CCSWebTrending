@@ -193,7 +193,7 @@ class TrendingPlot extends LitElement {
         this.shadowRoot.querySelector(".legend").toggleVisibility = (series) => {
             this._toggleVisibility(series);
         };
-
+        
         let dummyData = [Array.apply(null, Array(this.labels.length)).map(Number.prototype.valueOf, 0), Array.apply(null, Array(this.labels.length)).map(Number.prototype.valueOf, 0)];
         let timeRange = this._toTimeRange(this.range);
         dummyData[0][0] = new Date(timeRange.start);
@@ -265,22 +265,29 @@ class TrendingPlot extends LitElement {
 
     updated(changedProperties) {
         super.updated(changedProperties);
+        let reloadNeeded = false;
         changedProperties.forEach((oldValue, name) => {
             if (name === 'range') {
-                this._updateRange();
+                reloadNeeded = true;
             } else if (name === 'errorbars') {
-                this._updateErrorBars();
+                reloadNeeded = true;
             } else if (name === 'useUTC') {
                 this.graph.updateOptions({labelsUTC: this.useUTC});
             } else if (name === 'logscale') {
                 this.graph.updateOptions({logscale: this.logscale});
             }
         });
+        
+        if (reloadNeeded) {
+            this.updateComplete.then(() => { 
+                this._updateData();
+            });            
+        }
     }
 
     // Called when autoupdate wants to update the data.
     _reloadData() {
-        this._updateRange();
+        this._updateData();
     }
 
     _toTimeRange(range) {
@@ -292,15 +299,6 @@ class TrendingPlot extends LitElement {
             return {start: then, end: now};
         }
     }
-            _updateRange() {
-        let timeRange = this._toTimeRange(this.range);
-        this.graph.updateOptions({dateWindow: [timeRange.start, timeRange.end]});
-        this._updateData();
-    }
-
-    _updateErrorBars() {
-        this._updateData();
-    }
 
     _toggleVisibility(series) {
         this.graph.setVisibility(series, !this.graph.visibility()[series]);
@@ -311,9 +309,14 @@ class TrendingPlot extends LitElement {
             return;
         this._message = "Loading data...";
         let timeRange = this._toTimeRange(this.range);
+        this.graph.updateOptions({dateWindow: [timeRange.start, timeRange.end]});
         let args = this._parseUrlParams({"key": this.keys, "t1": timeRange.start, "t2": timeRange.end, "n": this.nBins, 'errorBars': this.errorbars}, true);
         if (typeof (this.graph) !== "undefined") {
+            if (this._request) {
+                this._request.abort();
+            }
             let request = new XMLHttpRequest();
+            this._request = request;
             request.open('GET', this.restURL + '?' + args, true);
             request.onload = () => {
                 if (request.status >= 200 && request.status < 400) {
@@ -330,9 +333,11 @@ class TrendingPlot extends LitElement {
                 } else {
                     this._message = `error ( ${this.restURL} ${args} returned ${request.status}`;
                 }
+                this._request = null;
             };
             request.onerror = () => {
                 this._message = `error ( ${this.restURL} ${args} returned ${request.status}`;
+                this._request = null;
             };
             request.send();
         }

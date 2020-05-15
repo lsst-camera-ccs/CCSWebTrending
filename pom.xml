@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.lsst</groupId>
+        <artifactId>org-lsst-ccs-parent</artifactId>
+        <version>3.0.9</version>
+        <relativePath />
+    </parent>
 
     <groupId>org.lsst</groupId>
     <artifactId>CCSWebTrending</artifactId>
@@ -8,6 +14,30 @@
     <packaging>war</packaging>
 
     <name>CCSWebTrending</name>
+
+    <repositories>
+        <repository>
+            <id>lsst-maven2-public</id>
+            <name>LSST Maven 2 central repository</name>
+            <url>https://repo-nexus.lsst.org/nexus/content/groups/ccs-maven2-public/</url>
+        </repository>
+    </repositories>
+
+    <scm>
+        <url>https://github.com/lsst-camera-ccs/CCSWebTrending</url>
+        <connection>scm:git:git://github.com/lsst-camera-ccs/CCSWebTrending.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/lsst-camera-ccs/CCSWebTrending.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <site>
+            <id>lsst-maven2-site</id>
+            <name>LSST Maven2 central site repository</name>
+            <url>dav:${org.lsst.ccs.site.url}</url>
+        </site>
+    </distributionManagement>
+
 
     <dependencyManagement>
         <dependencies>

@@ -1,200 +1,85 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Focal Plane power (9 raft version)</title>
+        <title>Focal Plane power (25 raft version)</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
-        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="CCSTrending.js"></script>
-        <style>
-            .dygraph-legend {
-                left: 70px !important;
-            }
-        </style>
+        <script type="module" src="ccs-trending.js"></script>
     </head>
     <body>
-        <div id="graph" style="width:100%;height:400px"></div>
-        <div class="link-interaction">
-            <style scoped>.link-interaction a:visited { color: blue; }</style>
-            <div id="div_g"></div>
-            <b>Zoom:</b>
-            <a href="#" id="hour">hour</a> 
-            <a href="#" id="3hour">3 hour</a> 
-            <a href="#" id="6hour">6 hour</a> 
-            <a href="#" id="12hour">12 hour</a> 
-            <a href="#" id="day">day</a> 
-            <a href="#" id="week">week</a> 
-            <a href="#" id="month">month</a>.
-            Or drag to select area for zoom, or shift drag to pan.<br>
-            <b>Error Bars:</b> 
-            <a href="#" id="none">none</a> 
-            <a href="#" id="minmax">min/max</a> 
-            <a href="#" id="rms">rms</a> 
-        </div>
-        <script type="text/javascript">
-            g = new CCSTrendingPlot(
-            document.getElementById("graph"), {
-            title: 'REB power',
-            ylabel: 'Total Power/REB (W)',
-            range: 3600,
-            data: {
-                38018: {title: 'R00: RebG' },
-                38001: {title: 'R00: RebW' },
-                35969: {title: 'R01: Reb0' },
-                35640: {title: 'R01: Reb1' },
-                35960: {title: 'R01: Reb2' },
-                35690: {title: 'R02: Reb0' },
-                36871: {title: 'R02: Reb1' },
-                35456: {title: 'R02: Reb2' },
-                38232: {title: 'R04: RebG' },
-                38230: {title: 'R04: RebW' },
-                15588: {title: 'R10: Reb1' },
-                15594: {title: 'R10: Reb2' },
-                12024: {title: 'R11: Reb0' },
-                11919: {title: 'R11: Reb1' },
-                11814: {title: 'R11: Reb2' },
-                12828: {title: 'R12: Reb0' },
-                12726: {title: 'R12: Reb1' },
-                12624: {title: 'R12: Reb2' },
-                36950: {title: 'R20: Reb0' },
-                36531: {title: 'R20: Reb1' },
-                35888: {title: 'R20: Reb2' },
-                37271: {title: 'R21: Reb0' },
-                36337: {title: 'R21: Reb1' },
-                36537: {title: 'R21: Reb2' },
-                15447: {title: 'R22: Reb0' },
-                15148: {title: 'R22: Reb1' },
-                15502: {title: 'R22: Reb2' },
-                36555: {title: 'R30: Reb0' },
-                35491: {title: 'R30: Reb1' },
-                36185: {title: 'R30: Reb2' },
-                38134: {title: 'R40: RebG' },
-                38261: {title: 'R40: RebW' },
-                38066: {title: 'R44: RebG' },
-                38282: {title: 'R44: RebW' }
-            }
-            });
-            $('#hour').click(function() { g.zoom(3600); }); 
-            $('#3hour').click(function() { g.zoom(3*3600); });
-            $('#6hour').click(function() { g.zoom(6*3600); });
-            $('#12hour').click(function() { g.zoom(12*3600); });
-            $('#day').click(function() { g.zoom(86400); });
-            $('#week').click(function() { g.zoom(604800); });
-            $('#month').click(function() { g.zoom(30 * 86400); });
-            $('#none').click(function() { g.setErrorBars('NONE'); });
-            $('#minmax').click(function() { g.setErrorBars('MINMAX'); });
-            $('#rms').click(function() { g.setErrorBars('RMS'); });
-        </script>
-        <div id="graph2" style="width:100%;height:400px"></div>
-        <div class="link-interaction">
-            <style scoped>.link-interaction a:visited { color: blue; }</style>
-            <div id="div_g2"></div>
-            <b>Zoom:</b>
-            <a href="#" id="g2_hour">hour</a> 
-            <a href="#" id="g2_3hour">3 hour</a> 
-            <a href="#" id="g2_6hour">6 hour</a> 
-            <a href="#" id="g2_12hour">12 hour</a> 
-            <a href="#" id="g2_day">day</a> 
-            <a href="#" id="g2_week">week</a> 
-            <a href="#" id="g2_month">month</a>.
-            Or drag to select area for zoom, or shift drag to pan.<br>
-            <b>Error Bars:</b> 
-            <a href="#" id="g2_none">none</a> 
-            <a href="#" id="g2_minmax">min/max</a> 
-            <a href="#" id="g2_rms">rms</a> 
-        </div>
-        <script type="text/javascript">
-            g2 = new CCSTrendingPlot(
-            document.getElementById("graph2"), {
-            title: 'REB temperature',
-            ylabel: 'Temperature (Temp2 - °C)',
-            range: 3600,
-            data: {
-                38204: {title: 'R00: RebG' },
-                35276: {title: 'R01: Reb1' },
-                37188: {title: 'R02: Reb1' },
-                56045: {title: 'R03: Reb1' },
-                38184: {title: 'R04: RebG' },
-                15341: {title: 'R10: Reb1' },
-                11888: {title: 'R11: Reb1' },
-                12698: {title: 'R12: Reb1' },
-                56121: {title: 'R13: Reb1' },
-                54162: {title: 'R14: Reb1' },
-                37030: {title: 'R20: Reb1' },
-                37038: {title: 'R21: Reb1' },
-                15741: {title: 'R22: Reb1' },
-                56638: {title: 'R23: Reb1' },
-                53538: {title: 'R24: Reb1' },
-                36251: {title: 'R30: Reb1' },
-                57040: {title: 'R31: Reb1' },
-                54155: {title: 'R32: Reb1' },
-                56901: {title: 'R33: Reb1' },
-                56996: {title: 'R34: Reb1' },
-                38174: {title: 'R40: RebG' },
-                55202: {title: 'R41: Reb1' },
-                56010: {title: 'R42: Reb1' },
-                57251: {title: 'R43: Reb1' },
-                38300: {title: 'R44: RebG' },
-            }
-            });
-            $('#g2_hour').click(function() { g2.zoom(3600); }); 
-            $('#g2_3hour').click(function() { g2.zoom(3*3600); });
-            $('#g2_6hour').click(function() { g2.zoom(6*3600); });
-            $('#g2_12hour').click(function() { g2.zoom(12*3600); });
-            $('#g2_day').click(function() { g2.zoom(86400); });
-            $('#g2_week').click(function() { g2.zoom(604800); });
-            $('#g2_month').click(function() { g2.zoom(30 * 86400); });
-            $('#g2_none').click(function() { g2.setErrorBars('NONE'); });
-            $('#g2_minmax').click(function() { g2.setErrorBars('MINMAX'); });
-            $('#g2_rms').click(function() { g2.setErrorBars('RMS'); });
-        </script>
-        <div id="graph3" style="width:100%;height:400px"></div>
-        <div class="link-interaction">
-            <style scoped>.link-interaction a:visited { color: blue; }</style>
-            <div id="div_g3"></div>
-            <b>Zoom:</b>
-            <a href="#" id="g3_hour">hour</a> 
-            <a href="#" id="g3_3hour">3 hour</a> 
-            <a href="#" id="g3_6hour">6 hour</a> 
-            <a href="#" id="g3_12hour">12 hour</a> 
-            <a href="#" id="g3_day">day</a> 
-            <a href="#" id="g3_week">week</a> 
-            <a href="#" id="g3_month">month</a>.
-            Or drag to select area for zoom, or shift drag to pan.<br>
-            <b>Error Bars:</b> 
-            <a href="#" id="g3_none">none</a> 
-            <a href="#" id="g3_minmax">min/max</a> 
-            <a href="#" id="g3_rms">rms</a> 
-        </div>
-        <script type="text/javascript">
-            g3 = new CCSTrendingPlot(
-            document.getElementById("graph3"), {
-            title: 'Cold plate temperature',
-            ylabel: 'Temperature (°C)',
-            range: 3600,
-            data: {
-                21742: {title: 'RTD-00' },
-                21743: {title: 'RTD-02' },
-                21744: {title: 'RTD-03' },
-                21745: {title: 'RTD-05' },
-                21746: {title: 'RTD-50' },
-                21747: {title: 'RTD-52' },
-                21748: {title: 'RTD-53' },
-                21749: {title: 'RTD-55' }
-            }
-            });
-            $('#g3_hour').click(function() { g3.zoom(3600); }); 
-            $('#g3_3hour').click(function() { g3.zoom(3*3600); });
-            $('#g3_6hour').click(function() { g3.zoom(6*3600); });
-            $('#g3_12hour').click(function() { g3.zoom(12*3600); });
-            $('#g3_day').click(function() { g3.zoom(86400); });
-            $('#g3_week').click(function() { g3.zoom(604800); });
-            $('#g3_month').click(function() { g3.zoom(30 * 86400); });
-            $('#g3_none').click(function() { g3.setErrorBars('NONE'); });
-            $('#g3_minmax').click(function() { g3.setErrorBars('MINMAX'); });
-            $('#g3_rms').click(function() { g3.setErrorBars('RMS'); });
-        </script>
+        <trending-controller></trending-controller>    
+        <trending-plot title="REB power" ylabel="Total Power/REB (W)" range="3600000">
+            <trending-data key="38018">R00: RebG</trending-data>
+            <trending-data key="38001">R00: RebW</trending-data>
+            <trending-data key="35969">R01: Reb0</trending-data>
+            <trending-data key="35640">R01: Reb1</trending-data>
+            <trending-data key="35960">R01: Reb2</trending-data>
+            <trending-data key="35690">R02: Reb0</trending-data>
+            <trending-data key="36871">R02: Reb1</trending-data>
+            <trending-data key="35456">R02: Reb2</trending-data>
+            <trending-data key="38232">R04: RebG</trending-data>
+            <trending-data key="38230">R04: RebW</trending-data>
+            <trending-data key="15588">R10: Reb1</trending-data>
+            <trending-data key="15594">R10: Reb2</trending-data>
+            <trending-data key="12024">R11: Reb0</trending-data>
+            <trending-data key="11919">R11: Reb1</trending-data>
+            <trending-data key="11814">R11: Reb2</trending-data>
+            <trending-data key="12828">R12: Reb0</trending-data>
+            <trending-data key="12726">R12: Reb1</trending-data>
+            <trending-data key="12624">R12: Reb2</trending-data>
+            <trending-data key="36950">R20: Reb0</trending-data>
+            <trending-data key="36531">R20: Reb1</trending-data>
+            <trending-data key="35888">R20: Reb2</trending-data>
+            <trending-data key="37271">R21: Reb0</trending-data>
+            <trending-data key="36337">R21: Reb1</trending-data>
+            <trending-data key="36537">R21: Reb2</trending-data>
+            <trending-data key="15447">R22: Reb0</trending-data>
+            <trending-data key="15148">R22: Reb1</trending-data>
+            <trending-data key="15502">R22: Reb2</trending-data>
+            <trending-data key="36555">R30: Reb0</trending-data>
+            <trending-data key="35491">R30: Reb1</trending-data>
+            <trending-data key="36185">R30: Reb2</trending-data>
+            <trending-data key="38134">R40: RebG</trending-data>
+            <trending-data key="38261">R40: RebW</trending-data>
+            <trending-data key="38066">R44: RebG</trending-data>
+            <trending-data key="38282">R44: RebW</trending-data>
+        </trending-plot>
+        <trending-plot title="REB temperature" ylabel="Temperature (Temp2 - °C)" range="3600000">
+            <trending-data key="38204">R00: RebG</trending-data>
+            <trending-data key="35276">R01: Reb1</trending-data>
+            <trending-data key="37188">R02: Reb1</trending-data>
+            <trending-data key="56045">R03: Reb1</trending-data>
+            <trending-data key="38184">R04: RebG</trending-data>
+            <trending-data key="15341">R10: Reb1</trending-data>
+            <trending-data key="11888">R11: Reb1</trending-data>
+            <trending-data key="12698">R12: Reb1</trending-data>
+            <trending-data key="56121">R13: Reb1</trending-data>
+            <trending-data key="54162">R14: Reb1</trending-data>
+            <trending-data key="37030">R20: Reb1</trending-data>
+            <trending-data key="37038">R21: Reb1</trending-data>
+            <trending-data key="15741">R22: Reb1</trending-data>
+            <trending-data key="56638">R23: Reb1</trending-data>
+            <trending-data key="53538">R24: Reb1</trending-data>
+            <trending-data key="36251">R30: Reb1</trending-data>
+            <trending-data key="57040">R31: Reb1</trending-data>
+            <trending-data key="54155">R32: Reb1</trending-data>
+            <trending-data key="56901">R33: Reb1</trending-data>
+            <trending-data key="56996">R34: Reb1</trending-data>
+            <trending-data key="38174">R40: RebG</trending-data>
+            <trending-data key="55202">R41: Reb1</trending-data>
+            <trending-data key="56010">R42: Reb1</trending-data>
+            <trending-data key="57251">R43: Reb1</trending-data>
+            <trending-data key="38300">R44: RebG</trending-data>
+        </trending-plot>
+        <trending-plot title="Cold plate temperature" ylabel="Temperature (°C)" range="3600000">
+            <trending-data key="21742">RTD-00</trending-data>
+            <trending-data key="21743">RTD-02</trending-data>
+            <trending-data key="21744">RTD-03</trending-data>
+            <trending-data key="21745">RTD-05</trending-data>
+            <trending-data key="21746">RTD-50</trending-data>
+            <trending-data key="21747">RTD-52</trending-data>
+            <trending-data key="21748">RTD-53</trending-data>
+            <trending-data key="21749">RTD-55</trending-data>     
+        </trending-plot>
     </body>
-
 </html>

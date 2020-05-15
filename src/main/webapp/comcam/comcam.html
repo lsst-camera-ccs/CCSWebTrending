@@ -4,86 +4,19 @@
         <title>ComCam vacuum and temperatures</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
-        <script type="text/javascript" src="/CCSWebTrending/synchronizer.js"></script>
-        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="/CCSWebTrending/CCSTrending.js"></script>
-        <link rel="stylesheet" href="/CCSWebTrending/trending.css"/>
+        <script type="module" src="../ccs-trending.js"></script>
     </head>
     <body>
-        <div id="graph" style="width:100%;height:400px"></div>
-        <div id="graph2" style="width:calc(100% - 70px);height:400px"></div>
-        <div class="link-interaction">
-            <style scoped>.link-interaction a:visited { color: blue; }</style>
-            <div id="div_g"></div>
-            <b>Zoom:</b>
-            <a href="#" id="hour">hour</a> 
-            <a href="#" id="3hour">3 hour</a> 
-            <a href="#" id="6hour">6 hour</a> 
-            <a href="#" id="12hour">12 hour</a> 
-            <a href="#" id="day">day</a> 
-            <a href="#" id="week">week</a> 
-            <a href="#" id="month">month</a>.
-            Or drag to select area for zoom, or shift drag to pan.<br>
-            <b>Error Bars:</b> 
-            <a href="#" id="none">none</a> 
-            <a href="#" id="minmax">min/max</a> 
-            <a href="#" id="rms">rms</a> 
-        </div>
-        <script type="text/javascript">
-            g = new CCSTrendingPlot(
-                    document.getElementById("graph"), {
-                restURL: '/CCSWebTrending/rest/comcam',
-                title: 'ComCam vacuum and temperatures',
-                ylabel: 'Temperature (°C)',
-                y2label: 'Pressure (Torr)', 
-                axes: { 
-                    y2: {
-                        valueFormatter: function(y2) {
-                           return y2.toExponential(3);
-                        },
-                        axisLabelFormatter: function(y2) {
-                           return y2.toExponential(3);
-                        },
-                        axisLabelWidth: 70
-                    }
-                },
-                data: {
-                    12216: {title: 'Cold1Temp'},
-                    12275: {title: 'Cold2Temp'},
-                    12208: {title: 'CryoTemp'},
-                    12272: {title: 'vqm pressure', axis: 'y2'}
-                }
-            });
-            g2 = new CCSTrendingPlot(
-                    document.getElementById("graph2"), {
-                restURL: '/CCSWebTrending/rest/comcam',
-                title: 'ComCam vacuum (Log)',
-                ylabel: 'Pressure (Torr)', 
-                logscale: true,
-                axes: { 
-                    y: {
-                        valueFormatter: function(y2) {
-                           return y2.toExponential(3);
-                        }
-                    }
-                },
-                data: {
-                    12272: {title: 'vqm pressure'}
-                }
-            });
-            synchronize(g,g2);
-            $('#hour').click(function() { g.zoom(3600); }); 
-            $('#3hour').click(function() { g.zoom(3*3600); });
-            $('#6hour').click(function() { g.zoom(6*3600); });
-            $('#12hour').click(function() { g.zoom(12*3600); });
-            $('#day').click(function() { g.zoom(86400); });
-            $('#week').click(function() { g.zoom(604800); });
-            $('#month').click(function() { g.zoom(30 * 86400); });
-            $('#none').click(function() { g.setErrorBars('NONE'); });
-            $('#minmax').click(function() { g.setErrorBars('MINMAX'); });
-            $('#rms').click(function() { g.setErrorBars('RMS'); });
-        </script>
+        <trending-plot title="ComCam vacuum and temperatures" ylabel="Temperature (°C)" y2label="Pressure (Torr)" restURL="../rest/comcam">
+            <trending-data key="12216">Cold1Temp</trending-data>
+            <trending-data key="12275">Cold2Temp</trending-data>
+            <trending-data key="12208">CryoTemp</trending-data>
+            <trending-data key="12272" axis="y2">VQM pressure</trending-data>
+        </trending-plot>
+        <trending-plot title="ComCam vacuum (Log)" ylabel="Pressure (Torr)" restURL="../rest/comcam" logscale>
+            <trending-data key="12272">VQM pressure</trending-data>
+        </trending-plot>    
+        <trending-controller useUTC></trending-controller>
     </body>
 
 </html>

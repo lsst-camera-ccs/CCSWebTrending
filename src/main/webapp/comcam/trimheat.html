@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>ComCam CCD Temperature control loop</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="1">
+      <trending-plot restURL="../rest/comcam" useUTC title="CCD Heater power" ylabel="Power (Watts)">
+        <trending-data key="1609" axis="y1">Reb0</trending-data>
+        <trending-data key="1665" axis="y1">Reb2</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="CCD temperatures" ylabel="CCD Temperature (°C)">
+        <trending-data key="1765" axis="y1">Reb0/S00</trending-data>
+        <trending-data key="1585" axis="y1">Reb0/S01</trending-data>
+        <trending-data key="1711" axis="y1">Reb0/S02</trending-data>
+        <trending-data key="1523" axis="y1">Reb1/S10</trending-data>
+        <trending-data key="1746" axis="y1">Reb1/S11</trending-data>
+        <trending-data key="1779" axis="y1">Reb1/S12</trending-data>
+        <trending-data key="1651" axis="y1">Reb2/S20</trending-data>
+        <trending-data key="1518" axis="y1">Reb2/S21</trending-data>
+        <trending-data key="1739" axis="y1">Reb2/S22</trending-data>
+      </trending-plot>
+    </trending-grid>
+  </body>
+</html>

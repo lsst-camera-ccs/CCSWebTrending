@@ -1,0 +1,30 @@
+{
+    "elements": {
+        "trending-plot": {
+            "attributes": {
+                "restURL": {},
+                "ylabel": {},
+                "useUTC": {},
+                "y2label": {},
+                "range": {},
+                "title": {},
+                "logscale": {}
+            }
+        },
+        "trending-conroller": {},
+        "trending-data": {
+            "attributes": {
+                "id": {},
+                "axis": {},
+                "key": {}
+            }
+        },
+        "trending-controller": {
+            "attributes": {
+                "useUTC": {},
+                "range": {}
+            }
+        }
+    },
+    "attributes": {}
+}

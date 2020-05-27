@@ -186,6 +186,10 @@ public class TrendingRestInterface {
                 private String rms;
                 private String min;
                 private String max;
+                private String units;
+                private String format;
+                private String description;
+                private String state;
 
                 @Override
                 public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -197,8 +201,7 @@ public class TrendingRestInterface {
                             time = attributes.getValue("value");
                             break;
                         case "datavalue":
-                            String name = attributes.getValue("name");
-                            switch (name) {
+                            switch (attributes.getValue("name")) {
                                 case "value":
                                     value = attributes.getValue("value");
                                     break;
@@ -213,15 +216,40 @@ public class TrendingRestInterface {
                                     break;
                             }
                             break;
+                        case "channelmetadata":
+                            units = format = description = state = null;
+                            break;
+                        case "channelmetadatavalue":
+                            switch (attributes.getValue("name")) {
+                                case "units":
+                                    units = attributes.getValue("value");
+                                    break;
+                                case "format":
+                                    format = attributes.getValue("value");
+                                    break;                                    
+                                case "description":
+                                    description = attributes.getValue("value");
+                                    break;  
+                                case "state":
+                                    state = attributes.getValue("value");
+                                    break;  
+                            }
+                            break; 
                     }
                 }
 
                 @Override
                 public void endElement(String uri, String localName, String qName) throws SAXException {
-                    if (qName.equals("trendingdata")) {
-                        merged.put(time, value, rms, min, max, y);
-                    } else if (qName.equals("data")) {
-                        y++;
+                    switch (qName) {
+                        case "trendingdata":
+                            merged.put(time, value, rms, min, max, y);
+                            break;
+                        case "data":
+                            y++;
+                            break;
+                        case "channelmetadata":
+                            meta.setMetaData(units, format, description, state);
+                            break;
                     }
                 }
 
@@ -261,6 +289,10 @@ public class TrendingRestInterface {
         private final long min;
         private final long max;
         private final Flavor flavor;
+        private String units;
+        private String format;
+        private String description;
+        private String state;
 
         public TrendingMetaData(ErrorBars errorBars, int nBins, long min, long max, Flavor flavor) {
             this.errorBars = errorBars;
@@ -288,6 +320,29 @@ public class TrendingRestInterface {
 
         public Flavor getFlavor() {
             return flavor;
+        }
+
+        public String getUnits() {
+            return units;
+        }
+
+        public String getFormat() {
+            return format;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getState() {
+            return state;
+        }
+
+        private void setMetaData(String units, String format, String description, String state) {
+            this.units = units;
+            this.format = format;
+            this.description = description;
+            this.state = state;
         }
 
     }

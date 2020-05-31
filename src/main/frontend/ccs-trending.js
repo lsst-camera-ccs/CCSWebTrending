@@ -3,7 +3,7 @@ import '@polymer/iron-icons';
 import Dygraph from '@tonyj321/dygraphs';
 import { ResizeObserver } from '@juggle/resize-observer';
 import { html, css, LitElement } from 'lit-element';
-var parse = require('parse-duration');
+let parse = require('parse-duration');
 
 class RangeSynchronizer {
     constructor() {
@@ -49,7 +49,17 @@ class RangeSynchronizer {
     }
 }
 
-const _rangeSynchronizer = new RangeSynchronizer();
+const _defaultRangeSynchronizer = new RangeSynchronizer();
+const _rangeSynchronizerGroups = {"defaultGroup": _defaultRangeSynchronizer};
+
+function _rangeSynchronizerForGroup(group) {
+    let result = _rangeSynchronizerGroups[group];
+    if (!result) {
+        result = new RangeSynchronizer();
+        _rangeSynchronizerGroups[group] = result;
+    }
+    return result;
+}
 
 class TrendingPlot extends LitElement {
 
@@ -168,32 +178,41 @@ class TrendingPlot extends LitElement {
 
             restURL: {
                 type: String
+            }, 
+            
+            group: {
+                type: String
             }
         };
     }
 
     constructor() {
         super();
-        _rangeSynchronizer.add(this);
-        this.errorbars = _rangeSynchronizer.errorbars;
-        this.useUTC = _rangeSynchronizer.useUTC;
-        this.range = _rangeSynchronizer.range;
+        this.group = "defaultGroup";
+        this.errorbars = _defaultRangeSynchronizer.errorbars;
+        this.useUTC = _defaultRangeSynchronizer.useUTC;
+        this.range = _defaultRangeSynchronizer.range;
         this.logscale = false;
         this.labels = ['time'];
         this.restURL = 'rest';
         this.nBins = 100;
         this.keys = [];
         this.autoUpdate = true;
-        this.synchronizer = _rangeSynchronizer;
         this.series = {};
         this._message = "";
     }
 
     firstUpdated(changedProperties) {
+        this.synchronizer = _rangeSynchronizerForGroup(this.group);
+        this.synchronizer.add(this);
+        if (!("errorbars" in changedProperties)) this.errorbars = this.synchronizer.errorbars;
+        if (!("useUTC" in changedProperties)) this.useUTC = this.synchronizer.useUTC;
+        if (!("range" in changedProperties)) this.range = this.synchronizer.range;
+        
         this.shadowRoot.querySelector(".legend").toggleVisibility = (series) => {
             this._toggleVisibility(series);
         };
-        
+
         let dummyData = [Array.apply(null, Array(this.labels.length)).map(Number.prototype.valueOf, 0), Array.apply(null, Array(this.labels.length)).map(Number.prototype.valueOf, 0)];
         let timeRange = this._toTimeRange(this.range);
         dummyData[0][0] = new Date(timeRange.start);
@@ -219,10 +238,10 @@ class TrendingPlot extends LitElement {
             }
         });
         this._ro = new ResizeObserver((entries, observer) => {
-           this.graph.resize();
+            this.graph.resize();
         });
         this._ro.observe(this);
-        
+
         if (this.autoUpdate) {
             this.timer = setInterval(() => {
                 if (!this.range.startsWith('{'))
@@ -238,7 +257,7 @@ class TrendingPlot extends LitElement {
         }
         this._ro.disconnect();
     }
-    
+
     set _message(value) {
         this.__message = value;
         this.requestUpdate();
@@ -277,11 +296,11 @@ class TrendingPlot extends LitElement {
                 this.graph.updateOptions({logscale: this.logscale});
             }
         });
-        
+
         if (reloadNeeded) {
-            this.updateComplete.then(() => { 
+            this.updateComplete.then(() => {
                 this._updateData();
-            });            
+            });
         }
     }
 
@@ -328,7 +347,24 @@ class TrendingPlot extends LitElement {
                     let errorBarsType = newData.meta.errorBars;
                     let customBars = errorBarsType === 'MINMAX';
                     let errorBars = errorBarsType === 'RMS';
-                    this.graph.updateOptions({file: newData.data, customBars: customBars, errorBars: errorBars, labels: this.labels});
+                    let options = {file: newData.data, customBars: customBars, errorBars: errorBars, labels: this.labels};
+                    // Messy code to deal with units. Units are received with the data, and need to be associated
+                    // with the corresponding axis, only if the user has not explicitly specified axes titles.
+                    let axisUnits = {"y1": new Set(), "y2": new Set()};
+                    newData.meta.perData.forEach((meta, i) => {
+                        axisUnits[this.series[this.labels[i+1]].axis].add(meta.units);
+                    });
+                    if (axisUnits["y1"].size === 1 && !this.ylabel) {
+                        options["ylabel"] = axisUnits["y1"].values().next().value;
+                    } else {
+                        options["ylabel"] = this.ylabel;
+                    }
+                    if (axisUnits["y2"].size === 1 && !this.y2label) {
+                        options["y2label"] = axisUnits["y2"].values().next().value;
+                    } else {
+                        options["y2label"] = this.y2label;
+                    }
+                    this.graph.updateOptions(options);
                     this._message = "";
                 } else {
                     this._message = `error ( ${this.restURL} ${args} returned ${request.status}`;
@@ -454,32 +490,31 @@ class TrendingData extends LitElement {
             }
         };
     }
+    constructor() {
+        super();
+        this.axis = "y1";
+    }
     
     connectedCallback() {
         super.connectedCallback();
         this._plot = this.closest("trending-plot");
         this._plot.keys.push(this.key);
         this._plot.labels.push(this.label);
-        if (this.axis === "y2") {
-            this._plot.series[this.label] = {"axis": "y2"};
-        }
+        this._plot.series[this.label] = {"axis": this.axis};
     }
-    
+
     disconnectedCallback() {
         super.disconnectedCallback();
         const index = this._plot.keys.indexOf(this.key);
         if (index > -1) {
-           this._plot.keys.splice(index, 1);
+            this._plot.keys.splice(index, 1);
         }
         const index2 = this._plot.labels.indexOf(this.label);
         if (index2 > -1) {
-           this._plot.labels.splice(index2, 1);
-        }
-        if (this.axis === "y2") {
-            this._plot.series[this.label] = {};
+            this._plot.labels.splice(index2, 1);
         }
     }   
-    
+
     get label() {
         return this.innerHTML;
     }
@@ -506,6 +541,10 @@ class TrendingController extends LitElement {
                 type: Boolean,
                 notify: true,
                 reflect: true
+            },
+
+            group: {
+                type: String
             }
         };
     }
@@ -546,18 +585,19 @@ class TrendingController extends LitElement {
     }
 
     constructor() {
-       super();
-       _rangeSynchronizer.add(this);
-       this.range = _rangeSynchronizer.range;
-       this.useUTC = _rangeSynchronizer.useUTC;
-       this.errorbars = _rangeSynchronizer.errorbars;
+        super();
+        this.group = "defaultGroup";
+        this.range = _defaultRangeSynchronizer.range;
+        this.useUTC = _defaultRangeSynchronizer.useUTC;
+        this.errorbars = _defaultRangeSynchronizer.errorbars;
     }
-    
+
     firstUpdated(changedProperties) {
-       _rangeSynchronizer.range = this.range;
-       _rangeSynchronizer.useUTC = this.useUTC;
-       _rangeSynchronizer.errorbars = this.errorbars ;  
-    };
+        _rangeSynchronizerForGroup(this.group).add(this);
+        _rangeSynchronizerForGroup(this.group).range = this.range;
+        _rangeSynchronizerForGroup(this.group).useUTC = this.useUTC;
+        _rangeSynchronizerForGroup(this.group).errorbars = this.errorbars;
+    }
     
     set range(value) {
         const oldValue = this.range;
@@ -569,37 +609,45 @@ class TrendingController extends LitElement {
     get range() {
         return this._range;
     }
-    
+
     _zoom() {
-        _rangeSynchronizer.range = this.shadowRoot.querySelector("#rangeSelector").value;
+        _rangeSynchronizerForGroup(this.group).range = this.shadowRoot.querySelector("#rangeSelector").value;
     }
 
     _setErrorBars() {
-        _rangeSynchronizer.errorbars = this.shadowRoot.querySelector("#errorBarSelector").value;
+        _rangeSynchronizerForGroup(this.group).errorbars = this.shadowRoot.querySelector("#errorBarSelector").value;
     }
 
     _setTimeZone() {
-        _rangeSynchronizer.useUTC = this.shadowRoot.querySelector("#timeZoneSelector").value === 'true';
+        _rangeSynchronizerForGroup(this.group).useUTC = this.shadowRoot.querySelector("#timeZoneSelector").value === 'true';
     }
-    
+
     _computeQuantizedRange() {
         try {
-            let rangeInMinutes = Math.round(parse(this.range)/1000/60);
+            let rangeInMinutes = Math.round((isNaN(this.range) ? parse(this.range) : this.range) / 1000 / 60);
             switch (rangeInMinutes) {
-                case 60:  return '1h';
-                case 60*3: return '3h';
-                case 60*6: return '6h';
-                case 60*12: return '12h';
-                case 60*24: return '1d';
-                case 60*24*7: return '1w';
-                case 60*24*7*30: return '1month';
-                default: return 'custom';
+                case 60:
+                    return '1h';
+                case 60 * 3:
+                    return '3h';
+                case 60 * 6:
+                    return '6h';
+                case 60 * 12:
+                    return '12h';
+                case 60 * 24:
+                    return '1d';
+                case 60 * 24 * 7:
+                    return '1w';
+                case 60 * 24 * 7 * 30:
+                    return '1month';
+                default:
+                    return 'custom';
             }
         } catch (typeerror) {
             return 'custom';
         }
     }
-};
+}
 
 class TrendingGrid extends LitElement {
     static get styles() {
@@ -630,7 +678,6 @@ class TrendingGrid extends LitElement {
         `;
     }
 
-
     static get properties() {
         return {
             columns: {
@@ -640,7 +687,7 @@ class TrendingGrid extends LitElement {
             }
         };
     }
-    
+
     constructor() {
         super();
         this.columns = 2;

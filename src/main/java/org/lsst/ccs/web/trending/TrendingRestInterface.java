@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ public class TrendingRestInterface {
     private static final Map<String, Site> sites = new HashMap<>();
     private static Site defaultSite;
     private final static Pattern SYNTAX_FILTER_PATTERN = Pattern.compile("(?:([a-z]+):)?(.*)");
+
     static {
         try {
             Site ir2 = SiteIR2.create();
@@ -46,7 +48,7 @@ public class TrendingRestInterface {
             defaultSite = ir2;
         } catch (JSchException | MalformedURLException | RuntimeException | UnknownHostException ex) {
             LOG.log(Level.SEVERE, "Failed to initialize sites", ex);
-        } 
+        }
         try {
             Site ats = SiteATS.create();
             sites.put(ats.getName(), ats);
@@ -83,7 +85,7 @@ public class TrendingRestInterface {
     @GET
     @Path("/{site}/channels")
     public Object channels(@PathParam(value = "site") String siteName,
-            @QueryParam(value = "id") Integer handle, 
+            @QueryParam(value = "id") Integer handle,
             @QueryParam(value = "filter") String filter) throws IOException {
         Site site = defaultSite;
         if (!siteName.isEmpty()) {
@@ -92,31 +94,31 @@ public class TrendingRestInterface {
                 throw new RuntimeException("Unknown site " + siteName);
             }
         }
-        
+
         ChannelTree tree = site.getChannelTree();
         if (filter != null && !filter.isEmpty()) {
             try {
                 Matcher matcher = SYNTAX_FILTER_PATTERN.matcher(filter);
                 if (!matcher.matches()) {
-                    throw new RuntimeException("Unknown syntax: "+filter);
+                    throw new RuntimeException("Unknown syntax: " + filter);
                 }
                 String syntax = matcher.group(1);
                 String regexp = matcher.group(2);
                 if (syntax == null || syntax.isEmpty() || "glob".equals(syntax)) {
                     regexp = Globs.toUnixRegexPattern(regexp);
                 } else if (!"regex".equals(syntax)) {
-                    throw new RuntimeException("Unknown syntax: "+syntax);
+                    throw new RuntimeException("Unknown syntax: " + syntax);
                 }
                 tree = tree.filter(Pattern.compile(regexp, Pattern.CASE_INSENSITIVE));
                 tree = tree.flatten();
             } catch (RuntimeException x) {
-                return new ChannelTree("Invalid filter: "+x.getMessage()).getRoot().getChildren();
+                return new ChannelTree("Invalid filter: " + x.getMessage()).getRoot().getChildren();
             }
         }
         if (tree.getRoot().getChildren().isEmpty()) {
             return new ChannelTree("Filter returned no results").getRoot().getChildren();
         }
-        
+
         if (handle == null) {
             return tree.getRoot().getChildren();
         } else {
@@ -226,15 +228,15 @@ public class TrendingRestInterface {
                                     break;
                                 case "format":
                                     format = attributes.getValue("value");
-                                    break;                                    
+                                    break;
                                 case "description":
                                     description = attributes.getValue("value");
-                                    break;  
+                                    break;
                                 case "state":
                                     state = attributes.getValue("value");
-                                    break;  
+                                    break;
                             }
-                            break; 
+                            break;
                     }
                 }
 
@@ -248,7 +250,7 @@ public class TrendingRestInterface {
                             y++;
                             break;
                         case "channelmetadata":
-                            meta.setMetaData(units, format, description, state);
+                            meta.addMetaData(units, format, description, state);
                             break;
                     }
                 }
@@ -282,6 +284,37 @@ public class TrendingRestInterface {
 
     }
 
+    private static class TrendingPerSeriesMetaData {
+
+        private final String units;
+        private final String format;
+        private final String description;
+        private final String state;
+
+        public TrendingPerSeriesMetaData(String units, String format, String description, String state) {
+            this.units = units;
+            this.format = format;
+            this.description = description;
+            this.state = state;
+        }
+
+        public String getUnits() {
+            return units;
+        }
+
+        public String getFormat() {
+            return format;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getState() {
+            return state;
+        }
+    }
+
     private static class TrendingMetaData {
 
         private final ErrorBars errorBars;
@@ -289,10 +322,7 @@ public class TrendingRestInterface {
         private final long min;
         private final long max;
         private final Flavor flavor;
-        private String units;
-        private String format;
-        private String description;
-        private String state;
+        private final List<TrendingPerSeriesMetaData> perData = new ArrayList<>();
 
         public TrendingMetaData(ErrorBars errorBars, int nBins, long min, long max, Flavor flavor) {
             this.errorBars = errorBars;
@@ -322,27 +352,12 @@ public class TrendingRestInterface {
             return flavor;
         }
 
-        public String getUnits() {
-            return units;
+        public List<TrendingPerSeriesMetaData> getPerData() {
+            return perData;
         }
 
-        public String getFormat() {
-            return format;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public String getState() {
-            return state;
-        }
-
-        private void setMetaData(String units, String format, String description, String state) {
-            this.units = units;
-            this.format = format;
-            this.description = description;
-            this.state = state;
+        private void addMetaData(String units, String format, String description, String state) {
+            perData.add(new TrendingPerSeriesMetaData(units, format, description, state));
         }
 
     }

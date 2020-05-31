@@ -6,7 +6,8 @@ export default {
   input: 'ccs-trending.js',
   output: {
     file: 'out/ccs-trending.js',
-    format: 'esm'
+    format: 'esm',
+    sourcemap: true
   },
   plugins: [
     common(),

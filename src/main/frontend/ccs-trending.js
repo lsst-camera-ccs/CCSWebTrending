@@ -223,6 +223,10 @@ class TrendingPlot extends LitElement {
             series: this.series,
             ylabel: this.ylabel,
             y2label: this.y2label,
+            axes: {
+                y: { axisLabelWidth: 60 },
+                y2: {axisLabelWidth: 60 }
+            },
             labelsDiv: this.shadowRoot.querySelector('.legend'),
             animatedZooms: true,
             labelsUTC: this.useUTC,

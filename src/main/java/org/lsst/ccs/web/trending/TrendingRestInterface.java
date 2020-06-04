@@ -78,15 +78,17 @@ public class TrendingRestInterface {
     @Path("/channels")
     public Object channels(
             @QueryParam(value = "id") Integer handle,
-            @QueryParam(value = "filter") String filter) throws IOException {
-        return channels("", handle, filter);
+            @QueryParam(value = "filter") String filter, 
+            @QueryParam(value = "flatten") Boolean flatten) throws IOException {
+        return channels("", handle, filter, flatten);
     }
 
     @GET
     @Path("/{site}/channels")
     public Object channels(@PathParam(value = "site") String siteName,
             @QueryParam(value = "id") Integer handle,
-            @QueryParam(value = "filter") String filter) throws IOException {
+            @QueryParam(value = "filter") String filter,
+            @QueryParam(value = "flatten") Boolean flatten) throws IOException {
         Site site = defaultSite;
         if (!siteName.isEmpty()) {
             site = sites.get(siteName);
@@ -110,7 +112,9 @@ public class TrendingRestInterface {
                     throw new RuntimeException("Unknown syntax: " + syntax);
                 }
                 tree = tree.filter(Pattern.compile(regexp, Pattern.CASE_INSENSITIVE));
-                tree = tree.flatten();
+                if (flatten == null || flatten) {
+                    tree = tree.flatten();
+                }
             } catch (RuntimeException x) {
                 return new ChannelTree("Invalid filter: " + x.getMessage()).getRoot().getChildren();
             }

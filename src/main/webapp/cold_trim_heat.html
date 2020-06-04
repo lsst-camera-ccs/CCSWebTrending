@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <title>Cold System Trim Heat</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="./ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller range="1h" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="2">
+      <trending-plot restURL="rest" title="thermal/Trim_Htrs/*" ylabel="Amps">
+        <trending-data key="21716" axis="y1">ColdHtr0_I</trending-data>
+        <trending-data key="21719" axis="y1">ColdHtr1_I</trending-data>
+        <trending-data key="21722" axis="y1">ColdHtr2_I</trending-data>
+        <trending-data key="21725" axis="y1">ColdHtr3_I</trending-data>
+        <trending-data key="21728" axis="y1">ColdHtr4_I</trending-data>
+        <trending-data key="21731" axis="y1">ColdHtr5_I</trending-data>
+      </trending-plot>
+      <trending-plot restURL="rest" title="thermal/Trim_Htrs/*" ylabel="Volts">
+        <trending-data key="21715" axis="y1">ColdHtr0_V</trending-data>
+        <trending-data key="21718" axis="y1">ColdHtr1_V</trending-data>
+        <trending-data key="21721" axis="y1">ColdHtr2_V</trending-data>
+        <trending-data key="21724" axis="y1">ColdHtr3_V</trending-data>
+        <trending-data key="21727" axis="y1">ColdHtr4_V</trending-data>
+        <trending-data key="21730" axis="y1">ColdHtr5_V</trending-data>
+      </trending-plot>
+      <trending-plot restURL="rest" title="thermal/Trim_Htrs/*" ylabel="Watts">
+        <trending-data key="21717" axis="y1">ColdHtr0_P</trending-data>
+        <trending-data key="21720" axis="y1">ColdHtr1_P</trending-data>
+        <trending-data key="21723" axis="y1">ColdHtr2_P</trending-data>
+        <trending-data key="21726" axis="y1">ColdHtr3_P</trending-data>
+        <trending-data key="21729" axis="y1">ColdHtr4_P</trending-data>
+        <trending-data key="21732" axis="y1">ColdHtr5_P</trending-data>
+      </trending-plot>
+      <trending-plot restURL="rest" title="thermal/Cold_Temp/*" ylabel="°C">
+        <trending-data key="21742" axis="y1">CLP-RTD-00</trending-data>
+        <trending-data key="21743" axis="y1">CLP-RTD-02</trending-data>
+        <trending-data key="21744" axis="y1">CLP-RTD-03</trending-data>
+        <trending-data key="21745" axis="y1">CLP-RTD-05</trending-data>
+        <trending-data key="21746" axis="y1">CLP-RTD-50</trending-data>
+        <trending-data key="21747" axis="y1">CLP-RTD-52</trending-data>
+        <trending-data key="21748" axis="y1">CLP-RTD-53</trending-data>
+        <trending-data key="21749" axis="y1">CLP-RTD-55</trending-data>
+      </trending-plot>
+    </trending-grid>
+  </body>
+</html>

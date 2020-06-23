@@ -12,7 +12,7 @@ public class Tunnel {
 
     public static void main(String[] args) throws JSchException, MalformedURLException, IOException {
         try (Site site = SiteIR2.create()) {
-            ChannelTree channelTree = site.getChannelTree();
+            ChannelTree channelTree = site.getChannelTree(false);
             System.out.println(channelTree);
         }
     }

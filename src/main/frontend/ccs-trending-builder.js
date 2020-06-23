@@ -433,8 +433,12 @@ class ChannelTree extends LitElement {
                 }
                 #filter-div {
                     flex-grow: 0;
+                    display: flex;
+                    flex-direction: row;
+                    overflow: hidden;
                 }
                 #filter-div label {
+                    flex-grow: 1;
                     display: flex;
                     flex-direction: row;
                 }
@@ -458,6 +462,7 @@ class ChannelTree extends LitElement {
             </style>
             <div id="left">
                 <div id="filter-div">
+                   <a @click=${this._refresh} href="#"><img src="${this.baseURL}refresh.png" alt="refresh"></a>
                    <label for="filter" @search=${this._search} @change=${this._search}>
                       Filter:&nbsp;<input type="search" id="filter-tree" placeholder="**/*memory" results="5" autosave="ccs-tree-filter">
                    </label>
@@ -482,6 +487,7 @@ class ChannelTree extends LitElement {
         super();
         this.restURL = "rest";
         this.baseURL = "./";
+        this._lastFilter = "";
     }
 
     createRenderRoot() {
@@ -515,10 +521,16 @@ class ChannelTree extends LitElement {
     _search() {
         let filter = this.querySelector('#filter-tree').value;
         if (filter !== this._lastFilter) {
-            this._lastFiler = filter;
+            this._lastFilter = filter;
             this.tree.settings.core.data.url = `${this.restURL}/channels?filter=${filter}`;
             this.tree.refresh();
         }
+    }
+
+    _refresh() {
+        this.tree.settings.core.data.url = `${this.restURL}/channels?filter=${this._lastFilter}&refresh=true`;
+        this.tree.refresh();
+        this.tree.settings.core.data.url = `${this.restURL}/channels?filter=${this._lastFilter}`;
     }
 }
 

@@ -1,5 +1,6 @@
 import '@tonyj321/shibui-dropdown-menu/shibui-dropdown-menu.js';
 import '@polymer/iron-icons';
+import '@fooloomanzoo/datetime-picker/datetime-picker.js';
 import Dygraph from '@tonyj321/dygraphs';
 import { ResizeObserver } from '@juggle/resize-observer';
 import { html, css, LitElement } from 'lit-element';
@@ -11,6 +12,7 @@ class RangeSynchronizer {
         this._range = '1d';
         this._errorbars = 'MINMAX';
         this._useUTC = false;
+        this._nBins = 100;
     }
 
     add(plot) {
@@ -46,6 +48,15 @@ class RangeSynchronizer {
 
     get useUTC() {
         return this._useUTC;
+    }
+
+    set nBins(value) {
+        this._nBins = value;
+        this.plots.forEach((plot) => plot.nBins = value);
+    }
+
+    get nBins() {
+        return this._nBins;
     }
 }
 
@@ -93,12 +104,12 @@ class TrendingPlot extends LitElement {
                 display: inline;
             }
             .legend .legendElement input {
-                vertical-align: middle; 
+                vertical-align: middle;
                 display: none;
             }
             .legend:hover .legendElement input {
                 display: inline;
-            }         
+            }
             .menu-bar {
                 width: 100%;
                 display: flex;
@@ -122,17 +133,17 @@ class TrendingPlot extends LitElement {
 
         return html`
            <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.css" />
-           <div class="menu-bar"><div class="title">${this.title}</div>       
+           <div class="menu-bar"><div class="title">${this.title}</div>
                 <shibui-dropdown-menu alignment="right">
                     <iron-icon slot="trigger" icon="menu"></iron-icon>
                     <label for="useUTC"><input @click=${() => this.useUTC = !this.useUTC} type="checkbox" id="useUTC" ?checked=${this.useUTC}>Use UTC</label>
                     <label for="logscale"><input @click=${() => this.logscale = !this.logscale} type="checkbox" id="logscale" ?checked=${this.logscale}>Log scale</label>
-                    <a @click=${this.download}>Download data as .csv</a>                       
+                    <a @click=${this.download}>Download data as .csv</a>
                 </shibui-dropdown-menu>
             </div>
-            <div class="legend">Legend</div>   
+            <div class="legend">Legend</div>
             <div class="graph" title="Drag to select range for zoom, or shift drag to pan."></div>
-            <div class="message">${this._message}</div>   
+            <div class="message">${this._message}</div>
         `;
     }
     static get properties() {
@@ -178,10 +189,16 @@ class TrendingPlot extends LitElement {
 
             restURL: {
                 type: String
-            }, 
-            
+            },
+
             group: {
                 type: String
+            },
+            
+            nBins: {
+                type: Number,
+                notify: true,
+                reflect: true
             }
         };
     }
@@ -208,7 +225,8 @@ class TrendingPlot extends LitElement {
         if (!("errorbars" in changedProperties)) this.errorbars = this.synchronizer.errorbars;
         if (!("useUTC" in changedProperties)) this.useUTC = this.synchronizer.useUTC;
         if (!("range" in changedProperties)) this.range = this.synchronizer.range;
-        
+        if (!("nBins" in changedProperties)) this.nBins = this.synchronizer.nBins;
+
         this.shadowRoot.querySelector(".legend").toggleVisibility = (series) => {
             this._toggleVisibility(series);
         };
@@ -293,6 +311,8 @@ class TrendingPlot extends LitElement {
             if (name === 'range') {
                 reloadNeeded = true;
             } else if (name === 'errorbars') {
+                reloadNeeded = true;
+            } else if (name === 'nBins') {
                 reloadNeeded = true;
             } else if (name === 'useUTC') {
                 this.graph.updateOptions({labelsUTC: this.useUTC});
@@ -422,7 +442,7 @@ class TrendingPlot extends LitElement {
             return data.series.map(function (series, i) {
                 return `<div class="legendElement" style="color: ${series.color};">
                         <label for="${i}">
-                        <input id="${i}" type="checkbox" ${series.isVisible ? "checked" : ""} 
+                        <input id="${i}" type="checkbox" ${series.isVisible ? "checked" : ""}
                                onclick="this.closest('.legend').toggleVisibility(this.id)">${series.dashHTML} ${series.labelHTML}</label></div>`;
             }).join('&nbsp;');
         }
@@ -498,7 +518,7 @@ class TrendingData extends LitElement {
         super();
         this.axis = "y1";
     }
-    
+
     connectedCallback() {
         super.connectedCallback();
         this._plot = this.closest("trending-plot");
@@ -517,7 +537,7 @@ class TrendingData extends LitElement {
         if (index2 > -1) {
             this._plot.labels.splice(index2, 1);
         }
-    }   
+    }
 
     get label() {
         return this.innerHTML;
@@ -526,7 +546,15 @@ class TrendingData extends LitElement {
 
 
 class TrendingController extends LitElement {
-
+    
+        static get styles() {
+            return css`
+                #timeZoneSelector {
+                    width: 5em;
+                }
+            `;
+        }
+    
     static get properties() {
         return {
             errorbars: {
@@ -569,8 +597,9 @@ class TrendingController extends LitElement {
                         <option disabled       ?selected=${this._quantizedRange === 'custom'}>Custom</option>
                     </select>
                 </nobr>
+                ${this.getDateTimeChooser(this._quantizedRange === 'custom')}
                 <nobr>
-                    <b>Error Bars:</b> 
+                    <b>Error Bars:</b>
                     <select id="errorBarSelector" @change=${this._setErrorBars}>
                         <option value="NONE"   ?selected=${this.errorbars === 'NONE'}>None</option>
                         <option value="MINMAX" ?selected=${this.errorbars === 'MINMAX'}>MinMax</option>
@@ -578,14 +607,30 @@ class TrendingController extends LitElement {
                     </select>
                 </nobr>
                 <nobr>
-                    <b>Timezone:</b> 
-                    <select id="timeZoneSelector" @change=${this._setTimeZone}>
-                        <option value="false" ?selected=${!this.useUTC}>Local (${Intl.DateTimeFormat().resolvedOptions().timeZone})</option>
-                        <option value="true"  ?selected=${this.useUTC}>UTC</option>
+                    <b>Timezone:</b>
+                    <select id="timeZoneSelector" @change=${this._setTimeZone} >
+                        <option value="false" ?selected=${!this.useUTC} data-abbr="Local">Local (${Intl.DateTimeFormat().resolvedOptions().timeZone})</option>
+                        <option value="true"  ?selected=${this.useUTC} data-abbr="UTC">UTC</option>
                     </select>
+                </nobr>
+                <nobr>
+                    <b>Bins:</b>
+                    <input type="number" id="nBinsSelector" @change=${this._setNBins} min="50" max="5000" step="50" value=${this.nBins}>
                 </nobr>
             </div>
         `;
+    }
+    
+    getDateTimeChooser(show) {
+        console.log(new Date(this._toTimeRange(this.range).start).toISOString().slice(0,16));
+        console.log(new Date(this._toTimeRange(this.range).end).toISOString());
+        if (show) return html`
+                <nobr>
+                    <input type="datetime-local" id="start-time" name="start-time" @change=${this._customZoom} value="${new Date(this._toTimeRange(this.range).start).toISOString().slice(0,16)}">
+                    <input type="datetime-local" id="end-time" name="end-time" @change=${this._customZoom} value="${new Date(this._toTimeRange(this.range).end).toISOString().slice(0,16)}">
+                </nobr>
+        `;
+        else return html``;
     }
 
     constructor() {
@@ -594,6 +639,7 @@ class TrendingController extends LitElement {
         this.range = _defaultRangeSynchronizer.range;
         this.useUTC = _defaultRangeSynchronizer.useUTC;
         this.errorbars = _defaultRangeSynchronizer.errorbars;
+        this.nBins = _defaultRangeSynchronizer.nBins;
     }
 
     firstUpdated(changedProperties) {
@@ -601,8 +647,9 @@ class TrendingController extends LitElement {
         _rangeSynchronizerForGroup(this.group).range = this.range;
         _rangeSynchronizerForGroup(this.group).useUTC = this.useUTC;
         _rangeSynchronizerForGroup(this.group).errorbars = this.errorbars;
+        _rangeSynchronizerForGroup(this.group).nBins = this.nBins;
     }
-    
+
     set range(value) {
         const oldValue = this.range;
         this._range = value;
@@ -618,12 +665,24 @@ class TrendingController extends LitElement {
         _rangeSynchronizerForGroup(this.group).range = this.shadowRoot.querySelector("#rangeSelector").value;
     }
 
+    _customZoom() {
+        let start = new Date(this.shadowRoot.querySelector("#start-time").value);
+        let end = new Date(this.shadowRoot.querySelector("#end-time").value);
+        _rangeSynchronizerForGroup(this.group).range = JSON.stringify({'start': start.getTime(), 'end': end.getTime()});        
+    }
+
     _setErrorBars() {
         _rangeSynchronizerForGroup(this.group).errorbars = this.shadowRoot.querySelector("#errorBarSelector").value;
     }
 
     _setTimeZone() {
-        _rangeSynchronizerForGroup(this.group).useUTC = this.shadowRoot.querySelector("#timeZoneSelector").value === 'true';
+        let element = this.shadowRoot.querySelector("#timeZoneSelector");
+        _rangeSynchronizerForGroup(this.group).useUTC = element.value === 'true';
+        element.text = "XYZ";
+    }
+
+    _setNBins() {
+        _rangeSynchronizerForGroup(this.group).nBins = this.shadowRoot.querySelector("#nBinsSelector").value;
     }
 
     _computeQuantizedRange() {
@@ -651,6 +710,17 @@ class TrendingController extends LitElement {
             return 'custom';
         }
     }
+    
+    // ToDo: Get rid of cut-paste duplication
+    _toTimeRange(range) {
+        if (range.startsWith('{')) {
+            return JSON.parse(range);
+        } else {
+            var now = Date.now();
+            var then = now - (isNaN(range) ? parse(range) : range);
+            return {start: then, end: now};
+        }
+    }
 }
 
 class TrendingGrid extends LitElement {
@@ -671,11 +741,11 @@ class TrendingGrid extends LitElement {
             <style>
                 .plot-grid {
                     --colNum: ${this.columns};
-                    display: grid; 
-                    grid-template-columns: repeat(var(--colNum), calc(100% / var(--colNum))); 
+                    display: grid;
+                    grid-template-columns: repeat(var(--colNum), calc(100% / var(--colNum)));
                     width: 100%;
                 }
-            </style> 
+            </style>
             <div class="plot-grid">
                 <slot></slot>
             </div>

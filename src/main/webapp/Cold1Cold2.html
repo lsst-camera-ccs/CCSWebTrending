@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <title>Cold1/Cold2 Performance</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="./ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="2">
+      <trending-plot title="Discharge/Suction Pressures"  style="height: 250px;">
+        <trending-data key="24206" axis="y1">Cold1/DischrgPrs</trending-data>
+        <trending-data key="24185" axis="y1">Cold1/SuctionPrs</trending-data>
+        <trending-data key="24272" axis="y1">Cold2/DischrgPrs</trending-data>
+        <trending-data key="24176" axis="y1">Cold2/SuctionPrs</trending-data>
+      </trending-plot>
+      <trending-plot title="SuperHeat SubCooling" style="height: 250px;">
+        <trending-data key="84633" axis="y1">Cold1/SupplySubCooling</trending-data>
+        <trending-data key="59086" axis="y1">Cold1/SuperHeat</trending-data>
+        <trending-data key="84635" axis="y1">Cold2/SupplySubCooling</trending-data>
+        <trending-data key="59087" axis="y1">Cold2/SuperHeat</trending-data>
+      </trending-plot>
+      <trending-plot title="Water Temperature" style="height: 250px;">
+        <trending-data key="24211" axis="y1">Cold1/WaterInTmp</trending-data>
+        <trending-data key="24291" axis="y1">Cold1/WaterOutTmp</trending-data>
+        <trending-data key="24306" axis="y1">Cold2/WaterInTmp</trending-data>
+        <trending-data key="24292" axis="y1">Cold2/WaterOutTmp</trending-data>
+      </trending-plot>
+      <trending-plot title="Cooling Valve Position" style="height: 250px;">
+        <trending-data key="86502" axis="y1">Cold1</trending-data>
+        <trending-data key="86503" axis="y1">Cold2</trending-data>
+      </trending-plot>
+      <trending-plot title="HGB Valve Position" style="height: 250px;">
+        <trending-data key="58503" axis="y1">Cold1</trending-data>
+        <trending-data key="58504" axis="y1">Cold2</trending-data>
+      </trending-plot>
+    </trending-grid>
+  </body>
+</html>

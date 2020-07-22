@@ -147,7 +147,7 @@ public class Site implements AutoCloseable {
         }
     }
 
-    ChannelTree getChannelTree() throws IOException {
+    ChannelTree getChannelTree(boolean refresh) throws IOException {
         Runnable readChannelTree = new Runnable() {
             @Override
             public void run() {
@@ -162,7 +162,7 @@ public class Site implements AutoCloseable {
             }
         };
 
-        if (!channelTreeInitialized.getAndSet(true)) {
+        if (refresh || !channelTreeInitialized.getAndSet(true)) {
             try {
                 readChannelTree.run();
             } finally {

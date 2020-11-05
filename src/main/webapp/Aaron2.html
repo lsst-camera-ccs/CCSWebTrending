@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <title>Cold1/Cold2 Performance</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="module" src="./ccs-trending.js"></script>
+    </head>
+    <body>
+    <trending-controller range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="2">
+        <trending-plot title="Discharge/Suction Pressures"  style="height: 250px;">
+            <trending-data key="24206" axis="y1">Cold1/DischrgPrs</trending-data>
+            <trending-data key="24185" axis="y1">Cold1/SuctionPrs</trending-data>
+            <trending-data key="24272" axis="y1">Cold2/DischrgPrs</trending-data>
+            <trending-data key="24176" axis="y1">Cold2/SuctionPrs</trending-data>
+        </trending-plot>
+        <trending-plot title="SuperHeat SubCooling" style="height: 250px;">
+            <trending-data key="84633" axis="y1">Cold1/SupplySubCooling</trending-data>
+            <trending-data key="59086" axis="y1">Cold1/SuperHeat</trending-data>
+            <trending-data key="84635" axis="y1">Cold2/SupplySubCooling</trending-data>
+            <trending-data key="59087" axis="y1">Cold2/SuperHeat</trending-data>
+        </trending-plot>
+        <trending-plot title="Water Temperature" ylabel="°C" style="height: 250px;">
+            <trending-data key="24211" axis="y1">Cold1/WaterInTmp</trending-data>
+            <trending-data key="24291" axis="y1">Cold1/WaterOutTmp</trending-data>
+            <trending-data key="24306" axis="y1">Cold2/WaterInTmp</trending-data>
+            <trending-data key="24292" axis="y1">Cold2/WaterOutTmp</trending-data>
+        </trending-plot>
+        <trending-plot title="Cooling Valve Position" style="height: 250px;">
+            <trending-data key="86502" axis="y1">Cold1</trending-data>
+            <trending-data key="86503" axis="y1">Cold2</trending-data>
+        </trending-plot>
+        <trending-plot title="HGB Valve Position" style="height: 250px;">
+            <trending-data key="58503" axis="y1">Cold1</trending-data>
+            <trending-data key="58504" axis="y1">Cold2</trending-data>
+        </trending-plot>
+        <trending-plot title="Cold plate temperature" ylabel="Temperature (°C)" style="height: 250px;">
+            <trending-data key="21742">RTD-00</trending-data>
+            <trending-data key="21743">RTD-02</trending-data>
+            <trending-data key="21744">RTD-03</trending-data>
+            <trending-data key="21745">RTD-05</trending-data>
+            <trending-data key="21746">RTD-50</trending-data>
+            <trending-data key="21747">RTD-52</trending-data>
+            <trending-data key="21748">RTD-53</trending-data>
+            <trending-data key="21749">RTD-55</trending-data>
+        </trending-plot>
+        <trending-plot title="Hex Temperatures" ylabel="°C"   style="height: 250px;">
+            <trending-data key="24666" axis="y1">Cold1/EvapExitTmp</trending-data>
+            <trending-data key="24630" axis="y1">Cold1/HexRtrnTmp</trending-data>
+            <trending-data key="24680" axis="y1">Cold1/PreExpnTmp</trending-data>
+            <trending-data key="24620" axis="y1">Cold2/EvapExitTmp</trending-data>
+            <trending-data key="24651" axis="y1">Cold2/HexRtrnTmp</trending-data>
+            <trending-data key="24669" axis="y1">Cold2/PreExpnTmp</trending-data>
+        </trending-plot>
+        <trending-plot title="Cold Trim Heater Power" ylabel="Watts"  style="height: 250px;">
+            <trending-data key="21717" axis="y1">ColdHtr0_P</trending-data>
+            <trending-data key="21720" axis="y1">ColdHtr1_P</trending-data>
+            <trending-data key="21723" axis="y1">ColdHtr2_P</trending-data>
+            <trending-data key="21726" axis="y1">ColdHtr3_P</trending-data>
+            <trending-data key="21729" axis="y1">ColdHtr4_P</trending-data>
+            <trending-data key="21732" axis="y1">ColdHtr5_P</trending-data>
+        </trending-plot>
+
+        <trending-plot title="REB temperature (Reb 1)" ylabel="Temperature (Temp2 - °C)" range="3600000" style="height: 250px;">
+            <trending-data key="35276">R01</trending-data>
+            <trending-data key="56045">R03</trending-data>
+            <trending-data key="15341">R10</trending-data>
+            <trending-data key="12698">R12</trending-data>
+            <trending-data key="54162">R14</trending-data>
+            <trending-data key="37030">R20</trending-data>
+            <trending-data key="15741">R22</trending-data>
+            <trending-data key="53538">R24</trending-data>
+            <trending-data key="36251">R30</trending-data>
+            <trending-data key="54155">R32</trending-data>
+            <trending-data key="56996">R34</trending-data>
+            <trending-data key="55202">R41</trending-data>
+            <trending-data key="57251">R43</trending-data>
+        </trending-plot>
+        <trending-plot title="Reb Power (Reb 1)" ylabel="Watts" style="height: 250px;">
+            <trending-data key="35640" axis="y1">R01</trending-data>
+            <trending-data key="56644" axis="y1">R03</trending-data>
+            <trending-data key="15588" axis="y1">R10</trending-data>
+            <trending-data key="12726" axis="y1">R12</trending-data>
+            <trending-data key="55216" axis="y1">R14</trending-data>
+            <trending-data key="36531" axis="y1">R20</trending-data>
+            <trending-data key="15148" axis="y1">R22</trending-data>
+            <trending-data key="55711" axis="y1">R24</trending-data>
+            <trending-data key="35491" axis="y1">R30</trending-data>
+            <trending-data key="56758" axis="y1">R32</trending-data>
+            <trending-data key="56650" axis="y1">R34</trending-data>
+            <trending-data key="54916" axis="y1">R41</trending-data>
+            <trending-data key="54670" axis="y1">R43</trending-data>
+        </trending-plot>
+    </trending-grid>
+</body>
+</html>

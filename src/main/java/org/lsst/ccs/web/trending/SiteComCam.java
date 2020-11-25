@@ -8,8 +8,8 @@ import java.util.Properties;
  *
  * @author tonyj
  */
-public class SiteComCamTucson extends Site {
-    private SiteComCamTucson(Properties props) throws MalformedURLException, JSchException {
+public class SiteComCam extends Site {
+    private SiteComCam(Properties props) throws MalformedURLException, JSchException {
         super(props);
     }
 
@@ -17,8 +17,8 @@ public class SiteComCamTucson extends Site {
         Properties props = new Properties();
         props.setProperty("name", "comcam");
         props.setProperty("useSSH", "false");
-        props.setProperty("restURL", "http://comcam-db01.ls.lsst.org:8080/rest/data/dataserver/");
+        props.setProperty("restURL", "http://comcam-db01.cp.lsst.org:8080/rest/data/dataserver/");
 
-        return new SiteComCamTucson(props);
+        return new SiteComCam(props);
     }    
 }

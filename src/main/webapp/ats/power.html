@@ -1,94 +1,63 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>AuxTel WREB Voltages as measured on WREB</title>
+        <title>AuxTel WREB Voltages</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined-dev.js"></script>
-        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="/CCSWebTrending/synchronizer.js"></script>
-        <script src="/CCSWebTrending/CCSTrending.js"></script>
-        <link rel="stylesheet" href="/CCSWebTrending/trending.css"/>
+        <script type="module" src="../ccs-trending.js"></script>
     </head>
     <body>
-        <div class="link-interaction">
-            <style scoped>.link-interaction a:visited { color: blue; }</style>
-            <div id="div_g"></div>
-            <b>Zoom:</b>
-            <a href="#" id="hour">hour</a> 
-            <a href="#" id="3hour">3 hour</a> 
-            <a href="#" id="6hour">6 hour</a> 
-            <a href="#" id="12hour">12 hour</a> 
-            <a href="#" id="day">day</a> 
-            <a href="#" id="week">week</a> 
-            <a href="#" id="month">month</a>.
-            <a href="#" id="2month">2 month</a>.
-            Or drag to select area for zoom, or shift drag to pan
-        </div>
-        <div id="graph1" style="width:1000px;height:300px"></div>
-        <div id="graph2" style="width:1000px;height:300px"></div>
-        <div id="graph3" style="width:1000px;height:300px"></div>
-        <script type="text/javascript">
-            g1 = new CCSTrendingPlot(
-                    document.getElementById("graph1"), {
-                range: '1d',
-                restURL: '/CCSWebTrending/rest/ats',
-                ylabel: 'Voltage',
-                title: 'WREB PS Voltages',
-                data: {
-                    30: {title: "Analog"},
-                    28: {title: "Digital"},
-                    32: {title: "ClkHigh"},
-                    223: {title: "ClkLow"},
-                    227: {title: "DPHI"},
-                    36: {title: "Heater"},
-                    34: {title: "OD"},
-                }
-            });
-            g2 = new CCSTrendingPlot(
-                    document.getElementById("graph2"), {
-                range: '1d',
-                restURL: '/CCSWebTrending/rest/ats',
-                ylabel: 'Voltage',
-                title: 'WREB PS Voltages',
-                data: {
-                    30: {title: "Parallel Clock Low"},
-                    41: {title: "Serial Clock Low"},
-                    40: {title: "Serial Clock High"},
-                    32: {title: "GD"},
-                    46: {title: "RG"},
-                    48: {title: "RD"},
-                    10: {title: "OG"},
-                    47: {title: "OD"},
-                }
-            });
-            g3 = new CCSTrendingPlot(
-                    document.getElementById("graph3"), {
-                range: '1d',
-                restURL: '/CCSWebTrending/rest/ats',
-                ylabel: 'Current (mA)',
-                title: 'Power supply currents',
-                data: {
-                    31: {title: "Analog"},
-                    29: {title: "Digital"},
-                    33: {title: "ClkHigh"},
-                    223: {title: "ClkLow"},
-                    227: {title: "DPHI"},
-                    37: {title: "Heater"},
-                    35: {title: "OD"},
-                }
-            });
-            synchronize(g1,g2,g3);
-            var zoom = function(time) { g1.zoom(time); g2.zoom(time); g3.zoom(time);};
-            $('#hour').click(function() { zoom(3600); }); 
-            $('#3hour').click(function() { zoom(3*3600); });
-            $('#6hour').click(function() { zoom(6*3600); });
-            $('#12hour').click(function() { zoom(12*3600); });
-            $('#day').click(function() { zoom(86400); });
-            $('#week').click(function() { zoom(604800); });
-            $('#month').click(function() { zoom(30 * 86400); });
-            $('#2month').click(function() { zoom(61 * 86400); });
-        </script>
-    </body>
+    <trending-plot title="Voltages at WREB" ylabel="Voltage" restURL="../rest/ats">
+        <trending-data key="1095">Analog</trending-data>
+        <trending-data key="1104">Digital</trending-data>
+        <trending-data key="1100">ClkHigh</trending-data>
+        <trending-data key="1101">ClkLow</trending-data>   
+        <trending-data key="1111">OD</trending-data> 
+    </trending-plot>
+    <trending-plot title="Power Supply Voltages" ylabel="Voltage" restURL="../rest/ats">
+        <trending-data key="219">Analog</trending-data>
+        <trending-data key="217">Digital</trending-data>
+        <trending-data key="221">ClkHigh</trending-data>
+        <trending-data key="223">ClkLow</trending-data>   
+        <trending-data key="227">DPHI</trending-data> 
+        <trending-data key="225">OD</trending-data> 
+        <trending-data key="830">Aux</trending-data>
+        <trending-data key="825">Fan</trending-data>
+        <trending-data key="823">OTM</trending-data>
+    </trending-plot>
+    <trending-plot title="Power Supply Currents" ylabel="Current (mA)" restURL="../rest/ats">
+        <trending-data key="218">Analog</trending-data>
+        <trending-data key="216">Digital</trending-data>
+        <trending-data key="220">ClkHigh</trending-data>
+        <trending-data key="222">ClkLow</trending-data>   
+        <trending-data key="226">DPHI</trending-data> 
+        <trending-data key="224">OD</trending-data> 
+        <trending-data key="829">Aux</trending-data>
+        <trending-data key="824">Fan</trending-data>
+        <trending-data key="822">OTM</trending-data>
+    </trending-plot>
+    <trending-controller useUTC></trending-controller>
+
+
+    <script type="text/javascript">
+        g1 = new CCSTrendingPlot(
+                document.getElementById("graph1"), {
+            range: '1d',
+            restURL: '/CCSWebTrending/rest/ats',
+            ylabel: 'Voltage',
+            title: 'WREB PS Voltages',
+            data: {
+                30: {title: "Analog"},
+                28: {title: "Digital"},
+                32: {title: "ClkHigh"},
+                223: {title: "ClkLow"},
+                227: {title: "DPHI"},
+                36: {title: "Heater"},
+                34: {title: "OD"},
+            }
+        });
+
+    </script>
+</body>
 
 </html>

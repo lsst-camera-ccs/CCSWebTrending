@@ -670,9 +670,16 @@ class TrendingGrid extends LitElement {
         return html`
             <style>
                 .plot-grid {
-                    --colNum: ${this.columns};
+                    --repeat: ${this.columns};
+                }
+                @media (max-width: calc(500px * ${this.columns})) {
+                    .plot-grid {
+                        --repeat: auto-fit;
+                    }                                        
+                }                        
+                .plot-grid {                        
                     display: grid; 
-                    grid-template-columns: repeat(var(--colNum), calc(100% / var(--colNum))); 
+                    grid-template-columns: repeat(var(--repeat), minmax(500px, 1fr)); 
                     width: 100%;
                 }
             </style> 

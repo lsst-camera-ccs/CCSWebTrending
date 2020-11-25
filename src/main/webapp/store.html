@@ -7,8 +7,10 @@
   </head>
   <body>
     <trending-controller range="1d" errorbars="MINMAX"></trending-controller>
-    <trending-plot title="DAQ 2-day store" ylabel="GBytes">
-      <trending-data key="42369" axis="y1">FreeSpace</trending-data>
+    <trending-plot title="DAQ 2-day store" ylabel="GBytes" y2label="Free Fraction">
+      <trending-data key="42368" axis="y1">Capacity</trending-data>
+      <trending-data key="42369" axis="y1">Free Space</trending-data>
+      <trending-data key="42367" axis="y2">Free Fraction</trending-data>
     </trending-plot>
   </body>
 </html>

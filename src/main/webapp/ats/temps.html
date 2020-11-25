@@ -4,79 +4,27 @@
         <title>AuxTel Camera Temperatures</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined-dev.js"></script>
-        <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="/CCSWebTrending/synchronizer.js"></script>
-        <script src="/CCSWebTrending/CCSTrending.js"></script>
-        <link rel="stylesheet" href="/CCSWebTrending/trending.css"/>
+        <script type="module" src="../ccs-trending.js"></script>
     </head>
     <body>
-        <div class="link-interaction">
-            <style scoped>.link-interaction a:visited { color: blue; }</style>
-            <div id="div_g"></div>
-            <b>Zoom:</b>
-            <a href="#" id="hour">hour</a> 
-            <a href="#" id="3hour">3 hour</a> 
-            <a href="#" id="6hour">6 hour</a> 
-            <a href="#" id="12hour">12 hour</a> 
-            <a href="#" id="day">day</a> 
-            <a href="#" id="week">week</a> 
-            <a href="#" id="month">month</a>.
-            Or drag to select area for zoom, or shift drag to pan
-        </div>
-        <div id="graph1" style="width:1000px;height:300px"></div>
-        <div id="graph2" style="width:1000px;height:300px"></div>
-        <div id="graph3" style="width:1000px;height:300px"></div>
-        <script type="text/javascript">
-            g1 = new CCSTrendingPlot(
-                    document.getElementById("graph1"), {
-                range: '1d',
-                restURL: '/CCSWebTrending/rest/ats',
-                ylabel: 'Temperature (°C)',
-                title: 'CCD temperatures',
-                data: {
-                    566: {title: "Cryocon CCD Temerature"},
-                    26:  {title: "WREB CCD Temperature"},
-                }
-            });
-            g2 = new CCSTrendingPlot(
-                    document.getElementById("graph2"), {
-                range: '1d',
-                restURL: '/CCSWebTrending/rest/ats',
-                ylabel: 'Temperature (°C)',
-                title: 'WREB board temperatures',
-                data: {
-                    18: {title: "Temp 1"},
-                    19: {title: "Temp 2"},
-                    20: {title: "Temp 3"},
-                    21: {title: "Temp 4"},
-                    22: {title: "Temp 5"},
-                    23: {title: "Temp 6"},
-                    24: {title: "Aspic U"},
-                    25: {title: "Aspic L"},
-               }
-            });
-            g3 = new CCSTrendingPlot(
-                    document.getElementById("graph3"), {
-                range: '1d',
-                restURL: '/CCSWebTrending/rest/ats',
-                ylabel: 'Temperature (°C)',
-                title: 'Cold/Cryo temperatures',
-                data: {
-                    568: {title: "Cold"},
-                    567: {title: "Cryo"}
-                }
-            });
-            synchronize(g1,g2,g3);
-            var zoom = function(time) { g1.zoom(time); g2.zoom(time); g3.zoom(time);};
-            $('#hour').click(function() { zoom(3600); }); 
-            $('#3hour').click(function() { zoom(3*3600); });
-            $('#6hour').click(function() { zoom(6*3600); });
-            $('#12hour').click(function() { zoom(12*3600); });
-            $('#day').click(function() { zoom(86400); });
-            $('#week').click(function() { zoom(604800); });
-            $('#month').click(function() { zoom(30 * 86400); });
-        </script>
+    <trending-plot title="CCD temperatures" ylabel="Temperature (°C)" restURL="../rest/ats">
+        <trending-data key="566">Cryocon CCD Temperature</trending-data>
+        <trending-data key="1130">WREB CCD Temperature</trending-data>
+    </trending-plot>
+    <trending-plot title="WREB board temperatures" ylabel="Temperature (°C)" restURL="../rest/ats">
+        <trending-data key="1131">Temp 1</trending-data>
+        <trending-data key="1132">Temp 2</trending-data>
+        <trending-data key="1133">Temp 3</trending-data>
+        <trending-data key="1134">Temp 4</trending-data>
+        <trending-data key="1135">Temp 5</trending-data>
+        <trending-data key="1136">Temp 6</trending-data>
+        <trending-data key="1096">Aspic U</trending-data>
+        <trending-data key="1097">Aspic L</trending-data>
+    </trending-plot>
+    <trending-plot title="Cold/Cryo temperatures" ylabel="Temperature (°C)" restURL="../rest/ats">
+        <trending-data key="568">Cold</trending-data>
+        <trending-data key="567">Cryo</trending-data>
+    </trending-plot>
+    <trending-controller useUTC></trending-controller>
     </body>
-
 </html>

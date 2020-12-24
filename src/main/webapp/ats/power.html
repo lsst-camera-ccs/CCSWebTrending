@@ -37,27 +37,6 @@
         <trending-data key="822">OTM</trending-data>
     </trending-plot>
     <trending-controller useUTC></trending-controller>
-
-
-    <script type="text/javascript">
-        g1 = new CCSTrendingPlot(
-                document.getElementById("graph1"), {
-            range: '1d',
-            restURL: '/CCSWebTrending/rest/ats',
-            ylabel: 'Voltage',
-            title: 'WREB PS Voltages',
-            data: {
-                30: {title: "Analog"},
-                28: {title: "Digital"},
-                32: {title: "ClkHigh"},
-                223: {title: "ClkLow"},
-                227: {title: "DPHI"},
-                36: {title: "Heater"},
-                34: {title: "OD"},
-            }
-        });
-
-    </script>
 </body>
 
 </html>

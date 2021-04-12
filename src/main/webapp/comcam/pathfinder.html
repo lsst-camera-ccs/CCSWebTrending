@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CCSTrending Pathfinder Plots</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="2">
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/*/*">
+        <trending-data key="24127" axis="y1">GaugeGCC00/pfpressure</trending-data>
+        <trending-data key="24129" axis="y1">GaugeGCC01/turbopressure</trending-data>
+        <trending-data key="24131" axis="y1">GaugeGCC02/forelinepressure</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/rtds/*">
+        <trending-data key="23780" axis="y1">REF-HEX-RTD-00</trending-data>
+        <trending-data key="23781" axis="y1">REF-HEX-RTD-01</trending-data>
+        <trending-data key="23782" axis="y1">REF-HEX-RTD-02</trending-data>
+        <trending-data key="23783" axis="y1">REF-HEX-RTD-03</trending-data>
+        <trending-data key="23784" axis="y1">REF-HEX-RTD-04</trending-data>
+        <trending-data key="23785" axis="y1">REF-HEX-RTD-05</trending-data>
+        <trending-data key="23786" axis="y1">REF-HEX-RTD-06</trending-data>
+        <trending-data key="23787" axis="y1">REF-HEX-RTD-07</trending-data>
+        <trending-data key="23788" axis="y1">REF-HEX-RTD-08</trending-data>
+        <trending-data key="23789" axis="y1">REF-HEX-RTD-09</trending-data>
+        <trending-data key="23790" axis="y1">REF-HEX-RTD-10</trending-data>
+        <trending-data key="23791" axis="y1">REF-HEX-RTD-11</trending-data>
+        <trending-data key="23792" axis="y1">REF-HEX-RTD-12</trending-data>
+        <trending-data key="23793" axis="y1">REF-HEX-RTD-13</trending-data>
+        <trending-data key="23794" axis="y1">REF-HEX-RTD-14</trending-data>
+        <trending-data key="23795" axis="y1">REF-HEX-RTD-15</trending-data>
+        <trending-data key="23796" axis="y1">REF-HEX-RTD-16</trending-data>
+        <trending-data key="23797" axis="y1">REF-HEX-RTD-17</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/rtds/*">
+        <trending-data key="23798" axis="y1">REF-LOAD-RTD-00</trending-data>
+        <trending-data key="23799" axis="y1">REF-LOAD-RTD-01</trending-data>
+        <trending-data key="23800" axis="y1">REF-LOAD-RTD-02</trending-data>
+        <trending-data key="23801" axis="y1">REF-LOAD-RTD-03</trending-data>
+        <trending-data key="23802" axis="y1">REF-LOAD-RTD-04</trending-data>
+        <trending-data key="23803" axis="y1">REF-LOAD-RTD-05</trending-data>
+        <trending-data key="23804" axis="y1">REF-LOAD-RTD-06</trending-data>
+        <trending-data key="23805" axis="y1">REF-LOAD-RTD-07</trending-data>
+        <trending-data key="23806" axis="y1">REF-LOAD-RTD-08</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/*/*">
+        <trending-data key="23761" axis="y1">IonPumps/current</trending-data>
+        <trending-data key="23815" axis="y2">turbo/rpm</trending-data>
+      </trending-plot>
+    </trending-grid>
+  </body>
+</html>

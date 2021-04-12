@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CCSTrending ComCam Vacuum Plots</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="2">
+      <trending-plot restURL="../rest/comcam" useUTC title="*/*/*/*/*">
+        <trending-data key="14681" axis="y1">comcam-vacuum/rtds/temperatureCold1</trending-data>
+        <trending-data key="14682" axis="y1">comcam-vacuum/rtds/temperatureCold2</trending-data>
+        <trending-data key="14221" axis="y1">comcam-vacuum/rtds/temperatureCryo</trending-data>
+        <trending-data key="12272" axis="y2">comcam-vacuum/VQMonitor/vqmpressure</trending-data>
+        <trending-data key="1585" axis="y1">comcam-fp/R22/Reb0/S01/Temp</trending-data>
+        <trending-data key="1746" axis="y1">comcam-fp/R22/Reb1/S11/Temp</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="comcam-fp/R22/*/HtrW">
+        <trending-data key="1609" axis="y1">Reb0</trending-data>
+        <trending-data key="1665" axis="y1">Reb2</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="comcam-fp/R22/*/*">
+        <trending-data key="1772" axis="y1">Reb0/Power</trending-data>
+        <trending-data key="1653" axis="y2">Reb0/ODI</trending-data>
+        <trending-data key="1769" axis="y1">Reb1/Power</trending-data>
+        <trending-data key="1830" axis="y2">Reb1/ODI</trending-data>
+        <trending-data key="1825" axis="y1">Reb2/Power</trending-data>
+        <trending-data key="1576" axis="y2">Reb2/ODI</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="comcam-vacuum/*/*">
+        <trending-data key="12277" axis="y1">IonPumps/current</trending-data>
+        <trending-data key="12239" axis="y2">turbo/RPM</trending-data>
+      </trending-plot>
+    </trending-grid>
+  </body>
+</html>

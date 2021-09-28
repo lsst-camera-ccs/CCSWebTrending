@@ -56,7 +56,7 @@ public class TrendingRestInterface {
             LOG.log(Level.SEVERE, "Failed to initialize sites", ex);
         }
         try {
-            Site comcam = SiteComCamTucson.create();
+            Site comcam = SiteComCam.create();
             sites.put(comcam.getName(), comcam);
         } catch (JSchException | MalformedURLException | RuntimeException ex) {
             LOG.log(Level.SEVERE, "Failed to initialize sites", ex);

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>AuxTel Vacuum</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="module" src="../ccs-trending.js"></script>
+    </head>
+    <body>
+    <trending-controller useUTC></trending-controller>
+    <trending-grid columns="1">
+        <trending-plot restURL="../rest/ats" useUTC title="Vacuum pressure" ylabel="Pressure (Torr)" logscale="">
+            <trending-data key="570" axis="y1">Pressure</trending-data>
+        </trending-plot>
+    </trending-grid>
+</body>
+</html>

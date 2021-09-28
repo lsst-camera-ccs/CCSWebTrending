@@ -7,8 +7,10 @@
   </head>
   <body>
     <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
-    <trending-plot restURL="../rest/comcam" useUTC title="DAQ 2-day store" ylabel="GBytes">
-      <trending-data key="14015" axis="y1">FreeSpace</trending-data>
+    <trending-plot restURL="../rest/comcam" useUTC title="DAQ 2-day store" ylabel="GBytes" y2label="Free Fraction">
+        <trending-data key="14014" axis="y1">Capacity</trending-data>
+        <trending-data key="14015" axis="y1">Free Space</trending-data>
+        <trending-data key="14016" axis="y2">Free Fraction</trending-data>
     </trending-plot>
   </body>
 </html>

@@ -587,6 +587,7 @@ class TrendingController extends LitElement {
                 <nobr>
                     <b>Range:</b>
                     <select id="rangeSelector" @change=${this._zoom}>
+                        <option value="10m"    ?selected=${this._quantizedRange === '10m'}>10 Minutes</option>
                         <option value="1h"     ?selected=${this._quantizedRange === '1h'}>Hour</option>
                         <option value="3h"     ?selected=${this._quantizedRange === '3h'}>3 Hour</option>
                         <option value="6h"     ?selected=${this._quantizedRange === '6h'}>6 hour</option>

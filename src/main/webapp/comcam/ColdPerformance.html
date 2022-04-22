@@ -1,0 +1,71 @@
+<html>
+  <head>
+    <title>PathFinder Cold Performance Plots</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="2">
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/maq20/*">
+        <trending-data key="24327" axis="y1">REF-LOAD-RTD-02</trending-data>
+        <trending-data key="24328" axis="y1">REF-LOAD-RTD-03</trending-data>
+        <trending-data key="24329" axis="y1">REF-LOAD-RTD-04</trending-data>
+        <trending-data key="24330" axis="y1">REF-LOAD-RTD-05</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/maq20/*">
+        <trending-data key="24331" axis="y1">REF-LOAD-RTD-06</trending-data>
+        <trending-data key="24332" axis="y1">REF-LOAD-RTD-07</trending-data>
+        <trending-data key="24333" axis="y1">REF-LOAD-RTD-08</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder-quadbox/BFR">
+        <trending-data key="24897" axis="y1">Heater4Cold_I</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/maq20/*/SuperHeat">
+        <trending-data key="24305" axis="y1">Cold1</trending-data>
+        <trending-data key="24311" axis="y1">Cold2</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder-refrig/*/*">
+        <trending-data key="24209" axis="y1">Cold1/DischrgPrs</trending-data>
+        <trending-data key="24225" axis="y1">Cold1/SuctionPrs</trending-data>
+        <trending-data key="24273" axis="y1">Cold2/DischrgPrs</trending-data>
+        <trending-data key="24289" axis="y1">Cold2/SuctionPrs</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/maq20/*/*">
+        <trending-data key="24301" axis="y1">Cold1/EvapExitTmp</trending-data>
+        <trending-data key="24302" axis="y1">Cold1/HexRtrnTmp</trending-data>
+        <trending-data key="24303" axis="y1">Cold1/PreExpnTmp</trending-data>
+        <trending-data key="24307" axis="y1">Cold2/EvapExitTmp</trending-data>
+        <trending-data key="24308" axis="y1">Cold2/HexRtrnTmp</trending-data>
+        <trending-data key="24309" axis="y1">Cold2/PreExpnTmp</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder-refrig/*/HGBValvePosn">
+        <trending-data key="24217" axis="y1">Cold1</trending-data>
+        <trending-data key="24281" axis="y1">Cold2</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder-refrig/*/*">
+        <trending-data key="24228" axis="y1">Cold1/WaterInTmp</trending-data>
+        <trending-data key="24229" axis="y1">Cold1/WaterOutTmp</trending-data>
+        <trending-data key="24292" axis="y1">Cold2/WaterInTmp</trending-data>
+        <trending-data key="24293" axis="y1">Cold2/WaterOutTmp</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder-refrig/*/EEPRValvePosn">
+        <trending-data key="24212" axis="y1">Cold1</trending-data>
+        <trending-data key="24276" axis="y1">Cold2</trending-data>
+      </trending-plot>
+    </trending-grid>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

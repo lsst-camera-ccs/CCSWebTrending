@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>Chiller DUT temperatures</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="./ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="1">
+      <trending-plot restURL="rest" title="Chiller DUT temperatures">
+        <trending-data key="139234" axis="y1">FluidTemperature</trending-data>
+        <trending-data key="146230" axis="y1">ImportedColdTemp</trending-data>
+        <trending-data key="139239" axis="y1">TempDynamicSetPt</trending-data>
+        <trending-data key="139238" axis="y1">TempSetPoint</trending-data>
+      </trending-plot>
+    </trending-grid>
+  </body>
+</html>

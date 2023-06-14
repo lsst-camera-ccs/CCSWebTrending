@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <title>Utility Trunk</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="module" src="./ccs-trending.js"></script>
+    </head>
+    <body>
+    <trending-controller></trending-controller>
+    <trending-grid columns="1">
+        <trending-plot restURL="rest" title="Temperatures">
+            <trending-data key="103984" axis="y1">UT/FanInletTemp</trending-data>
+            <trending-data key="103891" axis="y1">UT/MidXPlusTemp</trending-data>
+            <trending-data key="103894" axis="y1">UT/TopXMinusTemp</trending-data>
+            <trending-data key="103487" axis="y1">VPC/RetnAirTemp</trending-data>
+            <trending-data key="103489" axis="y1">VPC/SplyAirTemp</trending-data>
+            <trending-data key="103460" axis="y1">MPC/RetnAirTemp</trending-data>
+            <trending-data key="103462" axis="y1">MPC/SplyAirTemp</trending-data>
+            <trending-data key="103984" axis="y1">UT/FanInletTemp</trending-data>
+            <trending-data key="103891" axis="y1">UT/MidXPlusTemp</trending-data>
+            <trending-data key="103894" axis="y1">UT/TopXMinusTemp</trending-data>
+            <trending-data key="103487" axis="y1">VPC/RetnAirTemp</trending-data>
+            <trending-data key="103489" axis="y1">VPC/SplyAirTemp</trending-data>
+            <trending-data key="139178" axis="y1">Body/BackFlngYMinusTemp</trending-data>
+            <trending-data key="139191" axis="y1">Body/CamBodyYPlusTemp</trending-data>
+            <trending-data key="139185" axis="y1">Body/CamHousXPlusTemp</trending-data>
+            <trending-data key="103460" axis="y1">MPC/RetnAirTemp</trending-data>
+            <trending-data key="103462" axis="y1">MPC/SplyAirTemp</trending-data>
+            <trending-data key="103984" axis="y1">UT/FanInletTemp</trending-data>
+            <trending-data key="103891" axis="y1">UT/MidXPlusTemp</trending-data>
+            <trending-data key="103894" axis="y1">UT/TopXMinusTemp</trending-data>
+            <trending-data key="103487" axis="y1">VPC/RetnAirTemp</trending-data>
+            <trending-data key="103489" axis="y1">VPC/SplyAirTemp</trending-data>
+        </trending-plot>
+        <trending-plot restURL="rest" title="Fan Speeds">
+            <trending-data key="103980" axis="y1">MPC</trending-data>
+            <trending-data key="103985" axis="y1">UT</trending-data>
+            <trending-data key="103986" axis="y1">VPC</trending-data>
+        </trending-plot>
+        <trending-plot restURL="rest" title="Pressures">
+            <trending-data key="103461" axis="y1">MPC/RetnPress</trending-data>
+            <trending-data key="103463" axis="y1">MPC/SplyPress</trending-data>
+            <trending-data key="103461" axis="y1">MPC/RetnPress</trending-data>
+            <trending-data key="103463" axis="y1">MPC/SplyPress</trending-data>
+            <trending-data key="103488" axis="y1">VPC/RetnPress</trending-data>
+            <trending-data key="103491" axis="y1">VPC/SplyPress</trending-data>
+        </trending-plot>
+        <trending-plot restURL="rest" title="Currents">
+            <trending-data key="103484" axis="y1">HtrCurrent</trending-data>
+        </trending-plot>
+    </trending-grid>
+</body>
+</html>

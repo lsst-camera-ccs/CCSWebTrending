@@ -350,6 +350,10 @@ class TrendingPlot extends LitElement {
     _updateData() {
         if (this.keys.length === 0)
             return;
+        if (document.visibilityState !== 'visible') {
+            this._message = "Update suppressed ("+document.visibilityState+")";
+            return;
+        }
         this._message = "Loading data...";
         let timeRange = this._toTimeRange(this.range);
         this.graph.updateOptions({dateWindow: [timeRange.start, timeRange.end]});

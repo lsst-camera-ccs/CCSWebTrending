@@ -436,6 +436,7 @@ class ChannelTree extends LitElement {
                     display: flex;
                     flex-direction: row;
                     overflow: hidden;
+                    min-height: 20px;
                 }
                 #filter-div label {
                     flex-grow: 1;
@@ -466,6 +467,7 @@ class ChannelTree extends LitElement {
                    <label for="filter" @search=${this._search} @change=${this._search}>
                       Filter:&nbsp;<input type="search" id="filter-tree" placeholder="**/*memory" results="5" autosave="ccs-tree-filter">
                    </label>
+                   Recent: <input @change=${this._search} type="checkbox" id="recent-only" checked>
                 </div>
                 <div id="channel_tree"></div>
             </div>
@@ -488,6 +490,7 @@ class ChannelTree extends LitElement {
         this.restURL = "rest";
         this.baseURL = "./";
         this._lastFilter = "";
+        this._lastFull = false;
     }
 
     createRenderRoot() {
@@ -520,17 +523,20 @@ class ChannelTree extends LitElement {
 
     _search() {
         let filter = this.querySelector('#filter-tree').value;
-        if (filter !== this._lastFilter) {
+        let full = !this.querySelector('#recent-only').checked;
+        if (filter !== this._lastFilter || full !== this._lastFull) {
             this._lastFilter = filter;
-            this.tree.settings.core.data.url = `${this.restURL}/channels?filter=${filter}`;
+            this._lastFull = full;
+            this.tree.settings.core.data.url = `${this.restURL}/channels?filter=${filter}&full=${full}`;
             this.tree.refresh();
         }
     }
 
     _refresh() {
-        this.tree.settings.core.data.url = `${this.restURL}/channels?filter=${this._lastFilter}&refresh=true`;
+        let full = !this.querySelector('#recent-only').checked;
+        this.tree.settings.core.data.url = `${this.restURL}/channels?filter=${this._lastFilter}&full=${full}&refresh=true`;
         this.tree.refresh();
-        this.tree.settings.core.data.url = `${this.restURL}/channels?filter=${this._lastFilter}`;
+        this.tree.settings.core.data.url = `${this.restURL}/channels?filter=${this._lastFilter}&full=${full}`;
     }
 }
 

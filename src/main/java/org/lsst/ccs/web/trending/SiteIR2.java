@@ -21,9 +21,9 @@ public class SiteIR2 extends Site {
         props.setProperty("name", "ir2");
         props.setProperty("useSSH", InetAddress.getLocalHost().getHostAddress().startsWith("134.79.") ? "false" : "true");
         props.setProperty("restURL", "http://lsst-mcm.slac.stanford.edu:8080/rest/data/dataserver/");
-        
+        // These are only used when testing offsite
         props.setProperty("ssh.user", "tonyj");
-        props.setProperty("ssh.host", "exodata01.slac.stanford.edu");
+        props.setProperty("ssh.host", "lsst-it01.slac.stanford.edu");
         props.setProperty("ssh.key", "/home/tonyj/.ssh/id_rsa");
         props.setProperty("ssh.key.password", "arun2000");
         

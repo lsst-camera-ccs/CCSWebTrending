@@ -38,6 +38,9 @@ public class Site implements AutoCloseable {
     private final AtomicReference<ChannelTree> channelTree = new AtomicReference<>();
     private final AtomicBoolean channelTreeInitialized = new AtomicBoolean(false);
     private final CountDownLatch channelTreeInitCompleteLatch = new CountDownLatch(1);
+    private final AtomicReference<ChannelTree> fullChannelTree = new AtomicReference<>();
+    private final AtomicBoolean fullChannelTreeInitialized = new AtomicBoolean(false);
+    private final CountDownLatch fullChannelTreeInitCompleteLatch = new CountDownLatch(1);
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private static final Logger LOG = Logger.getLogger(Site.class.getName());
     private static final int SSH_TIMEOUT = 10000;
@@ -47,7 +50,7 @@ public class Site implements AutoCloseable {
 
     public Site(Properties properties) throws MalformedURLException, JSchException {
         this.name = properties.getProperty("name");
-        this.useSSH = Boolean.valueOf(properties.getProperty("useSSH", "false"));
+        this.useSSH = Boolean.parseBoolean(properties.getProperty("useSSH", "false"));
         this.restURL = new URL(properties.getProperty("restURL"));
         if (useSSH) {
             this.sshUsername = properties.getProperty("ssh.user");
@@ -161,7 +164,7 @@ public class Site implements AutoCloseable {
                 } 
             }
         };
-
+        
         if (refresh || !channelTreeInitialized.getAndSet(true)) {
             try {
                 readChannelTree.run();
@@ -178,6 +181,41 @@ public class Site implements AutoCloseable {
         ChannelTree result = channelTree.get();
         if (result == null) {
             throw new IOException("Channel tree unavailable");
+        }
+        return result;
+    }
+    
+    ChannelTree getFullChannelTree(boolean refresh) throws IOException {
+        Runnable readFullChannelTree = new Runnable() {
+            @Override
+            public void run() {
+                try (InputStream in = openURL("listchannels?maxIdleSeconds=0")) {
+                    fullChannelTree.set(new ChannelTree(in));
+                    LOG.log(Level.INFO, "Read full channel tree for site {0}", name);                
+                    scheduler.schedule(this, 12, TimeUnit.HOURS);
+                } catch (IOException x) {
+                    LOG.log(Level.WARNING, "Error reading full channel tree for site "+name, x);                
+                    scheduler.schedule(this, 5, TimeUnit.MINUTES);
+                } 
+            }
+        };
+
+        if (refresh || !fullChannelTreeInitialized.getAndSet(true)) {
+            try {
+                readFullChannelTree.run();
+            } finally {
+                fullChannelTreeInitCompleteLatch.countDown();
+            }
+        } else {
+            try {
+                fullChannelTreeInitCompleteLatch.await();
+            } catch (InterruptedException x) {
+                throw new InterruptedIOException();
+            }
+        }
+        ChannelTree result = fullChannelTree.get();
+        if (result == null) {
+            throw new IOException("Full channel tree unavailable");
         }
         return result;
     }

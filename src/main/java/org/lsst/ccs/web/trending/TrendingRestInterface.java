@@ -80,8 +80,9 @@ public class TrendingRestInterface {
             @QueryParam(value = "id") Integer handle,
             @QueryParam(value = "filter") String filter, 
             @QueryParam(value = "flatten") Boolean flatten,
-            @QueryParam(value = "refresh") Boolean refresh) throws IOException {
-        return channels("", handle, filter, flatten, refresh);
+            @QueryParam(value = "refresh") Boolean refresh,
+            @QueryParam(value = "full") Boolean full) throws IOException {
+        return channels("", handle, filter, flatten, refresh, full);
     }
 
     @GET
@@ -90,7 +91,8 @@ public class TrendingRestInterface {
             @QueryParam(value = "id") Integer handle,
             @QueryParam(value = "filter") String filter,
             @QueryParam(value = "flatten") Boolean flatten,
-            @QueryParam(value = "refresh") Boolean refresh) throws IOException {
+            @QueryParam(value = "refresh") Boolean refresh,
+            @QueryParam(value = "full") Boolean full) throws IOException {
         Site site = defaultSite;
         if (!siteName.isEmpty()) {
             site = sites.get(siteName);
@@ -99,7 +101,11 @@ public class TrendingRestInterface {
             }
         }
 
-        ChannelTree tree = site.getChannelTree(refresh == null ? false : refresh);
+        boolean fullTree = full == null ? false : full;
+        final boolean refreshTree = refresh == null ? false : refresh;
+        ChannelTree tree =  fullTree ? 
+                site.getFullChannelTree(refreshTree) :                 
+                site.getChannelTree(refreshTree);
         if (filter != null && !filter.isEmpty()) {
             try {
                 Matcher matcher = SYNTAX_FILTER_PATTERN.matcher(filter);

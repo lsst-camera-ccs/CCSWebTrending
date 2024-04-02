@@ -10,7 +10,7 @@
 
     <groupId>org.lsst</groupId>
     <artifactId>CCSWebTrending</artifactId>
-    <version>2.2</version>
+    <version>2.3-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>CCSWebTrending</name>
@@ -27,7 +27,7 @@
         <url>https://github.com/lsst-camera-ccs/CCSWebTrending</url>
         <connection>scm:git:git://github.com/lsst-camera-ccs/CCSWebTrending.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/lsst-camera-ccs/CCSWebTrending.git</developerConnection>
-        <tag>CCSWebTrending-2.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>

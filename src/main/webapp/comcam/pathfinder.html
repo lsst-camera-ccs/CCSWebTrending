@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
   <head>
     <title>CCSTrending Pathfinder Plots</title>
@@ -9,37 +8,46 @@
   <body>
     <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
     <trending-grid columns="2">
-      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/*/*">
-        <trending-data key="24127" axis="y1">GaugeGCC00/pfpressure</trending-data>
-        <trending-data key="24129" axis="y1">GaugeGCC01/turbopressure</trending-data>
-        <trending-data key="24131" axis="y1">GaugeGCC02/forelinepressure</trending-data>
-      </trending-plot>
-      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/maq20/*/*">
-        <trending-data key="24301" axis="y1">Cold1/EvapExitTmp</trending-data>
-        <trending-data key="24302" axis="y1">Cold1/HexRtrnTmp</trending-data>
-        <trending-data key="24303" axis="y1">Cold1/PreExpnTmp</trending-data>
-        <trending-data key="24307" axis="y1">Cold2/EvapExitTmp</trending-data>
-        <trending-data key="24308" axis="y1">Cold2/HexRtrnTmp</trending-data>
-        <trending-data key="24309" axis="y1">Cold2/PreExpnTmp</trending-data>
-        <trending-data key="24313" axis="y1">Cryo1/C3ExitTmp</trending-data>
-        <trending-data key="24314" axis="y1">Cryo1/C4ExitTmp</trending-data>
-        <trending-data key="24315" axis="y1">Cryo1/EvapExitTmp</trending-data>
-        <trending-data key="24316" axis="y1">Cryo1/HexRtrnTmp</trending-data>
-        <trending-data key="24319" axis="y1">Cryo2/C3ExitTmp</trending-data>
-        <trending-data key="24320" axis="y1">Cryo2/C4ExitTmp</trending-data>
-        <trending-data key="24321" axis="y1">Cryo2/EvapExitTmp</trending-data>
-        <trending-data key="24322" axis="y1">Cryo2/HexRtrnTmp</trending-data>
-      </trending-plot>
       <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/maq20/*">
-        <trending-data key="24325" axis="y1">REF-LOAD-RTD-00</trending-data>
-        <trending-data key="24326" axis="y1">REF-LOAD-RTD-01</trending-data>
-        <trending-data key="24327" axis="y1">REF-LOAD-RTD-02</trending-data>
-        <trending-data key="24328" axis="y1">REF-LOAD-RTD-03</trending-data>
-        <trending-data key="24329" axis="y1">REF-LOAD-RTD-04</trending-data>
-        <trending-data key="24330" axis="y1">REF-LOAD-RTD-05</trending-data>
         <trending-data key="24331" axis="y1">REF-LOAD-RTD-06</trending-data>
         <trending-data key="24332" axis="y1">REF-LOAD-RTD-07</trending-data>
         <trending-data key="24333" axis="y1">REF-LOAD-RTD-08</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder-refrig/*/*">
+        <trending-data key="24476" axis="y1">Cryo1/WaterInTmp</trending-data>
+        <trending-data key="24477" axis="y1">Cryo1/WaterOutTmp</trending-data>
+        <trending-data key="24519" axis="y1">Cryo4/WaterInTmp</trending-data>
+        <trending-data key="24520" axis="y1">Cryo4/WaterOutTmp</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/maq20/CryoHx123/*">
+        <trending-data key="26392" axis="y1">C3ExitTmp</trending-data>
+        <trending-data key="26398" axis="y1">C4ExitTmp</trending-data>
+        <trending-data key="26400" axis="y1">EvapExitTmp</trending-data>
+        <trending-data key="26402" axis="y1">HexRtrnTmp</trending-data>
+        <trending-data key="26394" axis="y1">PreC3Tmp</trending-data>
+        <trending-data key="26396" axis="y1">PreC4Tmp</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/maq20/CryoHx456/*">
+        <trending-data key="26393" axis="y1">C3ExitTmp</trending-data>
+        <trending-data key="26399" axis="y1">C4ExitTmp</trending-data>
+        <trending-data key="26401" axis="y1">EvapExitTmp</trending-data>
+        <trending-data key="26403" axis="y1">HexRtrnTmp</trending-data>
+        <trending-data key="26395" axis="y1">PreC3Tmp</trending-data>
+        <trending-data key="26397" axis="y1">PreC4Tmp</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/maq20/CryoPres1/*">
+        <trending-data key="26410" axis="y1">LiquidPrs</trending-data>
+        <trending-data key="26416" axis="y1">ReturnPrs</trending-data>
+        <trending-data key="26404" axis="y1">VaporPrs</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/maq20/CryoPres4/*">
+        <trending-data key="26413" axis="y1">LiquidPrs</trending-data>
+        <trending-data key="26419" axis="y1">ReturnPrs</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/*/*">
+        <trending-data key="24127" axis="y1">GaugeGCC00/pfpressure</trending-data>
+        <trending-data key="24129" axis="y2">GaugeGCC01/turbopressure</trending-data>
+        <trending-data key="24131" axis="y2">GaugeGCC02/forelinepressure</trending-data>
       </trending-plot>
       <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/*/*">
         <trending-data key="23761" axis="y1">IonPumps/current</trending-data>

@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  *
@@ -12,11 +13,15 @@ import java.util.Properties;
  */
 public class SiteIR2 extends Site {
 
+    private static final Logger LOG = Logger.getLogger(SiteIR2.class.getName());
+    
+    
     private SiteIR2(Properties props) throws MalformedURLException, JSchException {
         super(props);
     }
 
     static Site create() throws MalformedURLException, JSchException, UnknownHostException {
+        LOG.info("Setting up SiteIR2 for host address: "+InetAddress.getLocalHost().getHostAddress());
         Properties props = new Properties();
         props.setProperty("name", "ir2");
         props.setProperty("useSSH", 

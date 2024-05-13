@@ -19,7 +19,9 @@ public class SiteIR2 extends Site {
     static Site create() throws MalformedURLException, JSchException, UnknownHostException {
         Properties props = new Properties();
         props.setProperty("name", "ir2");
-        props.setProperty("useSSH", InetAddress.getLocalHost().getHostAddress().startsWith("134.79.") ? "false" : "true");
+        props.setProperty("useSSH", 
+                InetAddress.getLocalHost().getHostAddress().startsWith("134.79.") || 
+                InetAddress.getLocalHost().getHostAddress().startsWith("172.24.") ? "false" : "true");
         props.setProperty("restURL", "http://lsst-mcm.slac.stanford.edu:8080/rest/data/dataserver/");
         // These are only used when testing offsite
         props.setProperty("ssh.user", "tonyj");

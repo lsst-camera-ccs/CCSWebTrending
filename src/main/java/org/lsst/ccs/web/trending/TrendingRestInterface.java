@@ -38,14 +38,13 @@ public class TrendingRestInterface {
 
     private final static Logger LOG = Logger.getLogger(TrendingRestInterface.class.getName());
     private static final Map<String, Site> sites = new HashMap<>();
-    private static Site defaultSite;
+    private final Site defaultSite;
     private final static Pattern SYNTAX_FILTER_PATTERN = Pattern.compile("(?:([a-z]+):)?(.*)");
 
     static {
         try {
             Site ir2 = SiteIR2.create();
             sites.put(ir2.getName(), ir2);
-            defaultSite = ir2;
         } catch (JSchException | MalformedURLException | RuntimeException | UnknownHostException ex) {
             LOG.log(Level.SEVERE, "Failed to initialize sites", ex);
         }
@@ -61,6 +60,12 @@ public class TrendingRestInterface {
         } catch (JSchException | MalformedURLException | RuntimeException ex) {
             LOG.log(Level.SEVERE, "Failed to initialize sites", ex);
         }
+        try {
+            Site maincamera = SiteMainCamera.create();
+            sites.put(maincamera.getName(), maincamera);
+        } catch (JSchException | MalformedURLException | RuntimeException ex) {
+            LOG.log(Level.SEVERE, "Failed to initialize sites", ex);
+        }
     }
 
     public enum ErrorBars {
@@ -72,6 +77,20 @@ public class TrendingRestInterface {
     };
 
     public TrendingRestInterface() throws IOException {
+        String defaultSiteName = System.getProperty("org.lsst.ccs.web.trending.default.site", "ir2");
+        defaultSite = getSiteForName(defaultSiteName);
+        LOG.log(Level.INFO, "Created TrendingRestInterface with default site: {0}", defaultSite.getName());
+    }
+    
+    private Site getSiteForName(String siteName) {
+        Site site = defaultSite;
+        if (!siteName.isEmpty()) {
+            site = sites.get(siteName);
+            if (site == null) {
+                throw new RuntimeException("Unknown site " + siteName);
+            }
+        }
+        return site;        
     }
 
     @GET
@@ -93,13 +112,7 @@ public class TrendingRestInterface {
             @QueryParam(value = "flatten") Boolean flatten,
             @QueryParam(value = "refresh") Boolean refresh,
             @QueryParam(value = "full") Boolean full) throws IOException {
-        Site site = defaultSite;
-        if (!siteName.isEmpty()) {
-            site = sites.get(siteName);
-            if (site == null) {
-                throw new RuntimeException("Unknown site " + siteName);
-            }
-        }
+        Site site = getSiteForName(siteName);
 
         boolean fullTree = full == null ? false : full;
         final boolean refreshTree = refresh == null ? false : refresh;
@@ -154,13 +167,7 @@ public class TrendingRestInterface {
             @QueryParam(value = "t1") Long t1, @QueryParam(value = "t2") Long t2, @QueryParam(value = "n") Integer nBins,
             @QueryParam(value = "flavor") Flavor flavor, @QueryParam(value = "errorBars") ErrorBars errorBars) throws IOException {
 
-        Site site = defaultSite;
-        if (!siteName.isEmpty()) {
-            site = sites.get(siteName);
-            if (site == null) {
-                throw new RuntimeException("Unknown site " + siteName);
-            }
-        }
+        Site site = getSiteForName(siteName);
         long now = System.currentTimeMillis();
         long delta = 60 * 60 * 1000;
         if (period != null) {

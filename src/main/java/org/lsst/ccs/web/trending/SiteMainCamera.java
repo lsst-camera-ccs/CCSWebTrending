@@ -17,7 +17,7 @@ public class SiteMainCamera extends Site {
         Properties props = new Properties();
         props.setProperty("name", "maincamera");
         props.setProperty("useSSH", "false");
-        props.setProperty("restURL", "http://lsstcam-db01.cp.lsst.org:8080/rest/data/dataserver/");
+        props.setProperty("restURL", "http://lsstcam-mcm.cp.lsst.org:8080/rest/data/dataserver/");
 
         return new SiteMainCamera(props);
     }    

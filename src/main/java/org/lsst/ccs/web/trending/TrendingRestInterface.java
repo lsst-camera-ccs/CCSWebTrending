@@ -87,7 +87,7 @@ public class TrendingRestInterface {
         if (!siteName.isEmpty()) {
             site = sites.get(siteName);
             if (site == null) {
-                throw new RuntimeException("Unknown site " + siteName+". Available sites are: "+sites.values());
+                throw new RuntimeException("Unknown site " + siteName+". Available sites are: "+sites.keySet());
             }
         }
         return site;        

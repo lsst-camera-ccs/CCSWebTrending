@@ -26,7 +26,7 @@
     <scm>
         <url>https://github.com/lsst-camera-ccs/CCSWebTrending</url>
         <connection>scm:git:git://github.com/lsst-camera-ccs/CCSWebTrending.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/lsst-camera-ccs/CCSWebTrending.git</developerConnection>
+        <developerConnection>scm:git:https://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@github.com/lsst-camera-ccs/CCSWebTrending.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -209,3 +209,4 @@
         <jersey.version>2.22.2</jersey.version>
     </properties>
 </project>
+

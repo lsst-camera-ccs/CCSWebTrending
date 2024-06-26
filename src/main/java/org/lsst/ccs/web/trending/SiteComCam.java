@@ -17,7 +17,7 @@ public class SiteComCam extends Site {
         Properties props = new Properties();
         props.setProperty("name", "comcam");
         props.setProperty("useSSH", "false");
-        props.setProperty("restURL", "http://comcam-db01.cp.lsst.org:8080/rest/data/dataserver/");
+        props.setProperty("restURL", "http://comcam-mcm.cp.lsst.org:8080/rest/data/dataserver/");
 
         return new SiteComCam(props);
     }    

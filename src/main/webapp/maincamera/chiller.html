@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <title>Chiller Plots</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="1">
+      <trending-plot title="Chiller Temperatures" restURL="../rest/maincamera">
+        <trending-data key="156767" axis="y1">FluidTemperature</trending-data>
+        <trending-data key="156773" axis="y1">TempSetPoint</trending-data>
+        <trending-data key="156772" axis="y1">TempStage2Evap</trending-data>
+        <trending-data key="156771" axis="y1">TempTXVBulb</trending-data>
+        <trending-data key="156770" axis="y1">TempCondenser</trending-data>
+        <trending-data key="156774" axis="y1">TempDynamicSetPt</trending-data>
+      </trending-plot>
+      <trending-plot title="Chiller Flow Rates" restURL="../rest/maincamera">
+        <trending-data key="156778" axis="y1">FlowRate</trending-data>
+        <trending-data key="156779" axis="y1">FlowSetPoint</trending-data>
+      </trending-plot>
+        <trending-plot title="Chiller Heat/Cool percentage" ylabel="%" restURL="../rest/maincamera">
+        <trending-data key="156777" axis="y1">CoolPercentage</trending-data>
+        <trending-data key="156776" axis="y1">HeatPercentage</trending-data>
+      </trending-plot>
+      <trending-plot title="Chiller Pressure" restURL="../rest/maincamera">
+        <trending-data key="156780" axis="y1">PressureIn</trending-data>
+        <trending-data key="156781" axis="y1">PressureOut</trending-data>
+      </trending-plot>
+    </trending-grid>
+  </body>
+</html>

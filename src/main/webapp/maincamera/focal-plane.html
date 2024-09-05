@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Focal Plane power (25 raft version)</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="module" src="../ccs-trending.js"></script>
+    </head>
+    <body>
+        <trending-controller></trending-controller>    
+        <trending-plot title="REB power" ylabel="Total Power/REB (W)" range="3600000" restURL="../rest/maincamera">
+            <trending-data key="130715">R00: RebG</trending-data>
+            <trending-data key="130668">R00: RebW</trending-data>
+            <trending-data key="130821">R01: Reb0</trending-data>
+            <trending-data key="130927">R01: Reb1</trending-data>
+            <trending-data key="131033">R01: Reb2</trending-data>
+            <trending-data key="131139">R02: Reb0</trending-data>
+            <trending-data key="131245">R02: Reb1</trending-data>
+            <trending-data key="131351">R02: Reb2</trending-data>
+            <trending-data key="131756">R04: RebG</trending-data>
+            <trending-data key="131709">R04: RebW</trending-data>
+            <trending-data key="131968">R10: Reb1</trending-data>
+            <trending-data key="132074">R10: Reb2</trending-data>
+            <trending-data key="132180">R11: Reb0</trending-data>
+            <trending-data key="132286">R11: Reb1</trending-data>
+            <trending-data key="132392">R11: Reb2</trending-data>
+            <trending-data key="132498">R12: Reb0</trending-data>
+            <trending-data key="132604">R12: Reb1</trending-data>
+            <trending-data key="132710">R12: Reb2</trending-data>
+            <trending-data key="133452">R20: Reb0</trending-data>
+            <trending-data key="133558">R20: Reb1</trending-data>
+            <trending-data key="133664">R20: Reb2</trending-data>
+            <trending-data key="133770">R21: Reb0</trending-data>
+            <trending-data key="133876">R21: Reb1</trending-data>
+            <trending-data key="133982">R21: Reb2</trending-data>
+            <trending-data key="134088">R22: Reb0</trending-data>
+            <trending-data key="134194">R22: Reb1</trending-data>
+            <trending-data key="134300">R22: Reb2</trending-data>
+            <trending-data key="135042">R30: Reb0</trending-data>
+            <trending-data key="135148">R30: Reb1</trending-data>
+            <trending-data key="135254">R30: Reb2</trending-data>
+            <trending-data key="136613">R40: RebG</trending-data>
+            <trending-data key="136566">R40: RebW</trending-data>
+            <trending-data key="137654">R44: RebG</trending-data>
+            <trending-data key="137607">R44: RebW</trending-data>
+        </trending-plot>
+        <trending-plot title="REB temperature" ylabel="Temperature (Temp2 - °C)" range="3600000" restURL="../rest/maincamera">
+            <trending-data key="130691">R00: RebG</trending-data>
+            <trending-data key="130904">R01: Reb1</trending-data>
+            <trending-data key="131222">R02: Reb1</trending-data>
+            <trending-data key="131540">R03: Reb1</trending-data>
+            <trending-data key="131732">R04: RebG</trending-data>
+            <trending-data key="131945">R10: Reb1</trending-data>
+            <trending-data key="132263">R11: Reb1</trending-data>
+            <trending-data key="132581">R12: Reb1</trending-data>
+            <trending-data key="132899">R13: Reb1</trending-data>
+            <trending-data key="133217">R14: Reb1</trending-data>
+            <trending-data key="133535">R20: Reb1</trending-data>
+            <trending-data key="133853">R21: Reb1</trending-data>
+            <trending-data key="134171">R22: Reb1</trending-data>
+            <trending-data key="134489">R23: Reb1</trending-data>
+            <trending-data key="134807">R24: Reb1</trending-data>
+            <trending-data key="135125">R30: Reb1</trending-data>
+            <trending-data key="135443">R31: Reb1</trending-data>
+            <trending-data key="135761">R32: Reb1</trending-data>
+            <trending-data key="136079">R33: Reb1</trending-data>
+            <trending-data key="136397">R34: Reb1</trending-data>
+            <trending-data key="136589">R40: RebG</trending-data>
+            <trending-data key="136802">R41: Reb1</trending-data>
+            <trending-data key="137120">R42: Reb1</trending-data>
+            <trending-data key="137438">R43: Reb1</trending-data>
+            <trending-data key="137630">R44: RebG</trending-data>
+        </trending-plot>
+        <trending-plot title="Cold plate temperature" ylabel="Temperature (°C)" range="3600000" restURL="../rest/maincamera">
+            <trending-data key="154905">RTD-00</trending-data>
+            <trending-data key="154906">RTD-02</trending-data>
+            <trending-data key="154907">RTD-03</trending-data>
+            <trending-data key="154908">RTD-05</trending-data>
+            <trending-data key="154909">RTD-50</trending-data>
+            <trending-data key="154910">RTD-52</trending-data>
+            <trending-data key="154911">RTD-53</trending-data>
+            <trending-data key="154912">RTD-55</trending-data>     
+        </trending-plot>
+    </body>
+</html>

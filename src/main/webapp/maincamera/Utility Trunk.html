@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>CCSTrending Plots</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="2">
+      <trending-plot restURL="../rest/maincamera" useUTC title="utiltrunk/UT/*">
+        <trending-data key="1265" axis="y1">CoolPipeSplyTemp</trending-data><trending-data key="1266" axis="y1">CoolPipeRetnTemp</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="utiltrunk/UT/*">
+        <trending-data key="1270" axis="y1">CoolSupplyPrs</trending-data><trending-data key="1271" axis="y1">CoolReturnPrs</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="utiltrunk/*/FanSpeed">
+        <trending-data key="1262" axis="y1">UT</trending-data><trending-data key="1290" axis="y1">MPC</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="utiltrunk/UT/*">
+        <trending-data key="1261" axis="y1">AverageTemp</trending-data><trending-data key="1268" axis="y1">DomeXMinusTemp</trending-data><trending-data key="1269" axis="y1">DomeYMinusTemp</trending-data><trending-data key="1260" axis="y1">FanInletTemp</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="utiltrunk/MPC/*">
+        <trending-data key="1286" axis="y1">SplyAirTemp</trending-data><trending-data key="1287" axis="y1">RetnAirTemp</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="utiltrunk/MPC">
+        <trending-data key="1297" axis="y1">Humidity</trending-data></trending-plot>
+    </trending-grid>
+  </body>
+</html>

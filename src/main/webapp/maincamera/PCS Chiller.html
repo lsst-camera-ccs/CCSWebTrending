@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>PCS Chiller</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="2">
+      <trending-plot restURL="../rest/maincamera" useUTC title="chiller2/Chiller/*">
+        <trending-data key="156865" axis="y1">FluidTemperature</trending-data><trending-data key="156872" axis="y1">TempDynamicSetPt</trending-data><trending-data key="156871" axis="y1">TempSetPoint</trending-data><trending-data key="156870" axis="y1">TempStage2Evap</trending-data><trending-data key="156869" axis="y1">TempTXVBulb</trending-data><trending-data key="156868" axis="y1">TempCondenser</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="chiller2/Chiller/*">
+        <trending-data key="156875" axis="y1">CoolPercentage</trending-data><trending-data key="156874" axis="y1">HeatPercentage</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="chiller2/Chiller/*">
+        <trending-data key="156878" axis="y1">PressureIn</trending-data><trending-data key="156879" axis="y1">PressureOut</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="chiller2/*/*">
+        <trending-data key="156876" axis="y1">Chiller/FlowRate</trending-data><trending-data key="156877" axis="y1">Chiller/FlowSetPoint</trending-data><trending-data key="156912" axis="y1">Maq20/GlycInputFlow</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="chiller2/Maq20/*">
+        <trending-data key="156889" axis="y1">Stg1CondensOut</trending-data><trending-data key="156890" axis="y1">Stg1TXVBulb</trending-data><trending-data key="156893" axis="y1">Stg2DeSuHtrOut</trending-data><trending-data key="156894" axis="y1">Stg2EvapIn</trending-data><trending-data key="156895" axis="y1">Stg2EvapOut</trending-data><trending-data key="156915" axis="y1">AmbientTemp</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="chiller2/Maq20/*">
+        <trending-data key="156906" axis="y1">GlycChillerIn</trending-data><trending-data key="156909" axis="y1">GlycChillerOut</trending-data></trending-plot>
+    </trending-grid>
+  </body>
+</html>

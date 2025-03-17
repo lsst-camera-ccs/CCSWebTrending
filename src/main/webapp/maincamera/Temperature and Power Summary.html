@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>Temperature and Power Summary</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="2">
+      <trending-plot restURL="../rest/maincamera" useUTC title="focal-plane">
+        <trending-data key="137668" axis="y1">RebsAverageTemp6</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="focal-plane">
+        <trending-data key="137667" axis="y1">RebTotalPower</trending-data></trending-plot>	  
+      <trending-plot restURL="../rest/maincamera" useUTC title="thermal/Cold_Temp">
+        <trending-data key="154904" axis="y1">AvgColdTemp</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="thermal/Trim_Htrs">
+	<trending-data key="154964" axis="y1">ColdTotal_P</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="thermal/Cryo_Temp">
+        <trending-data key="154913" axis="y1">AvgCryoTemp</trending-data></trending-plot>	  
+      <trending-plot restURL="../rest/maincamera" useUTC title="thermal/Trim_Htrs">
+        <trending-data key="154983" axis="y1">CryoTotal_P</trending-data></trending-plot>
+    </trending-grid>
+  </body>
+</html>

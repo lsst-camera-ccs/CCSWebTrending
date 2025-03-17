@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>Shutter</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="1">
+      <trending-plot restURL="../rest/maincamera" useUTC title="shutter1/ShutterStatus/axstatus/MINUSX">
+        <trending-data key="165571" axis="y1">actPos</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="shutter1/ShutterStatus/axstatus/PLUSX">
+        <trending-data key="165572" axis="y1">actPos</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="shutter1/*/strokeCount">
+        <trending-data key="166452" axis="y1">minusX</trending-data><trending-data key="166451" axis="y1">plusX</trending-data></trending-plot>
+    </trending-grid>
+  </body>
+</html>

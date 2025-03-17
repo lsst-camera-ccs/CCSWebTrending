@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>CCSTrending Plots</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="2">
+      <trending-plot restURL="../rest/maincamera" useUTC title="refrig2/Cryo1/*">
+        <trending-data key="168885" axis="y1">DischrgPrs</trending-data><trending-data key="168888" axis="y1">SuctionPrs</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="refrig2/Cryo2/*">
+        <trending-data key="168868" axis="y1">DischrgPrs</trending-data><trending-data key="168871" axis="y1">SuctionPrs</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="refrig2/Cryo3/*">
+        <trending-data key="168849" axis="y1">DischrgPrs</trending-data><trending-data key="168852" axis="y1">SuctionPrs</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="refrig2/Cryo4/*">
+        <trending-data key="168832" axis="y1">DischrgPrs</trending-data><trending-data key="168835" axis="y1">SuctionPrs</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="refrig2/Cryo5/*">
+        <trending-data key="168796" axis="y1">DischrgPrs</trending-data><trending-data key="168799" axis="y1">SuctionPrs</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="refrig2/Cryo5/*">
+        <trending-data key="168796" axis="y1">DischrgPrs</trending-data><trending-data key="168799" axis="y1">SuctionPrs</trending-data></trending-plot>
+    </trending-grid>
+  </body>
+</html>

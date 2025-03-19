@@ -679,22 +679,21 @@ class TrendingController extends LitElement {
             request.onload = () => {
                 if (request.status >= 200 && request.status < 400) {
                     // Success!
-                    this.sourceSelection = html``;
+                    this.sourceSelection = html``;                    
                     let content = request.responseText.replace("[", "").replace("]", "").replaceAll("\"", "");
                     var sourceArray = content.split(',');
                     if (sourceArray.length > 1) {
-                        this.sourceSelection = [];
-                        this.sourceSelection.push(html`<nobr> <b>Source:</b> <select id="sourceSelector" @change=${this._setSource} >
-                            <option value="EFD" ?selected=false>EFD</option>
-                            <option value="CCS" ?selected=true>CCS</option>`);
+                        var options = [];
                         for (var i = 0; i < sourceArray.length; i++) {
                             var source = sourceArray[i];
                             if ( this.source === `` ) {
                                 this.source = source;
                             }
-                            this.sourceSelection.push(html`<option value="${source}" ?selected=${this.source === source}>${source}</option>`);
+                            options.push(html`<option value="${source}" ?selected=${this.source === source}>${source}</option>`);
                         }
-                        this.sourceSelection.push(html`</select> </nobr>`);
+                        this.sourceSelection = html`<nobr> <b>Source:</b> <select id="sourceSelector" @change=${this._setSource} >
+                        ${options}
+                        </select> </nobr>`;
                     }                    
                 } else {
                     this._message = `error ( ${this.restURL} returned ${request.status}`;

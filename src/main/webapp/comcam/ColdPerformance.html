@@ -6,7 +6,7 @@
     <script type="module" src="../ccs-trending.js"></script>
   </head>
   <body>
-    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-controller restURL="../rest/comcam"  useUTC range="1d" errorbars="MINMAX"></trending-controller>
     <trending-grid columns="2">
       <trending-plot restURL="../rest/comcam" useUTC title="Cold plate temperature">
         <trending-data key="24327" axis="y1">REF-LOAD-RTD-02</trending-data>

@@ -10,7 +10,11 @@ import java.io.InterruptedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,7 +32,7 @@ public class Site implements AutoCloseable {
 
     private final String name;
     private final boolean useSSH;
-    private final URL restURL;
+    private volatile URL restURL = null;
     private final String sshUsername;
     private final String sshHost;
     private final File sshKey;
@@ -47,11 +51,34 @@ public class Site implements AutoCloseable {
     private static final int SSH_RETRIES = 2;
     private int sshTimeout = SSH_TIMEOUT;
     private int sshRetries = SSH_RETRIES;
+    private String source = "CCS";
+    private Map<String,URL> sourcesUrl = new LinkedHashMap<>();
+    private Set<String> allSources = new LinkedHashSet<>();
+    
+    
+    
 
     public Site(Properties properties) throws MalformedURLException, JSchException {
         this.name = properties.getProperty("name");
         this.useSSH = Boolean.parseBoolean(properties.getProperty("useSSH", "false"));
-        this.restURL = new URL(properties.getProperty("restURL"));
+        
+        String defaultSource = properties.getProperty("defaultSource", "");
+        allSources.add(defaultSource);
+        
+        for ( Object prop : properties.keySet() ) {
+            String propStr = (String)prop;
+            if ( propStr.endsWith("restURL") ) {
+                String sourceUrl = propStr.replace("restURL", "");
+                if ( sourcesUrl.containsKey(sourceUrl) ) {
+                    throw new RuntimeException("Source "+sourceUrl+" is already defined for site "+name);                    
+                }
+                sourcesUrl.put(sourceUrl, new URL(properties.getProperty(propStr)));                
+                allSources.add(sourceUrl);
+            }
+        }
+        
+        this.restURL = sourcesUrl.get(defaultSource);
+        
         if (useSSH) {
             this.sshUsername = properties.getProperty("ssh.user");
             this.sshHost = properties.getProperty("ssh.host");
@@ -80,6 +107,19 @@ public class Site implements AutoCloseable {
 
     public void setTunnelURL(URL tunnelURL) {
         this.tunnelURL = tunnelURL;
+    }
+    
+    public void setSource(String source) {
+        if ( this.source.equals(source) ) {
+            return;
+        }        
+        this.restURL = sourcesUrl.get(source);
+        this.source = source;        
+        close();
+    }
+    
+    public Set<String> getAvailableSources() {
+        return allSources;
     }
 
     public int getSSHTimeout() {

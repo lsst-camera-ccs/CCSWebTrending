@@ -6,7 +6,7 @@
     <script type="module" src="../ccs-trending.js"></script>
   </head>
   <body>
-    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-controller restURL="../rest/maincamera" useUTC range="1d" errorbars="MINMAX"></trending-controller>
     <trending-grid columns="2">
       <trending-plot restURL="../rest/maincamera" useUTC title="refrig2/Cryo1/*">
         <trending-data key="168885" axis="y1">DischrgPrs</trending-data><trending-data key="168888" axis="y1">SuctionPrs</trending-data></trending-plot>

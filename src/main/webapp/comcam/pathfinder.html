@@ -6,7 +6,7 @@
     <script type="module" src="../ccs-trending.js"></script>
   </head>
   <body>
-    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-controller restURL="../rest/comcam" useUTC range="1d" errorbars="MINMAX"></trending-controller>
     <trending-grid columns="2">
       <trending-plot restURL="../rest/comcam" useUTC title="pathfinder/maq20/*">
         <trending-data key="24331" axis="y1">REF-LOAD-RTD-06</trending-data>

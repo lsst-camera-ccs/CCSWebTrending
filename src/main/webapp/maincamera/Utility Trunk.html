@@ -6,7 +6,7 @@
     <script type="module" src="../ccs-trending.js"></script>
   </head>
   <body>
-    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-controller restURL="../rest/maincamera" useUTC range="1d" errorbars="MINMAX"></trending-controller>
     <trending-grid columns="2">
       <trending-plot restURL="../rest/maincamera" useUTC title="utiltrunk/UT/*">
         <trending-data key="1265" axis="y1">CoolPipeSplyTemp</trending-data><trending-data key="1266" axis="y1">CoolPipeRetnTemp</trending-data></trending-plot>

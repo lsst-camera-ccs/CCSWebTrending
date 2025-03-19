@@ -13,6 +13,7 @@ class RangeSynchronizer {
         this._errorbars = 'MINMAX';
         this._useUTC = false;
         this._nBins = 100;
+        this._source = 'Some Default';
     }
 
     add(plot) {
@@ -39,6 +40,15 @@ class RangeSynchronizer {
 
     get errorbars() {
         return this._errorbars;
+    }
+
+    set source(value) {
+        this._source = value;
+        this.plots.forEach((plot) => plot.source = value);
+    }
+
+    get source() {
+        return this._source;
     }
 
     set useUTC(value) {
@@ -175,6 +185,12 @@ class TrendingPlot extends LitElement {
                 reflect: true
             },
 
+            source: {
+                type: String,
+                notify: true,
+                reflect: true
+            },
+
             range: {
                 type: String,
                 notify: true,
@@ -209,6 +225,7 @@ class TrendingPlot extends LitElement {
         this.errorbars = _defaultRangeSynchronizer.errorbars;
         this.useUTC = _defaultRangeSynchronizer.useUTC;
         this.range = _defaultRangeSynchronizer.range;
+        this.source = _defaultRangeSynchronizer.source;
         this.logscale = false;
         this.labels = ['time'];
         this.restURL = 'rest';
@@ -223,6 +240,7 @@ class TrendingPlot extends LitElement {
         this.synchronizer = _rangeSynchronizerForGroup(this.group);
         this.synchronizer.add(this);
         if (!("errorbars" in changedProperties)) this.errorbars = this.synchronizer.errorbars;
+        if (!("source" in changedProperties)) this.source = this.synchronizer.source;
         if (!("useUTC" in changedProperties)) this.useUTC = this.synchronizer.useUTC;
         if (!("range" in changedProperties)) this.range = this.synchronizer.range;
         if (!("nBins" in changedProperties)) this.nBins = this.synchronizer.nBins;
@@ -312,6 +330,8 @@ class TrendingPlot extends LitElement {
                 reloadNeeded = true;
             } else if (name === 'errorbars') {
                 reloadNeeded = true;
+            } else if (name === 'source') {
+                reloadNeeded = true;
             } else if (name === 'nBins') {
                 reloadNeeded = true;
             } else if (name === 'useUTC') {
@@ -357,7 +377,7 @@ class TrendingPlot extends LitElement {
         this._message = "Loading data...";
         let timeRange = this._toTimeRange(this.range);
         this.graph.updateOptions({dateWindow: [timeRange.start, timeRange.end]});
-        let args = this._parseUrlParams({"key": this.keys, "t1": timeRange.start, "t2": timeRange.end, "n": this.nBins, 'errorBars': this.errorbars}, true);
+        let args = this._parseUrlParams({"key": this.keys, "t1": timeRange.start, "t2": timeRange.end, "n": this.nBins, 'errorBars': this.errorbars, 'source': this.source}, true);
         if (typeof (this.graph) !== "undefined") {
             if (this._request) {
                 this._request.abort();
@@ -567,6 +587,12 @@ class TrendingController extends LitElement {
                 reflect: true
             },
 
+            source: {
+                type: String,
+                notify: true,
+                reflect: true
+            },
+
             range: {
                 type: String,
                 notify: true,
@@ -579,14 +605,21 @@ class TrendingController extends LitElement {
                 reflect: true
             },
 
+            restURL: {
+                type: String,
+                notify: true,
+                reflect: true
+            },
+
             group: {
                 type: String
             }
         };
     }
 
-    render() {
-        return html`
+    render() {        
+        this.buildSourceSelector();
+        var returnValue = html`
             <div class="link-interaction">
                 <nobr>
                     <b>Range:</b>
@@ -622,8 +655,9 @@ class TrendingController extends LitElement {
                     <b>Bins:</b>
                     <input type="number" id="nBinsSelector" @change=${this._setNBins} min="50" max="5000" step="50" value=${this.nBins}>
                 </nobr>
-            </div>
-        `;
+                ${this.sourceSelection}
+                </div>`;
+        return returnValue;
     }
     
     getDateTimeChooser(show) {
@@ -638,20 +672,63 @@ class TrendingController extends LitElement {
         else return html``;
     }
 
+    buildSourceSelector() {
+        if (this.needsToBuildSourceSelector) {
+            let request = new XMLHttpRequest();
+            request.open('GET', this.restURL + '/sources', false);
+            request.onload = () => {
+                if (request.status >= 200 && request.status < 400) {
+                    // Success!
+                    this.sourceSelection = html``;
+                    let content = request.responseText.replace("[", "").replace("]", "").replaceAll("\"", "");
+                    var sourceArray = content.split(',');
+                    if (sourceArray.length > 1) {
+                        this.sourceSelection = [];
+                        this.sourceSelection.push(html`<nobr> <b>Source:</b> <select id="sourceSelector" @change=${this._setSource} >
+                            <option value="EFD" ?selected=false>EFD</option>
+                            <option value="CCS" ?selected=true>CCS</option>`);
+                        for (var i = 0; i < sourceArray.length; i++) {
+                            var source = sourceArray[i];
+                            if ( this.source === `` ) {
+                                this.source = source;
+                            }
+                            this.sourceSelection.push(html`<option value="${source}" ?selected=${this.source === source}>${source}</option>`);
+                        }
+                        this.sourceSelection.push(html`</select> </nobr>`);
+                    }                    
+                } else {
+                    this._message = `error ( ${this.restURL} returned ${request.status}`;
+                }
+            };
+            request.onerror = () => {
+                this._message = `error ( ${this.restURL} returned ${request.status}`;
+            };
+            request.send();
+            this.needsToBuildSourceSelector = false;
+        }
+    }
+
+
+
     constructor() {
         super();
         this.group = "defaultGroup";
         this.range = _defaultRangeSynchronizer.range;
         this.useUTC = _defaultRangeSynchronizer.useUTC;
         this.errorbars = _defaultRangeSynchronizer.errorbars;
+        this.source = '';
         this.nBins = _defaultRangeSynchronizer.nBins;
+        this.restURL = 'rest';
+        this.sourceSelection = '';
+        this.needsToBuildSourceSelector = true;
     }
 
-    firstUpdated(changedProperties) {
+    firstUpdated(changedProperties) {    
         _rangeSynchronizerForGroup(this.group).add(this);
         _rangeSynchronizerForGroup(this.group).range = this.range;
         _rangeSynchronizerForGroup(this.group).useUTC = this.useUTC;
         _rangeSynchronizerForGroup(this.group).errorbars = this.errorbars;
+        _rangeSynchronizerForGroup(this.group).source = this.source;
         _rangeSynchronizerForGroup(this.group).nBins = this.nBins;
     }
 
@@ -678,6 +755,10 @@ class TrendingController extends LitElement {
 
     _setErrorBars() {
         _rangeSynchronizerForGroup(this.group).errorbars = this.shadowRoot.querySelector("#errorBarSelector").value;
+    }
+
+    _setSource() {
+        _rangeSynchronizerForGroup(this.group).source = this.shadowRoot.querySelector("#sourceSelector").value;
     }
 
     _setTimeZone() {

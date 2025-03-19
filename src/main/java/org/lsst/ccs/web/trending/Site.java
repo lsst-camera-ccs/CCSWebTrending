@@ -51,7 +51,7 @@ public class Site implements AutoCloseable {
     private static final int SSH_RETRIES = 2;
     private int sshTimeout = SSH_TIMEOUT;
     private int sshRetries = SSH_RETRIES;
-    private String source = "CCS";
+    private volatile String source = "";
     private Map<String,URL> sourcesUrl = new LinkedHashMap<>();
     private Set<String> allSources = new LinkedHashSet<>();
     

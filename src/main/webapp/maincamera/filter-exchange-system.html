@@ -1,0 +1,82 @@
+<html>
+  <head>
+    <title>Camera filter exchange</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller useUTC range="12h" errorbars="MINMAX"></trending-controller>
+    <trending-grid columns="2">
+      <trending-plot restURL="../rest/maincamera" title="Filter ID in Autochanger & Filter Exchange Duration">
+        <trending-data key="152434" axis="y1">filter ID</trending-data>
+        <trending-data key="167938" axis="y2">setFilter duration</trending-data>
+        <trending-data key="167941" axis="y2">setNoFilter duration</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/maincamera" title="Carousel: Position & Current">
+        <trending-data key="152313" axis="y1">Carousel position</trending-data>
+        <trending-data key="151731" axis="y2">Carousel current</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/maincamera" title="Autochanger: Position & Current">
+        <trending-data key="152406" axis="y1">Truck X- position</trending-data>
+        <trending-data key="151732" axis="y2">Truck X- current</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/maincamera" title="Autochanger: Online Clamps Position">
+        <trending-data key="151686" axis="y1">Clamp X- position</trending-data>
+        <trending-data key="151687" axis="y1">Clamp X+ position</trending-data>
+        <trending-data key="151688" axis="y1">Clamp Y- position</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/maincamera" title="Who is Holding the Filter">
+        <trending-data key="151804" axis="y1">Carousel clamps</trending-data>
+        <trending-data key="151908" axis="y1">Autochanger latch X-</trending-data>
+        <!-- <trending-data key="151918" axis="y1">AC X+</trending-data> -->
+        <!-- <trending-data key="151916" axis="y1">Autochanger clamp X+</trending-data> -->
+        <!-- <trending-data key="151874" axis="y1">Autochanger clamp X-</trending-data> -->
+        <trending-data key="151906" axis="y1">Autochanger clamp Y-</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/maincamera" title="FES PLC: Allowed Actions">
+        <trending-data key="167913" axis="y1">Carousel: Enable Brakes</trending-data>
+        <trending-data key="167912" axis="y1">Carousel: Enable Rotation</trending-data>
+        <trending-data key="167891" axis="y1">Carousel: Enable UnClamp</trending-data>
+        <trending-data key="167918" axis="y1">Carousel: powerSave</trending-data>
+        <trending-data key="151822" axis="y1">AC: Enable Latches</trending-data>
+        <trending-data key="151876" axis="y1">AC: Enable Truck X-</trending-data>
+        <trending-data key="151982" axis="y1">AC: Enable Truck X+</trending-data>
+        <trending-data key="152022" axis="y1">AC: Enable Online Clamps</trending-data>
+      </trending-plot>
+      <trending-plot restURL="../rest/maincamera" title="FES: Accelerometers & Orientation">
+        <trending-data key="151810" axis="y1">AC X- Angle (Max +/-12deg)</trending-data>
+        <trending-data key="151984" axis="y1">AC X+ Angle (Max +/-12deg)</trending-data>
+        <trending-data key="151792" axis="y1">BackFlange azimut</trending-data>
+        <trending-data key="151791" axis="y1">BackFlange elevation</trending-data>
+        <trending-data key="151784" axis="y2">BackFlange Angular velocity X</trending-data>
+        <trending-data key="151785" axis="y2">BackFlange Angular velocity Y</trending-data>
+        <trending-data key="151786" axis="y2">BackFlange Angular velocity Z</trending-data>
+        <!-- <trending-data key="151787" axis="y2">BackFlange Acceleration X</trending-data> -->
+        <!-- <trending-data key="151788" axis="y2">BackFlange Acceleration Y</trending-data> -->
+        <!-- <trending-data key="151789" axis="y2">BackFlange Acceleration Z</trending-data> -->
+      </trending-plot>
+      <trending-plot restURL="../rest/maincamera" title="FES: Temperatures">
+        <trending-data key="167923" axis="y1">Carousel Motor (Bay D)</trending-data>
+        <trending-data key="167924" axis="y1">Carousel Brake (Bay I)</trending-data>
+        <trending-data key="167925" axis="y1">Carousel Brake (Bay N)</trending-data>
+        <trending-data key="167926" axis="y1">Carousel Brake (Bay X)</trending-data>
+        <trending-data key="168027" axis="y1">AC cell X-</trending-data>
+        <trending-data key="168028" axis="y1">AC clamp Motor X-</trending-data>
+        <trending-data key="168029" axis="y1">AC clamp Motor X+</trending-data>
+        <trending-data key="168030" axis="y1">AC clamp Motor Y-</trending-data>
+        <trending-data key="168031" axis="y1">AC frontBox</trending-data>
+        <trending-data key="168032" axis="y1">AC linear rail Motor X-</trending-data>
+        <trending-data key="168033" axis="y1">AC linear rail Motor X+</trending-data>
+        <trending-data key="168034" axis="y1">AC rearBox</trending-data>
+        <trending-data key="167883" axis="y1">Carousel average clamps</trending-data>
+        <trending-data key="167884" axis="y1">Carousel TTC580 (PLC)</trending-data>
+        <trending-data key="167879" axis="y1">Carousel Socket 1</trending-data>
+        <trending-data key="167880" axis="y1">Carousel Socket 2</trending-data>
+        <trending-data key="167880" axis="y1">Carousel Socket 3</trending-data>
+        <trending-data key="167881" axis="y1">Carousel Socket 4</trending-data>
+        <trending-data key="167882" axis="y1">Carousel Socket 5</trending-data>
+      </trending-plot>
+    </trending-grid>
+  </body>
+</html>

@@ -7,7 +7,7 @@
         <script type="module" src="../ccs-trending.js"></script>
     </head>
     <body>
-    <trending-controller useUTC></trending-controller>
+    <trending-controller restURL="../rest/ats"  useUTC></trending-controller>
     <trending-grid columns="1">
         <trending-plot restURL="../rest/ats" useUTC title="Vacuum pressure" ylabel="Pressure (Torr)" logscale="">
             <trending-data key="570" axis="y1">Pressure</trending-data>

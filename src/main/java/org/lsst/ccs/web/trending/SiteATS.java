@@ -18,7 +18,9 @@ public class SiteATS extends Site {
         Properties props = new Properties();
         props.setProperty("name", "ats");
         props.setProperty("useSSH", "false");
-        props.setProperty("restURL", "http://auxtel-mcm.cp.lsst.org:8080/rest/data/dataserver/");
+        props.setProperty("CCSrestURL", "http://auxtel-mcm.cp.lsst.org:8080/rest/data/dataserver/");
+        props.setProperty("EFDrestURL", "http://auxtel-mcm.cp.lsst.org:8080/efd-rest/data/dataserver/");
+        props.setProperty("defaultSource", "CCS");
         
         return new SiteATS(props);
     }

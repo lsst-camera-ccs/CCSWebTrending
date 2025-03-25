@@ -7,7 +7,7 @@
         <script type="module" src="http://ccs.lsst.org/CCSWebTrending/ccs-trending.js"></script>
     </head>
     <body>
-    <trending-controller range="3h" nBins="1000" ></trending-controller>
+    <trending-controller restURL="../rest/maincamera" range="3h" nBins="1000" ></trending-controller>
     <trending-grid columns="6">
         <trending-plot restURL="rest/maincamera" title="hex/Cryo1/*">
             <trending-data key="154839" axis="y1">C3ExitTmp</trending-data>

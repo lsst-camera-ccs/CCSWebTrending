@@ -6,7 +6,7 @@
     <script type="module" src="../ccs-trending.js"></script>
   </head>
   <body>
-    <trending-controller useUTC range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-controller restURL="../rest/ats"  useUTC range="1d" errorbars="MINMAX"></trending-controller>
     <trending-plot restURL="../rest/ats" useUTC title="DAQ 2-day store" ylabel="GBytes" y2label="Free Fraction">
         <trending-data key="1000" axis="y1">Capacity</trending-data>
         <trending-data key="1002" axis="y1">Free Space</trending-data>

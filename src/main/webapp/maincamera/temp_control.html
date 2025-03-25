@@ -6,7 +6,7 @@
     <script type="module" src="../ccs-trending.js"></script>
   </head>
   <body>
-    <trending-controller range="1d" errorbars="MINMAX"></trending-controller>
+    <trending-controller restURL="../rest/maincamera" range="1d" errorbars="MINMAX"></trending-controller>
     <trending-grid columns="1">
       <trending-plot title="CCD Heater power" ylabel="Power (Watts)" restURL="../rest/maincamera">
         <trending-data key="130656" axis="y1">R00/RebW</trending-data>

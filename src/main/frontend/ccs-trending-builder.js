@@ -44,7 +44,7 @@ class TrendingBuilder extends LitElement {
                 <channel-tree restURL=${this.restURL} baseURL=${this.baseURL}></channel-tree>
                 <div id="right" stle="width: 100%;">
                     <div class="navbar">
-                        <trending-controller range=${this.range} ?useUTC=${this.useUTC}></trending-controller>
+                        <trending-controller range=${this.range} restURL=${this.restURL} ?useUTC=${this.useUTC}></trending-controller>
                         <div>
                             <button @click=${() => this.plots += 1}>Add Plot</button>
                             <button @click=${() => this.plots -= 1} ?disabled=${this.plots == 1}>Remove Plot</button>
@@ -121,7 +121,7 @@ class TrendingBuilder extends LitElement {
                     <script type="module" src="${this.baseURL}ccs-trending.js"></script>
                 </head>
                 <body>
-                    <trending-controller ${controller.useUTC ? "useUTC" : ""} range="${controller.range}" errorbars="${controller.errorbars}"></trending-controller>
+                    <trending-controller ${controller.useUTC ? "useUTC" : ""} range="${controller.range}" errorbars="${controller.errorbars}" source="${controller.source}"></trending-controller>
                     <trending-grid columns="${this.columns}">
                     ${this._generatePlots()}
                     </trending-grid>

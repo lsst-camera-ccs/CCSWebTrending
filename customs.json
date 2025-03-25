@@ -22,6 +22,9 @@
         "trending-controller": {
             "attributes": {
                 "useUTC": {},
+                "errorbars": {},
+                "source": {},
+                "restURL": {},
                 "range": {}
             }
         }

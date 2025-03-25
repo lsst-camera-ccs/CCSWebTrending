@@ -77,7 +77,7 @@ public class TrendingRestInterface {
     };
 
     public TrendingRestInterface() throws IOException {
-        String defaultSiteName = System.getProperty("org.lsst.ccs.web.trending.default.site", "ir2");
+        String defaultSiteName = System.getProperty("org.lsst.ccs.web.trending.default.site", "maincamera");
         defaultSite = getSiteForName(defaultSiteName);
         LOG.log(Level.INFO, "Created TrendingRestInterface with default site: {0}", defaultSite.getName());
     }
@@ -155,8 +155,8 @@ public class TrendingRestInterface {
     public Object trending(
             @QueryParam(value = "key") List<String> keys, @QueryParam(value = "period") String period,
             @QueryParam(value = "t1") Long t1, @QueryParam(value = "t2") Long t2, @QueryParam(value = "n") Integer nBins,
-            @QueryParam(value = "flavor") Flavor flavor, @QueryParam(value = "errorBars") ErrorBars errorBars) throws IOException {
-        return trending("", keys, period, t1, t2, nBins, flavor, errorBars);
+            @QueryParam(value = "flavor") Flavor flavor, @QueryParam(value = "errorBars") ErrorBars errorBars, @QueryParam(value = "source") String source) throws IOException {
+        return trending("", keys, period, t1, t2, nBins, flavor, errorBars, source);
     }
 
     @GET
@@ -165,7 +165,7 @@ public class TrendingRestInterface {
             @PathParam(value = "site") String siteName,
             @QueryParam(value = "key") List<String> keys, @QueryParam(value = "period") String period,
             @QueryParam(value = "t1") Long t1, @QueryParam(value = "t2") Long t2, @QueryParam(value = "n") Integer nBins,
-            @QueryParam(value = "flavor") Flavor flavor, @QueryParam(value = "errorBars") ErrorBars errorBars) throws IOException {
+            @QueryParam(value = "flavor") Flavor flavor, @QueryParam(value = "errorBars") ErrorBars errorBars, @QueryParam(value = "source") String source) throws IOException {
 
         Site site = getSiteForName(siteName);
         long now = System.currentTimeMillis();
@@ -194,8 +194,9 @@ public class TrendingRestInterface {
         for (String key : keys) {
             allKeys.append("id=").append(key).append('&');
         }
-        String dataURL = String.format("data/?%st1=%s&t2=%s&n=%s&flavor=%s", allKeys, t1, t2, nBins, flavor.toString().toLowerCase());
+        String dataURL = String.format("data/?%st1=%s&t2=%s&n=%s&flavor=%s&source=%s", allKeys, t1, t2, nBins, flavor.toString().toLowerCase(),source);
         LOG.log(Level.INFO, "Reading: {0}", dataURL);
+        site.setSource(source);
         try (InputStream in = site.openURL(dataURL)) {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
@@ -281,6 +282,18 @@ public class TrendingRestInterface {
             throw new IOException("Error processing restful data from: " + dataURL, ex);
         }
         return new TrendingResult(meta, merged);
+    }
+
+    @GET
+    @Path("/{site}/sources")
+    public Object sources(@PathParam(value = "site") String siteName) {
+        return getSiteForName(siteName).getAvailableSources();
+    }
+
+    @GET
+    @Path("/sources")
+    public Object sources() {
+        return defaultSite.getAvailableSources();
     }
 
     private static class TrendingResult {

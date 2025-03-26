@@ -110,6 +110,9 @@ public class Site implements AutoCloseable {
     }
     
     public void setSource(String source) {
+        if ( source == null ) {
+            return;
+        }
         if ( this.source.equals(source) ) {
             return;
         }        

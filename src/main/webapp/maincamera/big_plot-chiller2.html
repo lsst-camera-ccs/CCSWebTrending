@@ -1,86 +1,85 @@
 <html>
-    <head>
+  <head>
         <title>Big Plot</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<base href="http://ccs.lsst.org/CCSWebTrending/" target="_blank">
-        <script type="module" src="http://ccs.lsst.org/CCSWebTrending/ccs-trending.js"></script>
-    </head>
-    <body>
-    <trending-controller restURL="../rest/maincamera" range="3h" nBins="1000" ></trending-controller>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+    <body>        
+    <trending-controller restURL="../rest/maincamera" useUTC range="3h"  ></trending-controller>
     <trending-grid columns="6">
-        <trending-plot restURL="rest/maincamera" title="hex/Cryo1/*">
+        <trending-plot restURL="../rest/maincamera" title="hex/Cryo1/*">
             <trending-data key="154839" axis="y1">C3ExitTmp</trending-data>
             <trending-data key="154857" axis="y1">C4ExitTmp</trending-data>
             <trending-data key="154845" axis="y1">Cryo1/PreC3Tmp</trending-data>
             <trending-data key="154851" axis="y1">Cryo1/PreC4Tmp</trending-data>
             <trending-data key="154863" axis="y1">EvapExitTmp</trending-data>
             <trending-data key="154869" axis="y1">HexRtrnTmp</trending-data></trending-plot>
-        <trending-plot restURL="rest/maincamera" title="hex/Cryo2/*">
+        <trending-plot restURL="../rest/maincamera" title="hex/Cryo2/*">
             <trending-data key="154838" axis="y1">C3ExitTmp</trending-data>
             <trending-data key="154856" axis="y1">C4ExitTmp</trending-data>
             <trending-data key="154844" axis="y1">Cryo2/PreC3Tmp</trending-data>
             <trending-data key="154850" axis="y1">Cryo2/PreC4Tmp</trending-data>
             <trending-data key="154862" axis="y1">EvapExitTmp</trending-data>
             <trending-data key="154868" axis="y1">HexRtrnTmp</trending-data></trending-plot>
-        <trending-plot restURL="rest/maincamera" title="hex/Cryo3/*">
+        <trending-plot restURL="../rest/maincamera" title="hex/Cryo3/*">
             <trending-data key="154837" axis="y1">C3ExitTmp</trending-data>
             <trending-data key="154855" axis="y1">C4ExitTmp</trending-data>
             <trending-data key="154843" axis="y1">Cryo3/PreC3Tmp</trending-data>
             <trending-data key="154849" axis="y1">Cryo3/PreC4Tmp</trending-data>
             <trending-data key="154861" axis="y1">EvapExitTmp</trending-data>
             <trending-data key="154867" axis="y1">HexRtrnTmp</trending-data></trending-plot>
-        <trending-plot restURL="rest/maincamera" title="hex/Cryo4/*">
+        <trending-plot restURL="../rest/maincamera" title="hex/Cryo4/*">
             <trending-data key="154836" axis="y1">C3ExitTmp</trending-data>
             <trending-data key="154854" axis="y1">C4ExitTmp</trending-data>
             <trending-data key="154842" axis="y1">Cryo4/PreC3Tmp</trending-data>
             <trending-data key="154848" axis="y1">Cryo4/PreC4Tmp</trending-data>
             <trending-data key="154860" axis="y1">EvapExitTmp</trending-data>
             <trending-data key="154866" axis="y1">HexRtrnTmp</trending-data></trending-plot>
-        <trending-plot restURL="rest/maincamera" title="hex/Cryo5/*">
+        <trending-plot restURL="../rest/maincamera" title="hex/Cryo5/*">
             <trending-data key="154834" axis="y1">C3ExitTmp</trending-data>
             <trending-data key="154852" axis="y1">C4ExitTmp</trending-data>
             <trending-data key="154840" axis="y1">Cryo5/PreC3Tmp</trending-data>
             <trending-data key="154846" axis="y1">Cryo5/PreC4Tmp</trending-data>
             <trending-data key="154858" axis="y1">EvapExitTmp</trending-data>
             <trending-data key="154864" axis="y1">HexRtrnTmp</trending-data></trending-plot>
-        <trending-plot restURL="rest/maincamera" title="hex/Cryo6/*">
+        <trending-plot restURL="../rest/maincamera" title="hex/Cryo6/*">
             <trending-data key="154835" axis="y1">C3ExitTmp</trending-data>
             <trending-data key="154853" axis="y1">C4ExitTmp</trending-data>
             <trending-data key="154841" axis="y1">Cryo6/PreC3Tmp</trending-data>
             <trending-data key="154847" axis="y1">Cryo6/PreC4Tmp</trending-data>
             <trending-data key="154859" axis="y1">EvapExitTmp</trending-data>
             <trending-data key="154865" axis="y1">HexRtrnTmp</trending-data></trending-plot>
-        <trending-plot restURL="rest/maincamera" title="refrig/Cryo1/*">
+        <trending-plot restURL="../rest/maincamera" title="refrig/Cryo1/*">
             <trending-data key="168885" axis="y1">DischrgPrs</trending-data>
             <trending-data key="168888" axis="y1">SuctionPrs</trending-data></trending-plot>
-        <trending-plot restURL="rest/maincamera" title="refrig/Cryo2/*">
+        <trending-plot restURL="../rest/maincamera" title="refrig/Cryo2/*">
             <trending-data key="168868" axis="y1">DischrgPrs</trending-data>
             <trending-data key="168871" axis="y1">SuctionPrs</trending-data></trending-plot>
-        <trending-plot restURL="rest/maincamera" title="refrig/Cryo3/*">
+        <trending-plot restURL="../rest/maincamera" title="refrig/Cryo3/*">
             <trending-data key="168849" axis="y1">DischrgPrs</trending-data>
             <trending-data key="168852" axis="y1">SuctionPrs</trending-data></trending-plot>
-        <trending-plot restURL="rest/maincamera" title="refrig/Cryo4/*">
+        <trending-plot restURL="../rest/maincamera" title="refrig/Cryo4/*">
             <trending-data key="168832" axis="y1">DischrgPrs</trending-data>	
             <trending-data key="168835" axis="y1">SuctionPrs</trending-data></trending-plot>
-        <trending-plot restURL="rest/maincamera" title="refrig/Cryo5/*">
+        <trending-plot restURL="../rest/maincamera" title="refrig/Cryo5/*">
             <trending-data key="168796" axis="y1">DischrgPrs</trending-data>
             <trending-data key="168799" axis="y1">SuctionPrs</trending-data></trending-plot>
-        <trending-plot restURL="rest/maincamera" title="refrig/Cryo6/*">
+        <trending-plot restURL="../rest/maincamera" title="refrig/Cryo6/*">
             <trending-data key="168815" axis="y1">DischrgPrs</trending-data>
             <trending-data key="168818" axis="y1">SuctionPrs</trending-data></trending-plot>
 
-        <trending-plot restURL="rest/maincamera" title="Foreline / Turbo" ylabel="Pressure (Torr)" logscale>
+        <trending-plot restURL="../rest/maincamera" title="Foreline / Turbo" ylabel="Pressure (Torr)" logscale>
             <trending-data key="165477">Foreline</trending-data>
             <trending-data key="165476">Turbo</trending-data>
             <trending-data key="165519">HexTurbo</trending-data>
         </trending-plot>
-        <trending-plot restURL="rest/maincamera" title="Camera / Hex vacuum monitoring" ylabel="Pressure (Torr)">
+        <trending-plot restURL="../rest/maincamera" title="Camera / Hex vacuum monitoring" ylabel="Pressure (Torr)">
             <trending-data key="165475">Cryo</trending-data>
             <trending-data key="165518">HexVac</trending-data>
         </trending-plot>
         <!--
-                <trending-plot restURL="rest/maincamera" title="Cold plate temperature" ylabel="Temperature (°C)">
+                <trending-plot restURL="../rest/maincamera" title="Cold plate temperature" ylabel="Temperature (°C)">
                     <trending-data key="154905">RTD-00</trending-data>
                     <trending-data key="154906">RTD-02</trending-data>
                     <trending-data key="154907">RTD-03</trending-data>
@@ -92,7 +91,7 @@
                 </trending-plot>
         -->
 <!--
-        <trending-plot restURL="rest/maincamera" title="Cryo plate temperature" ylabel="Temperature (°C)">
+        <trending-plot restURL="../rest/maincamera" title="Cryo plate temperature" ylabel="Temperature (°C)">
             <trending-data key="154914">RTD-02</trending-data>
             <trending-data key="154915">RTD-03</trending-data>
             <trending-data key="154916">RTD-04</trending-data>
@@ -100,7 +99,7 @@
             <trending-data key="154918">RTD-13</trending-data>
             <trending-data key="154919">RTD-14</trending-data>
         </trending-plot>
-        <trending-plot restURL="rest/maincamera" title="Cryo plate temperature" ylabel="Temperature (°C)">
+        <trending-plot restURL="../rest/maincamera" title="Cryo plate temperature" ylabel="Temperature (°C)">
             <trending-data key="154920">RTD-21</trending-data>
             <trending-data key="154921">RTD-22</trending-data>
             <trending-data key="154922">RTD-24</trending-data>
@@ -109,7 +108,7 @@
             <trending-data key="154925">RTD-31</trending-data>
             <trending-data key="154926">RTD-34</trending-data>
         </trending-plot>
-        <trending-plot restURL="rest/maincamera" title="Cryo plate temperature" ylabel="Temperature (°C)">
+        <trending-plot restURL="../rest/maincamera" title="Cryo plate temperature" ylabel="Temperature (°C)">
             <trending-data key="154927">RTD-14</trending-data>
             <trending-data key="154928">RTD-41</trending-data>
             <trending-data key="154929">RTD-42</trending-data>            
@@ -119,11 +118,11 @@
             <trending-data key="154933">RTD-53</trending-data>     
         </trending-plot>
         -->
-        <trending-plot restURL="rest/maincamera" title="Cryo plate temperature" ylabel="Temperature (°C)">
+        <trending-plot restURL="../rest/maincamera" title="Cryo plate temperature" ylabel="Temperature (°C)">
             <trending-data key="154913">AvgCryoTemp</trending-data>
         </trending-plot>
 <!--
-        <trending-plot restURL="rest/maincamera" title="thermal/Cold_Temp/*">
+        <trending-plot restURL="../rest/maincamera" title="thermal/Cold_Temp/*">
             <trending-data key="154905" axis="y1">CLP-RTD-00</trending-data>
             <trending-data key="154906" axis="y1">CLP-RTD-02</trending-data>
             <trending-data key="154907" axis="y1">CLP-RTD-03</trending-data>
@@ -135,12 +134,12 @@
             <trending-data key="154904" axis="y1">AvgColdTemp</trending-data>
         </trending-plot>
 -->
-        <trending-plot restURL="rest/maincamera" title="thermal/Cold_Temp/*">
+        <trending-plot restURL="../rest/maincamera" title="thermal/Cold_Temp/*">
             <trending-data key="154904" axis="y1">AvgColdTemp</trending-data>
         </trending-plot>
 
 
-        <trending-plot restURL="rest/maincamera" title="chiller/Chiller/*">
+        <trending-plot restURL="../rest/maincamera" title="chiller/Chiller/*">
             <trending-data key="156865" axis="y1">FluidTemperature</trending-data>
             <trending-data key="156768" axis="y1">ImportedColdTemp</trending-data>
             <trending-data key="156872" axis="y1">TempDynamicSetPt</trending-data>
@@ -149,13 +148,13 @@
             <trending-data key="156900" axis="y1">CoolantReturn</trending-data>
             <trending-data key="156901" axis="y1">CoolantSupply</trending-data>
         </trending-plot>
-        <trending-plot restURL="rest/maincamera" title="chiller/Chiller/*">
+        <trending-plot restURL="../rest/maincamera" title="chiller/Chiller/*">
             <trending-data key="156878" axis="y1">PressureIn</trending-data>
             <trending-data key="156879" axis="y1">PressureOut</trending-data>
             <trending-data key="156880" axis="y1">PressureTank</trending-data>
             <trending-data key="156876" axis="y2">FlowRate</trending-data>
         </trending-plot>
-        <trending-plot restURL="rest/maincamera" title="chiller/Maq20/*">
+        <trending-plot restURL="../rest/maincamera" title="chiller/Maq20/*">
             <trending-data key="156889" axis="y1">Stg1CondensOut</trending-data>
             <trending-data key="156890" axis="y1">Stg1TXVBulb</trending-data>
             <trending-data key="156893" axis="y1">Stg2DeSuHtrOut</trending-data>
@@ -164,7 +163,7 @@
             <trending-data key="156915" axis="y1">AmbientTemp</trending-data>
         </trending-plot>
 
-        <trending-plot restURL="rest/maincamera" title="Cryo WaterInOutTmp">
+        <trending-plot restURL="../rest/maincamera" title="Cryo WaterInOutTmp">
             <trending-data key="168840" axis="y1">Cryo4/WaterInTmp</trending-data>
             <trending-data key="168876" axis="y1">Cryo2/WaterInTmp</trending-data>
             <trending-data key="168893" axis="y1">Cryo1/WaterInTmp</trending-data>
@@ -180,20 +179,20 @@
             <trending-data key="168805" axis="y1">Cryo3/WaterOutTmp</trending-data>
         </trending-plot>
 
-        <trending-plot restURL="rest/maincamera" title="chiller/Maq20/*">
+        <trending-plot restURL="../rest/maincamera" title="chiller/Maq20/*">
             <trending-data key="156906" axis="y1">GlycChillerIn</trending-data>
             <trending-data key="156909" axis="y1">GlycChillerOut</trending-data>
         </trending-plot>
-        <trending-plot restURL="rest/maincamera" title="chiller/Maq20">
+        <trending-plot restURL="../rest/maincamera" title="chiller/Maq20">
             <trending-data key="156912" axis="y1">GlycInputFlow</trending-data>
         </trending-plot>
 
-        <trending-plot restURL="rest/maincamera" title="utilitytrunk/UT">
+        <trending-plot restURL="../rest/maincamera" title="utilitytrunk/UT">
             <trending-data key="1265" axis="y1">CoolPipeSplyTemp</trending-data>
             <trending-data key="1266" axis="y1">CoolPipeRetnTemp</trending-data>
             <trending-data key="1264" axis="y2">CoolFlowRate</trending-data>
         </trending-plot>
-        <trending-plot restURL="rest/maincamera" title="Power">
+        <trending-plot restURL="../rest/maincamera" title="Power">
             <trending-data key="137667" axis="y1">focal-plane/RebTotalPower</trending-data>
             <trending-data key="154983" axis="y1">thermal/Trim_Htrs/CryoTotal_P</trending-data>
             <trending-data key="154964" axis="y1">thermal/Trim_Htrs/ColdTotal_P</trending-data>

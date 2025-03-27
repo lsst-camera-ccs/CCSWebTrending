@@ -196,8 +196,7 @@ public class TrendingRestInterface {
         }
         String dataURL = String.format("data/?%st1=%s&t2=%s&n=%s&flavor=%s&source=%s", allKeys, t1, t2, nBins, flavor.toString().toLowerCase(),source);
         LOG.log(Level.INFO, "Reading: {0}", dataURL);
-        site.setSource(source);
-        try (InputStream in = site.openURL(dataURL)) {
+        try (InputStream in = site.openURL(dataURL, source)) {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
             DefaultHandler handler = new DefaultHandler() {

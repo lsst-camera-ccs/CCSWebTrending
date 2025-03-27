@@ -31,14 +31,6 @@ import java.util.logging.Logger;
 public class Site implements AutoCloseable {
 
     private final String name;
-    private final boolean useSSH;
-    private volatile URL restURL = null;
-    private final String sshUsername;
-    private final String sshHost;
-    private final File sshKey;
-    private final String sshKeyPassword;
-    private volatile Session session;
-    private volatile URL tunnelURL;
     private final AtomicReference<ChannelTree> channelTree = new AtomicReference<>();
     private final AtomicBoolean channelTreeInitialized = new AtomicBoolean(false);
     private final CountDownLatch channelTreeInitCompleteLatch = new CountDownLatch(1);
@@ -51,74 +43,107 @@ public class Site implements AutoCloseable {
     private static final int SSH_RETRIES = 2;
     private int sshTimeout = SSH_TIMEOUT;
     private int sshRetries = SSH_RETRIES;
-    private volatile String source = "";
-    private Map<String,URL> sourcesUrl = new LinkedHashMap<>();
-    private Set<String> allSources = new LinkedHashSet<>();
+
+    private final Set<String> allSources = new LinkedHashSet<>();
     
+    private Map<String,SessionWrapper> sessionsMap = new LinkedHashMap<>();
+    
+    private final String defaultSource;
     
     
 
     public Site(Properties properties) throws MalformedURLException, JSchException {
         this.name = properties.getProperty("name");
-        this.useSSH = Boolean.parseBoolean(properties.getProperty("useSSH", "false"));
         
-        String defaultSource = properties.getProperty("defaultSource", "");
+        defaultSource = properties.getProperty("defaultSource", "");
         allSources.add(defaultSource);
         
         for ( Object prop : properties.keySet() ) {
             String propStr = (String)prop;
             if ( propStr.endsWith("restURL") ) {
-                String sourceUrl = propStr.replace("restURL", "");
-                if ( sourcesUrl.containsKey(sourceUrl) ) {
-                    throw new RuntimeException("Source "+sourceUrl+" is already defined for site "+name);                    
+                String sourceName = propStr.replace("restURL", "");
+                if ( sessionsMap.containsKey(sourceName) ) {
+                    throw new RuntimeException("Source "+sourceName+" is already defined for site "+name);                    
                 }
-                sourcesUrl.put(sourceUrl, new URL(properties.getProperty(propStr)));                
-                allSources.add(sourceUrl);
+                
+                allSources.add(sourceName);
+                URL url = new URL(properties.getProperty(propStr));
+                boolean useSSH = Boolean.parseBoolean(properties.getProperty(sourceName+"useSSH", "false"));
+                SessionWrapper sw = new SessionWrapper(name, sourceName, url, useSSH, properties);
+                sessionsMap.put(sourceName, sw);
             }
         }
-        
-        this.restURL = sourcesUrl.get(defaultSource);
-        
-        if (useSSH) {
-            this.sshUsername = properties.getProperty("ssh.user");
-            this.sshHost = properties.getProperty("ssh.host");
-            this.sshKey = new File(properties.getProperty("ssh.key"));
-            if (!sshKey.canRead()) {
-                throw new RuntimeException("Invalid ssh key " + properties.getProperty("ssh.key"));
-            }
-            this.sshKeyPassword = properties.getProperty("ssh.key.password");
-        } else {
-            sshUsername = sshHost = sshKeyPassword = null;
-            sshKey = null;
-        }
-    }
-
-    public Session getSession() {
-        return session;
-    }
-
-    public void setSession(Session session) {
-        this.session = session;
-    }
-
-    public URL getTunnelURL() {
-        return tunnelURL;
-    }
-
-    public void setTunnelURL(URL tunnelURL) {
-        this.tunnelURL = tunnelURL;
     }
     
-    public void setSource(String source) {
-        if ( source == null ) {
-            return;
+    
+    private static class SessionWrapper {
+        private final String sshUsername;
+        private final String sshHost;
+        private final File sshKey;
+        private final String sshKeyPassword;
+        private final boolean useSSH;
+        private volatile Session session;
+        private volatile URL restURL = null;
+        private volatile URL tunnelURL;
+        private final String siteName;
+
+        SessionWrapper(String siteName, String sourceName, URL url, boolean useSSH, Properties properties) {
+            this.useSSH = useSSH;
+            this.restURL = url;
+            this.siteName = siteName;
+            
+            if (useSSH) {
+                this.sshUsername = properties.getProperty("ssh.user");
+                this.sshHost = properties.getProperty("ssh.host");
+                this.sshKey = new File(properties.getProperty("ssh.key"));
+                if (!sshKey.canRead()) {
+                    throw new RuntimeException("Invalid ssh key " + properties.getProperty("ssh.key"));
+                }
+                this.sshKeyPassword = properties.getProperty("ssh.key.password");
+            } else {
+                sshUsername = sshHost = sshKeyPassword = null;
+                sshKey = null;
+            }            
         }
-        if ( this.source.equals(source) ) {
-            return;
-        }        
-        this.restURL = sourcesUrl.get(source);
-        this.source = source;        
-        close();
+
+
+        private synchronized void establishConnection() throws MalformedURLException, IOException {
+            if (useSSH && (session == null || !session.isConnected())) {
+                try {
+                    JSch jsch = new JSch();
+                    jsch.addIdentity(sshKey.getAbsolutePath(), sshKeyPassword);
+                    session = jsch.getSession(sshUsername, sshHost);
+                    Properties config = new Properties();
+                    config.put("StrictHostKeyChecking", "no");
+                    config.put("PreferredAuthentications", "publickey");
+                    session.setConfig(config);
+                    session.setDaemonThread(true);
+                    session.connect(5000);
+                    int port = session.setPortForwardingL(null, 0, restURL.getHost(), restURL.getPort());
+                    tunnelURL = new URL("http", "localhost", port, restURL.getPath());
+                    LOG.log(Level.INFO, "Tunnel to {0} for site {1} opened {2}", new Object[]{sshHost, siteName, tunnelURL});
+                } catch (JSchException ex) {
+                    throw new IOException("Error opening tunnel ", ex);
+                }
+            }
+        }
+
+        public Session getSession() {
+            return session;
+        }
+
+        public URL getTunnelURL() {
+            return tunnelURL;
+        }
+        
+        public boolean getUseSSH() {
+            return useSSH;
+        }
+        
+        public URL getRestURL() {
+            return restURL;
+        }
+        
     }
     
     public Set<String> getAvailableSources() {
@@ -141,36 +166,19 @@ public class Site implements AutoCloseable {
         this.sshRetries = sshRetries;
     }
 
-    private synchronized void establishConnection() throws MalformedURLException, IOException {
-        if (useSSH && (session == null || !session.isConnected())) {
-            try {
-                JSch jsch = new JSch();
-                jsch.addIdentity(sshKey.getAbsolutePath(), sshKeyPassword);
-                session = jsch.getSession(sshUsername, sshHost);
-                Properties config = new Properties();
-                config.put("StrictHostKeyChecking", "no");
-                config.put("PreferredAuthentications", "publickey");
-                session.setConfig(config);
-                session.setDaemonThread(true);
-                session.connect(5000);
-                int port = session.setPortForwardingL(null, 0, restURL.getHost(), restURL.getPort());
-                tunnelURL = new URL("http", "localhost", port, restURL.getPath());
-                LOG.log(Level.INFO, "Tunnel to {0} for site {1} opened {2}", new Object[]{sshHost, name, tunnelURL});
-            } catch (JSchException ex) {
-                throw new IOException("Error opening tunnel ", ex);
-            }
-        }
-    }
 
-    public InputStream openURL(String relativePath) throws MalformedURLException, IOException {
-        if (!useSSH) {
-            URL url = new URL(restURL, relativePath);
+    public InputStream openURL(String relativePath, String source) throws MalformedURLException, IOException {
+        String sourceToUse = source == null ? defaultSource : source;
+        SessionWrapper sessionWrapper = sessionsMap.get(sourceToUse);
+        
+        if (!sessionWrapper.getUseSSH()) {
+            URL url = new URL(sessionWrapper.getRestURL(), relativePath);
             return url.openStream();
         } else {
             IOException cause = null;
             for (int i=0;i<sshRetries;i++) {
-                establishConnection();
-                URL url = new URL(tunnelURL, relativePath);
+                sessionWrapper.establishConnection();
+                URL url = new URL(sessionWrapper.getTunnelURL(), relativePath);
                 try {
                     URLConnection connection = url.openConnection();
                     connection.setConnectTimeout(sshTimeout);
@@ -179,7 +187,7 @@ public class Site implements AutoCloseable {
                 } catch (IOException x) {
                     cause = x;
                     LOG.log(Level.WARNING, "Failed to connect via ssh to "+url+" (attempt "+i+")", x);
-                    session.disconnect();
+                    sessionWrapper.getSession().disconnect();
                 }
             }
             throw new IOException("Unable to establish ssh connection after "+sshRetries+" retries", cause);
@@ -188,8 +196,13 @@ public class Site implements AutoCloseable {
 
     @Override
     public void close() {
-        if (useSSH && session != null && session.isConnected()) {
-            session.disconnect();
+        for ( SessionWrapper sw : sessionsMap.values() ) {
+            if (sw.getUseSSH() ) {
+                Session session = sw.getSession();
+                if ( session != null && session.isConnected() ) {
+                    session.disconnect();
+                }
+            }
         }
     }
 
@@ -197,7 +210,7 @@ public class Site implements AutoCloseable {
         Runnable readChannelTree = new Runnable() {
             @Override
             public void run() {
-                try (InputStream in = openURL("listchannels?maxIdleSeconds=604800")) {
+                try (InputStream in = openURL("listchannels?maxIdleSeconds=604800", null)) {
                     channelTree.set(new ChannelTree(in));
                     LOG.log(Level.INFO, "Read channel tree for site {0}", name);                
                     scheduler.schedule(this, 12, TimeUnit.HOURS);
@@ -232,7 +245,7 @@ public class Site implements AutoCloseable {
         Runnable readFullChannelTree = new Runnable() {
             @Override
             public void run() {
-                try (InputStream in = openURL("listchannels?maxIdleSeconds=0")) {
+                try (InputStream in = openURL("listchannels?maxIdleSeconds=0", null)) {
                     fullChannelTree.set(new ChannelTree(in));
                     LOG.log(Level.INFO, "Read full channel tree for site {0}", name);                
                     scheduler.schedule(this, 12, TimeUnit.HOURS);
@@ -265,5 +278,5 @@ public class Site implements AutoCloseable {
 
     String getName() {
         return name;
-    }
+    }    
 }

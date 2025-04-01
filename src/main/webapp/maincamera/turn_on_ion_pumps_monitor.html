@@ -1,0 +1,25 @@
+<html>
+  <head>
+      <title>Ion Pump Turn On</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller restURL="../rest/maincamera" useUTC range="1h" errorbars="MINMAX" source="CCS"></trending-controller>
+    <trending-grid columns="1">
+      <trending-plot restURL="../rest/maincamera" useUTC title="thermal/Cryo_Temp">
+        <trending-data key="154913" axis="y1">AvgCryoTemp</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="vacuum/Cryo/*">
+        <trending-data key="165495" axis="y1">CIP1_I</trending-data><trending-data key="165499" axis="y1">CIP2_I</trending-data><trending-data key="165503" axis="y1">CIP3_I</trending-data><trending-data key="165507" axis="y1">CIP4_I</trending-data><trending-data key="165511" axis="y1">CIP5_I</trending-data><trending-data key="165515" axis="y1">CIP6_I</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="vacuum/Cryo/*">
+        <trending-data key="165494" axis="y1">CIP1_V</trending-data><trending-data key="165498" axis="y1">CIP2_V</trending-data><trending-data key="165502" axis="y1">CIP3_V</trending-data><trending-data key="165506" axis="y1">CIP4_V</trending-data><trending-data key="165510" axis="y1">CIP5_V</trending-data><trending-data key="165514" axis="y1">CIP6_V</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="vacuum/*/*">
+        <trending-data key="165475" axis="y1">Cryo/CryoVac</trending-data><trending-data key="165476" axis="y1">Cryo/TurboVac</trending-data><trending-data key="165518" axis="y2">HX/HexVac</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="vacuum/HX/*">
+        <trending-data key="165538" axis="y1">HIP1_I</trending-data><trending-data key="165542" axis="y1">HIP2_I</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="vacuum/HX/*">
+        <trending-data key="165537" axis="y1">HIP1_V</trending-data><trending-data key="165541" axis="y1">HIP2_V</trending-data></trending-plot>
+    </trending-grid>
+  </body>
+</html>

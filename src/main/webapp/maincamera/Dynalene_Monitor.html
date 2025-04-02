@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title>Dynalene Monitor</title>
+    <base href="http://ccs.lsst.org/CCSWebTrending/maincamera/split.html" target="_blank">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller restURL="../rest/maincamera" useUTC range="1w" errorbars="MINMAX" source="CCS"></trending-controller>
+    <trending-grid columns="1">
+      <trending-plot restURL="../rest/maincamera" useUTC title="utiltrunk/UT/*">
+        <trending-data key="1266" axis="y1">CoolPipeRetnTemp</trending-data><trending-data key="1265" axis="y1">CoolPipeSplyTemp</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="utiltrunk/UT">
+        <trending-data key="1264" axis="y1">CoolFlowRate</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="rebpower/RebPS/P00/*">
+        <trending-data key="4274" axis="y1">BoardTemp5</trending-data><trending-data key="4269" axis="y1">BoardTemp0</trending-data></trending-plot>
+    </trending-grid>
+  </body>
+</html>

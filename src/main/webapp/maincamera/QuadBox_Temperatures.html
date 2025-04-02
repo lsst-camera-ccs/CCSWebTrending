@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>QuadBox Temperatures</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller restURL="../rest/maincamera" useUTC range="1d" errorbars="MINMAX" ></trending-controller>
+    <trending-grid columns="2">
+      <trending-plot restURL="../rest/maincamera" useUTC title="rebpower/RebPS/*/BoardTemp0">
+        <trending-data key="4269" axis="y1">P00</trending-data><trending-data key="4278" axis="y1">P01</trending-data><trending-data key="4287" axis="y1">P02</trending-data><trending-data key="4296" axis="y1">P03</trending-data><trending-data key="4305" axis="y1">P04</trending-data><trending-data key="4314" axis="y1">P05</trending-data><trending-data key="4323" axis="y1">P06</trending-data><trending-data key="4332" axis="y1">P07</trending-data><trending-data key="4341" axis="y1">P08</trending-data><trending-data key="4350" axis="y1">P09</trending-data><trending-data key="4359" axis="y1">P10</trending-data><trending-data key="4368" axis="y1">P11</trending-data><trending-data key="4377" axis="y1">P12</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="quadbox/PDU_24VC/*">
+        <trending-data key="4863" axis="y1">Board_T</trending-data><trending-data key="4862" axis="y1">Main_T</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="quadbox/PDU_24VD/*">
+        <trending-data key="4904" axis="y1">Board_T</trending-data><trending-data key="4903" axis="y1">Main_T</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="quadbox/PDU_48V/*">
+        <trending-data key="4935" axis="y1">Board_T</trending-data><trending-data key="4933" axis="y1">Main_T</trending-data></trending-plot>
+    </trending-grid>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title>Glycol Monitor</title>
+    <base href="http://ccs.lsst.org/CCSWebTrending/maincamera/split.html" target="_blank">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../ccs-trending.js"></script>
+  </head>
+  <body>
+    <trending-controller restURL="../rest/maincamera" range="6h" errorbars="MINMAX" source="CCS"></trending-controller>
+    <trending-grid columns="1">
+      <trending-plot restURL="../rest/maincamera" useUTC title="chiller2/Maq20">
+        <trending-data key="156912" axis="y1">GlycInputFlow</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="chiller2/Maq20/*">
+        <trending-data key="156906" axis="y1">GlycChillerIn</trending-data><trending-data key="156909" axis="y1">GlycChillerOut</trending-data></trending-plot>
+      <trending-plot restURL="../rest/maincamera" useUTC title="refrig2/*/*">
+        <trending-data key="168893" axis="y1">Cryo1/WaterInTmp</trending-data><trending-data key="168876" axis="y1">Cryo2/WaterInTmp</trending-data><trending-data key="168857" axis="y1">Cryo3/WaterInTmp</trending-data><trending-data key="168840" axis="y1">Cryo4/WaterInTmp</trending-data><trending-data key="168804" axis="y1">Cryo5/WaterInTmp</trending-data><trending-data key="168823" axis="y1">Cryo6/WaterInTmp</trending-data><trending-data key="168894" axis="y1">Cryo1/WaterOutTmp</trending-data><trending-data key="168877" axis="y1">Cryo2/WaterOutTmp</trending-data><trending-data key="168858" axis="y1">Cryo3/WaterOutTmp</trending-data><trending-data key="168841" axis="y1">Cryo4/WaterOutTmp</trending-data><trending-data key="168805" axis="y1">Cryo5/WaterOutTmp</trending-data><trending-data key="168824" axis="y1">Cryo6/WaterOutTmp</trending-data></trending-plot>
+    </trending-grid>
+  </body>
+</html>

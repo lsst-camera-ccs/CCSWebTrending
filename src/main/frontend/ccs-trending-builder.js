@@ -121,7 +121,7 @@ class TrendingBuilder extends LitElement {
                     <script type="module" src="${this.baseURL}ccs-trending.js"></script>
                 </head>
                 <body>
-                    <trending-controller ${controller.useUTC ? "useUTC" : ""} range="${controller.range}" errorbars="${controller.errorbars}" source="${controller.source}"></trending-controller>
+                    <trending-controller ${controller.useUTC ? "useUTC" : ""} range="${controller.range}" errorbars="${controller.errorbars}" restURL="${controller.restURL}"></trending-controller>
                     <trending-grid columns="${this.columns}">
                     ${this._generatePlots()}
                     </trending-grid>

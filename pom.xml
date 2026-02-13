@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.lsst</groupId>
         <artifactId>org-lsst-ccs-parent</artifactId>
-        <version>3.2.3-SNAPSHOT</version>
+        <version>3.2.2</version>
         <relativePath />
     </parent>
 
@@ -27,7 +27,7 @@
     <scm>
         <url>https://github.com/lsst-camera-ccs/CCSWebTrending</url>
         <connection>scm:git:git://github.com/lsst-camera-ccs/CCSWebTrending.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/lsst-camera-ccs/CCSWebTrending.git</developerConnection>
+        <developerConnection>scm:git:https://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@github.com/lsst-camera-ccs/CCSWebTrending.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 

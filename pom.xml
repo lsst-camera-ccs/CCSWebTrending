@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.lsst</groupId>
         <artifactId>org-lsst-ccs-parent</artifactId>
-        <version>3.1.5</version>
+        <version>3.2.3-SNAPSHOT</version>
         <relativePath />
     </parent>
 
@@ -12,6 +12,7 @@
     <artifactId>CCSWebTrending</artifactId>
     <version>2.4-SNAPSHOT</version>
     <packaging>war</packaging>
+    <url>${org.lsst.ccs.site.url.base}${org.lsst.ccs.site.dir}</url>
 
     <name>CCSWebTrending</name>
 
@@ -26,17 +27,17 @@
     <scm>
         <url>https://github.com/lsst-camera-ccs/CCSWebTrending</url>
         <connection>scm:git:git://github.com/lsst-camera-ccs/CCSWebTrending.git</connection>
-        <developerConnection>scm:git:https://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@github.com/lsst-camera-ccs/CCSWebTrending.git</developerConnection>
+        <developerConnection>scm:git:ssh://git@github.com/lsst-camera-ccs/CCSWebTrending.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
         <site>
-            <id>lsst-maven2-site</id>
-            <name>LSST Maven2 central site repository</name>
-            <url>dav:${org.lsst.ccs.site.url}</url>
+            <id>github</id>
+            <name>LSST Public pages in github</name>
+            <url>scm:git:https://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@github.com/lsst-camera-ccs/org-lsst-ccs-site.git</url>
         </site>
-    </distributionManagement>
+     </distributionManagement>
 
 
     <dependencyManagement>
@@ -203,6 +204,7 @@
     </build>
     
     <properties>
+        <org.lsst.ccs.site.dir>site-root/utilities/org-lsst-ccs-web-trending/${project.version}</org.lsst.ccs.site.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.lsst</groupId>
         <artifactId>org-lsst-ccs-parent</artifactId>
-        <version>3.2.5</version>
+        <version>3.2.2</version>
         <relativePath />
     </parent>
 

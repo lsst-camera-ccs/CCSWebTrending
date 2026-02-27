@@ -7,7 +7,7 @@
     <script type="module" src="../ccs-trending.js"></script>
   </head>
   <body>
-    <trending-controller restURL="../rest/maincamera" range="6h" errorbars="MINMAX" source="CCS"></trending-controller>
+    <trending-controller restURL="../rest/maincamera" useUTC range="6h" errorbars="MINMAX" source="CCS"></trending-controller>
     <trending-grid columns="1">
       <trending-plot restURL="../rest/maincamera" useUTC title="chiller2/Maq20">
         <trending-data key="156912" axis="y1">GlycInputFlow</trending-data></trending-plot>

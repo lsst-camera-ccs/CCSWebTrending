@@ -604,6 +604,12 @@ class TrendingController extends LitElement {
                 notify: true,
                 reflect: true
             },
+            
+            nBins: {
+                type: Number,
+                notify: true,
+                reflect: true
+            },
 
             restURL: {
                 type: String,

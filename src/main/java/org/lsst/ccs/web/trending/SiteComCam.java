@@ -19,6 +19,7 @@ public class SiteComCam extends Site {
         props.setProperty("useSSH", "false");
         props.setProperty("CCSrestURL", "http://comcam-mcm.cp.lsst.org:8080/rest/data/dataserver/");
         props.setProperty("EFDrestURL", "http://comcam-mcm.cp.lsst.org:8080/efd-rest/data/dataserver/");
+        props.setProperty("EFD-SALrestURL", "http://comcam-mcm.cp.lsst.org:8080/efd-sal-rest/data/dataserver/");
         props.setProperty("defaultSource", "CCS");
 
         return new SiteComCam(props);

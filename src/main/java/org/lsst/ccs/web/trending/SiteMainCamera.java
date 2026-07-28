@@ -19,6 +19,7 @@ public class SiteMainCamera extends Site {
         props.setProperty("useSSH", "false");
         props.setProperty("CCSrestURL", "http://lsstcam-tomcat.cp.lsst.org:8080/rest/data/dataserver/");
         props.setProperty("EFDrestURL", "http://lsstcam-tomcat.cp.lsst.org:8080/efd-rest/data/dataserver/");
+        props.setProperty("EFD-SALrestURL", "http://lsstcam-tomcat.cp.lsst.org:8080/efd-sal-rest/data/dataserver/");
         props.setProperty("defaultSource", "CCS");
 
         return new SiteMainCamera(props);
